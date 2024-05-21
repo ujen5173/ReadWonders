@@ -8,7 +8,7 @@ export const authRouter = createTRPCRouter({
         id: ctx.user.id,
       },
       include: {
-        users: {
+        author: {
           select: {
             rawUserMetaData: true,
           },
@@ -16,6 +16,6 @@ export const authRouter = createTRPCRouter({
       },
     });
 
-    return user.users.rawUserMetaData as SupabaseUser | null;
+    return user.author.rawUserMetaData as SupabaseUser | null;
   }),
 });
