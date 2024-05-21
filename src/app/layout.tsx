@@ -16,11 +16,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   minimumScale: 1,
-  maximumScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  maximumScale: 6,
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "white" }],
 };
 
 export const metadata: Metadata = {
@@ -41,8 +38,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      follow: true,
+      index: true,
+    },
   },
-
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -50,6 +52,14 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.links.openGraphImage,
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} Open Graph Image`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -73,7 +83,7 @@ async function RootLayout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <body
           className={cn(
-            "min-h-screen bg-background font-sans antialiased",
+            "min-h-screen font-sans antialiased",
             fontInter.className,
           )}
         >

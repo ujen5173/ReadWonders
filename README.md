@@ -1,6 +1,6 @@
 # StoryNest
 
-Welcome to StoryNest, a dynamic community platform where creators can craft and share their stories, express their emotions, and connect with a supportive audience. Whether you’re a seasoned writer or just starting your journey, StoryNest offers the perfect space to unleash your creativity and find your voice.
+Welcome to StoryNest, a robust community platform designed for creators to compose and share their narratives, articulate their emotions, and engage with a supportive audience. Whether you are an experienced writer or a novice, StoryNest offers a versatile environment to unleash your creativity and refine your voice.
 
 > **Warning**
 > This is a work-in-progress and not the finished product.
@@ -29,6 +29,7 @@ Welcome to StoryNest, a dynamic community platform where creators can craft and 
 - **Prisma**
 - **Supabase**
 - **TRPC**
+- **Posthog**
 
 ## Features
 

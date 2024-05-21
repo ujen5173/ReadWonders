@@ -1,4 +1,4 @@
-import { Inter, Urbanist } from "next/font/google";
+import { Inter, Nunito, Urbanist, Work_Sans } from "next/font/google";
 
 export const fontInter = Inter({
   subsets: ["latin"],
@@ -6,6 +6,16 @@ export const fontInter = Inter({
 });
 
 export const fontUrbanist = Urbanist({
+  subsets: ["latin"],
+  variable: "--font-urbanist",
+});
+
+export const nunito = Nunito({
+  subsets: ["latin"],
+  variable: "--font-urbanist",
+});
+
+export const workSans = Work_Sans({
   subsets: ["latin"],
   variable: "--font-urbanist",
 });
