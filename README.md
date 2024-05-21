@@ -2,14 +2,24 @@
 
 Welcome to StoryNest, a dynamic community platform where creators can craft and share their stories, express their emotions, and connect with a supportive audience. Whether you’re a seasoned writer or just starting your journey, StoryNest offers the perfect space to unleash your creativity and find your voice.
 
+> **Warning**
+> This is a work-in-progress and not the finished product.
+>
+> StoryNest is in its very early days of development. We are working hard to provide an initial version as soon as possible and are accepting contributions.
+>
+> Feel free to leave feature suggestions but please don't open issues for bugs or support requests just yet.
+>
+> Follow me on GitHub [@ujen5173](https://github.com/ujen5173) for updates.
+
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running the Project](#running-the-project)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Supabase Setup](#supabase-setup)
+  - [Running the Project](#running-the-project)
 - [Contributing](#contributing)
 
 ## Tech Stack
@@ -22,15 +32,16 @@ Welcome to StoryNest, a dynamic community platform where creators can craft and 
 
 ## Features
 
-- [x] Role based Authentication
-- [x] Write Stories with AI Writing Assistant
-- [x] Share Stories with the Community
-- [x] Like and Comment on Stories
-- [x] Follow and Connect with Creators
-- [x] Personalized Feed
-- [x] Notifications
-- [x] Premium Subscription for Exclusive Content
-- [x] Schedule Stories
+- Offline Support
+- Collaborative Writing
+- Discussion Threads
+- Achievements
+- Live Writing Sessions
+- Write Stories with AI Writing Assistant
+- Like, Comment on Stories, Follow Creators, Notifications
+- Personalized Feed
+- Premium Subscription for Exclusive Content
+- Schedule Stories
 
 ## Getting Started
 
@@ -44,32 +55,81 @@ Make sure you have the following installed on your system:
 
 ### Installation
 
-Clone the repository:
+1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/storynest.git
+  git clone https://github.com/your-username/storynest.git
 ```
+
+2. Navigate to the project directory:
 
 ```bash
-cd storynest
+  cd storynest
 ```
 
-#### Install dependencies:
+3. Install dependencies:
 
 ```bash
-pnpm install
+  pnpm install
 ```
 
-#### Set up environment variables:
+4. Set up environment variables:
 
 Create a `.env` file in the root directory and add the environment variables referenced in the `.env.example` file.
+
+### Supabase Setup
+
+1. Create an account on [Supabase](https://supabase.com/).
+2. Populate the API keys in the `.env` file as referenced in `.env.example`.
+3. Push the Prisma schema to Supabase:
+
+```bash
+  pnpm db:push
+```
+
+4. Enable the RLS policy in all tables for security.
+5. Set up Supabase auth:
+
+- Navigate to the SQL editor to set up the authentication process.
+- Run the following SQL queries in the Supabase SQL editor one by one:
+
+```sql
+  CREATE OR REPLACE FUNCTION public.handle_new_user()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    INSERT INTO public.profiles (id) -- replace `profile` with your profile table name
+    VALUES (new.id);
+    RETURN new;
+  END;
+  $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+  CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+  CREATE OR REPLACE FUNCTION public.handle_user_delete()
+  RETURNS TRIGGER AS $$
+  BEGIN
+    DELETE FROM auth.users WHERE id = old.id;
+    RETURN old;
+  END;
+  $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+  CREATE OR REPLACE TRIGGER on_profile_user_deleted
+  AFTER DELETE ON public.profiles -- replace `profile` with your profile table name
+  FOR EACH ROW EXECUTE FUNCTION public.handle_user_delete();
+```
+
+6. Adding Google signup:
+
+Navigate to `/auth/providers` in Supabase, enable Google, and paste the API keys.
 
 ### Running the Project
 
 Start the development server:
 
 ```bash
-pnpm dev
+  pnpm dev
 ```
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
@@ -78,11 +138,27 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 We welcome contributions from the community. Please follow these steps to contribute:
 
-1. Fork the repository
-2. Create a new branch (git checkout -b feature-branch)
-3. Commit your changes (git commit -m 'Add some feature')
-4. Push to the branch (git push origin feature-branch)
-5. Open a pull request
+1. Fork the repository.
+
+2. Create a new branch:
+
+```bash
+  git checkout -b feature-branch
+```
+
+3. Commit your changes:
+
+```bash
+  git commit -m 'Add some feature'
+```
+
+4. Push to the branch:
+
+```bash
+  git push origin feature-branch
+```
+
+5. Open a pull request.
 
 Please make sure your code adheres to our coding standards.
 

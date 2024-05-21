@@ -10,26 +10,6 @@ datasource db {
   schemas   = ["auth", "public"]
 }
 
-model Book {
-  id        Int      @id @default(autoincrement())
-  title     String
-  author    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@schema("public")
-}
-
-model Chapter {
-  id        Int      @id @default(autoincrement())
-  title     String
-  bookId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@schema("public")
-}
-
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model AuditLogEntries {
   instanceId String?   @map("instance_id") @db.Uuid
@@ -57,7 +37,9 @@ model FlowState {
   updatedAt            DateTime?           @map("updated_at") @db.Timestamptz(6)
   authenticationMethod String              @map("authentication_method")
   authCodeIssuedAt     DateTime?           @map("auth_code_issued_at") @db.Timestamptz(6)
+  samlRelayStates      SamlRelayStates[]
 
+  @@index([createdAt(sort: Desc)])
   @@index([authCode], map: "idx_auth_code")
   @@index([userId, authenticationMethod], map: "idx_user_id_auth_method")
   @@map("flow_state")
@@ -143,6 +125,24 @@ model MfaFactors {
   @@schema("auth")
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model OneTimeTokens {
+  id        String           @id @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  tokenType OneTimeTokenType @map("token_type")
+  tokenHash String           @map("token_hash")
+  relatesTo String           @map("relates_to")
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime         @default(now()) @map("updated_at") @db.Timestamp(6)
+  users     Users            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, tokenType])
+  @@index([relatesTo], map: "one_time_tokens_relates_to_hash_idx", type: Hash)
+  @@index([tokenHash], map: "one_time_tokens_token_hash_hash_idx", type: Hash)
+  @@map("one_time_tokens")
+  @@schema("auth")
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model RefreshTokens {
   instanceId String?   @map("instance_id") @db.Uuid
@@ -195,11 +195,12 @@ model SamlRelayStates {
   createdAt     DateTime?    @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime?    @map("updated_at") @db.Timestamptz(6)
   flowStateId   String?      @map("flow_state_id") @db.Uuid
+  flowState     FlowState?   @relation(fields: [flowStateId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   ssoProviders  SsoProviders @relation(fields: [ssoProviderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([createdAt(sort: Desc)])
   @@index([forEmail])
   @@index([ssoProviderId])
-  @@index([createdAt(sort: Desc)])
   @@map("saml_relay_states")
   @@schema("auth")
 }
@@ -229,9 +230,9 @@ model Sessions {
   refreshTokens RefreshTokens[]
   users         Users           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([notAfter(sort: Desc)])
   @@index([userId])
   @@index([userId, createdAt], map: "user_id_created_at_idx")
-  @@index([notAfter(sort: Desc)])
   @@map("sessions")
   @@schema("auth")
 }
@@ -272,44 +273,46 @@ model SsoProviders {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Users {
-  instanceId               String?      @map("instance_id") @db.Uuid
-  id                       String       @id @db.Uuid
-  aud                      String?      @db.VarChar(255)
-  role                     String?      @db.VarChar(255)
-  email                    String?      @db.VarChar(255)
-  encryptedPassword        String?      @map("encrypted_password") @db.VarChar(255)
-  emailConfirmedAt         DateTime?    @map("email_confirmed_at") @db.Timestamptz(6)
-  invitedAt                DateTime?    @map("invited_at") @db.Timestamptz(6)
-  confirmationToken        String?      @map("confirmation_token") @db.VarChar(255)
-  confirmationSentAt       DateTime?    @map("confirmation_sent_at") @db.Timestamptz(6)
-  recoveryToken            String?      @map("recovery_token") @db.VarChar(255)
-  recoverySentAt           DateTime?    @map("recovery_sent_at") @db.Timestamptz(6)
-  emailChangeTokenNew      String?      @map("email_change_token_new") @db.VarChar(255)
-  emailChange              String?      @map("email_change") @db.VarChar(255)
-  emailChangeSentAt        DateTime?    @map("email_change_sent_at") @db.Timestamptz(6)
-  lastSignInAt             DateTime?    @map("last_sign_in_at") @db.Timestamptz(6)
-  rawAppMetaData           Json?        @map("raw_app_meta_data")
-  rawUserMetaData          Json?        @map("raw_user_meta_data")
-  isSuperAdmin             Boolean?     @map("is_super_admin")
-  createdAt                DateTime?    @map("created_at") @db.Timestamptz(6)
-  updatedAt                DateTime?    @map("updated_at") @db.Timestamptz(6)
-  phone                    String?      @unique
-  phoneConfirmedAt         DateTime?    @map("phone_confirmed_at") @db.Timestamptz(6)
-  phoneChange              String?      @default("") @map("phone_change")
-  phoneChangeToken         String?      @default("") @map("phone_change_token") @db.VarChar(255)
-  phoneChangeSentAt        DateTime?    @map("phone_change_sent_at") @db.Timestamptz(6)
-  confirmedAt              DateTime?    @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @map("confirmed_at") @db.Timestamptz(6)
-  emailChangeTokenCurrent  String?      @default("") @map("email_change_token_current") @db.VarChar(255)
-  emailChangeConfirmStatus Int?         @default(0) @map("email_change_confirm_status") @db.SmallInt
-  bannedUntil              DateTime?    @map("banned_until") @db.Timestamptz(6)
-  reauthenticationToken    String?      @default("") @map("reauthentication_token") @db.VarChar(255)
-  reauthenticationSentAt   DateTime?    @map("reauthentication_sent_at") @db.Timestamptz(6)
-  isSsoUser                Boolean      @default(false) @map("is_sso_user")
-  deletedAt                DateTime?    @map("deleted_at") @db.Timestamptz(6)
-  isAnonymous              Boolean      @default(false) @map("is_anonymous")
+  instanceId               String?         @map("instance_id") @db.Uuid
+  id                       String          @id @db.Uuid
+  aud                      String?         @db.VarChar(255)
+  role                     String?         @db.VarChar(255)
+  email                    String?         @db.VarChar(255)
+  encryptedPassword        String?         @map("encrypted_password") @db.VarChar(255)
+  emailConfirmedAt         DateTime?       @map("email_confirmed_at") @db.Timestamptz(6)
+  invitedAt                DateTime?       @map("invited_at") @db.Timestamptz(6)
+  confirmationToken        String?         @map("confirmation_token") @db.VarChar(255)
+  confirmationSentAt       DateTime?       @map("confirmation_sent_at") @db.Timestamptz(6)
+  recoveryToken            String?         @map("recovery_token") @db.VarChar(255)
+  recoverySentAt           DateTime?       @map("recovery_sent_at") @db.Timestamptz(6)
+  emailChangeTokenNew      String?         @map("email_change_token_new") @db.VarChar(255)
+  emailChange              String?         @map("email_change") @db.VarChar(255)
+  emailChangeSentAt        DateTime?       @map("email_change_sent_at") @db.Timestamptz(6)
+  lastSignInAt             DateTime?       @map("last_sign_in_at") @db.Timestamptz(6)
+  rawAppMetaData           Json?           @map("raw_app_meta_data")
+  rawUserMetaData          Json?           @map("raw_user_meta_data")
+  isSuperAdmin             Boolean?        @map("is_super_admin")
+  createdAt                DateTime?       @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime?       @map("updated_at") @db.Timestamptz(6)
+  phone                    String?         @unique
+  phoneConfirmedAt         DateTime?       @map("phone_confirmed_at") @db.Timestamptz(6)
+  phoneChange              String?         @default("") @map("phone_change")
+  phoneChangeToken         String?         @default("") @map("phone_change_token") @db.VarChar(255)
+  phoneChangeSentAt        DateTime?       @map("phone_change_sent_at") @db.Timestamptz(6)
+  confirmedAt              DateTime?       @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @map("confirmed_at") @db.Timestamptz(6)
+  emailChangeTokenCurrent  String?         @default("") @map("email_change_token_current") @db.VarChar(255)
+  emailChangeConfirmStatus Int?            @default(0) @map("email_change_confirm_status") @db.SmallInt
+  bannedUntil              DateTime?       @map("banned_until") @db.Timestamptz(6)
+  reauthenticationToken    String?         @default("") @map("reauthentication_token") @db.VarChar(255)
+  reauthenticationSentAt   DateTime?       @map("reauthentication_sent_at") @db.Timestamptz(6)
+  isSsoUser                Boolean         @default(false) @map("is_sso_user")
+  deletedAt                DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  isAnonymous              Boolean         @default(false) @map("is_anonymous")
   identities               Identities[]
   mfaFactors               MfaFactors[]
+  oneTimeTokens            OneTimeTokens[]
   sessions                 Sessions[]
+  profiles                 Profiles?
 
   @@index([instanceId])
   @@index([isAnonymous])
@@ -317,21 +320,109 @@ model Users {
   @@schema("auth")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model OneTimeTokens {
-  id        String           @id @db.Uuid
-  userId    String           @map("user_id") @db.Uuid
-  tokenType OneTimeTokenType @map("token_type")
-  tokenHash String           @map("token_hash")
-  relatesTo String           @map("relates_to")
-  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt DateTime         @default(now()) @map("updated_at") @db.Timestamp(6)
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Profiles {
+  id          String        @id @db.Uuid
+  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
+  role        String        @default("reader")
+  book        Book[]
+  bookmark    Bookmark[]
+  author      Users         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recommended Recommended[]
 
-  @@unique([userId, tokenType])
-  @@index([relatesTo], map: "one_time_tokens_relates_to_hash_idx", type: Hash)
-  @@index([tokenHash], map: "one_time_tokens_token_hash_hash_idx", type: Hash)
-  @@map("one_time_tokens")
-  @@schema("auth")
+  @@map("profiles")
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Book {
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String        @unique
+  description String
+  thumbnail   String
+  tags        String[]
+  isPremium   Boolean       @default(false)
+  isDeleted   Boolean       @default(false)
+  isMature    Boolean       @default(false)
+  category    String?
+  reads       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  authorId    String        @db.Uuid
+  author      Profiles      @relation(fields: [authorId], references: [id])
+  bookmark    Bookmark[]
+  chapter     Chapter[]
+  discussion  Discussion[]
+  recommended Recommended[]
+
+  @@index([authorId])
+  @@index([tags])
+  @@map("book")
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Bookmark {
+  id        String   @id @default(uuid()) @db.Uuid
+  bookId    String   @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      Profiles @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("bookmark")
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Chapter {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String
+  slug      String   @unique
+  content   Json
+  thumbnail String?
+  reads     Int      @default(0)
+  time      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+  bookId    String   @db.Uuid
+  book      Book     @relation(fields: [bookId], references: [id])
+
+  @@index([bookId])
+  @@map("chapter")
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Discussion {
+  id        String   @id @default(uuid()) @db.Uuid
+  bookId    String   @db.Uuid
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  book      Book     @relation(fields: [bookId], references: [id])
+
+  @@index([bookId])
+  @@map("discussion")
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Recommended {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  bookId    String   @db.Uuid
+  userId    String   @db.Uuid
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      Profiles @relation(fields: [userId], references: [id])
+
+  @@index([bookId])
+  @@index([userId])
+  @@map("recommended")
+  @@schema("public")
 }
 
 enum AalLevel {

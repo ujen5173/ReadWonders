@@ -92,3 +92,31 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
 });
 
 export const privateProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceAuthor = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  const usAuthor = await db.profiles.findFirst({
+    where: {
+      id: ctx.user.id,
+    },
+  });
+
+  if (usAuthor) {
+    return next({
+      ctx: {
+        user: ctx.user,
+      },
+    });
+  }
+
+  throw new TRPCError({
+    code: "FORBIDDEN",
+  });
+});
+
+export const authorProcedure = t.procedure.use(enforceAuthor);
