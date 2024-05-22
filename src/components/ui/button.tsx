@@ -9,23 +9,22 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary hover:shadow-md hover:-translate-y-[0.5px] transition shadow-secondary text-primary-foreground hover:bg-primary/90",
+          "bg-primary hover:shadow-md hover:-translate-y-[0.5px] transition shadow-secondary text-primary-foreground hover:bg-primary-hover",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input hover:bg-accent hover:text-accent-foreground",
+          "border border-input hover:bg-accent text-text-primary hover:bg-background transition hover:shadow-md hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground transition hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         "ghost-link":
-          "hover:bg-primary/20 border border-transparent hover:border-primary/20",
-        link: "underline-offset-4 hover:underline text-slate-900",
-        premium:
-          "font-bold bg-clip-padding border-[2px] before:-m-[2px] rounded-md before:rounded-md border-transparent bg-white dark:bg-secondary text-primary hover:before:bg-gradient-to-r hover:before:from-pink-500 hover:before:to-purple-500 before:bg-gradient-to-r before:from-purple-500 before:to-pink-500 hover:bg-white/90 dark:hover:bg-secondary/90 relative before:content before:absolute before:z-[-1] before:inset-0 before:bg-primary before:transition-opacity before:duration-500 before:delay-100 hover:before:opacity-100",
+          "text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20",
+        link: "underline-offset-4 hover:underline text-text-primary",
       },
       size: {
         default: "h-10 py-2 px-4",
         sm: "h-9 px-3 rounded-md",
+        icon: "size-9 rounded-md",
         lg: "h-11 px-8 rounded-md",
       },
     },

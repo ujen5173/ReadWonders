@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
   title: {
-    default: siteConfig.name,
+    default: siteConfig.name + " - " + siteConfig.tagline,
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,

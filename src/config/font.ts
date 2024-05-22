@@ -1,4 +1,10 @@
-import { Inter, Nunito, Urbanist, Work_Sans } from "next/font/google";
+import {
+  Inter,
+  Merriweather,
+  Nunito,
+  Urbanist,
+  Work_Sans,
+} from "next/font/google";
 
 export const fontInter = Inter({
   subsets: ["latin"],
@@ -18,4 +24,9 @@ export const nunito = Nunito({
 export const workSans = Work_Sans({
   subsets: ["latin"],
   variable: "--font-urbanist",
+});
+
+export const caveat = Merriweather({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
 });

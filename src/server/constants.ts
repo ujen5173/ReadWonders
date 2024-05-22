@@ -7,3 +7,6 @@ export const slugy = {
   trim: true,
   locale: "en",
 };
+
+export const cardWidth = 500;
+export const cardHeight = 800;
