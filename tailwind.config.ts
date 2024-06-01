@@ -1,4 +1,5 @@
 import { type Config } from "tailwindcss";
+import { type PluginAPI } from "tailwindcss/types/config";
 
 export default {
   content: ["src/**/*.{ts,tsx}"],
@@ -7,11 +8,22 @@ export default {
       center: true,
       padding: "2rem",
     },
+    "sm-container": {
+      center: true,
+      padding: "2rem",
+      screens: {
+        sm: "100%",
+        md: "540px",
+        lg: "720px",
+        xl: "960px",
+        "2xl": "1140px",
+      },
+    },
     extend: {
       screens: {
         "2xl": "1536px",
         xs: "575px",
-        xxs: "375px",
+        xxs: "415px",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -59,5 +71,29 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function ({ addComponents }: PluginAPI) {
+      addComponents({
+        ".sm-container": {
+          maxWidth: "100%",
+          "@screen sm": {
+            maxWidth: "100%",
+          },
+          "@screen md": {
+            maxWidth: "540px",
+          },
+          "@screen lg": {
+            maxWidth: "720px",
+          },
+          "@screen xl": {
+            maxWidth: "960px",
+          },
+          "@screen 2xl": {
+            maxWidth: "1140px",
+          },
+        },
+      });
+    },
+  ],
 } satisfies Config;

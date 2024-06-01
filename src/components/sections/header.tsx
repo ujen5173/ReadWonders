@@ -7,12 +7,17 @@ import { siteConfig } from "~/config/site";
 import { cn } from "~/utils/cn";
 import { Button, buttonVariants } from "../ui/button";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { useUser } from "~/providers/AuthProvider/AuthProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
 import {
   Sheet,
   SheetContent,
@@ -22,25 +27,40 @@ import {
 } from "../ui/sheet";
 
 const Header = () => {
+  const { user } = useUser();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const searchQuery = inputRef.current?.value;
+
+    if (!searchQuery?.trim()) return;
+
+    router.push(`/search?q=${searchQuery}`);
+  };
+
   return (
     <header className="w-full">
-      <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
+      <div className="container flex items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="block md:hidden">
             <MobileMenu />
           </div>
 
-          <h1
-            className={cn(
-              `${fontUrbanist.className} text-xl font-bold text-text-primary`,
-            )}
-          >
-            {siteConfig.name}
-          </h1>
+          <Link href="/">
+            <h1
+              className={cn(
+                `${fontUrbanist.className} text-xl font-bold text-text-primary`,
+              )}
+            >
+              {siteConfig.name}
+            </h1>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/">
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <Link href="/write">
             <Button className="hidden gap-2 sm:flex" variant="ghost-link">
               <Plus size={18} />
               <span>Write a book</span>
@@ -57,7 +77,11 @@ const Header = () => {
             </Button>
           </Link>
 
-          <div className="hidden">
+          <form className="w-4/12" onSubmit={handleSubmit}>
+            <Input ref={inputRef} placeholder="Search a book..." />
+          </form>
+
+          <div className="">
             <DropdownMenu>
               <DropdownMenuTrigger className="bg-white" asChild>
                 <Button variant="outline" size="sm">
@@ -108,9 +132,52 @@ const Header = () => {
             </DropdownMenu>
           </div>
 
-          <Link href="/login">
-            <Button variant="default">Login</Button>
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="rounded">
+                  <span className="sr-only">Open user menu</span>
+                  <Image
+                    src={user.user_metadata.picture}
+                    alt={user.user_metadata.name + "Profile"}
+                    width={120}
+                    height={120}
+                    className="size-8 rounded-full object-cover"
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[250px] bg-white" align="end">
+                <DropdownMenuItem className="pointer-events-none cursor-default rounded-none border-b border-border">
+                  <div className="py-1">
+                    <p className="text-sm font-semibold">
+                      {user.user_metadata.full_name}
+                    </p>
+                    <p className="text-sm">{user.user_metadata.email}</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-none border-b border-border px-[2px]">
+                  <Link
+                    className="block w-full rounded-sm p-2 hover:bg-foreground/10"
+                    href="/"
+                  >
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-none px-[2px]">
+                  <Link
+                    className="block w-full rounded-sm p-2 hover:bg-foreground/10"
+                    href="/"
+                  >
+                    <span>Logout</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link href="/auth/login">
+              <Button>Login</Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
@@ -184,12 +251,12 @@ const MobileMenu = () => {
               <Plus size={18} />
               <span>Write a book</span>
             </Button>
-          </Link>{" "}
-          <Link href="/login">
+          </Link>
+          <Link href="/auth/login">
             <Button className="w-full" variant="default">
               Login
             </Button>
-          </Link>{" "}
+          </Link>
         </div>
       </SheetContent>
     </Sheet>

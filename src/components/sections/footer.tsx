@@ -15,7 +15,7 @@ import {
 const Footer = () => {
   return (
     <footer className="w-full">
-      <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="container grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2 lg:grid-cols-3">
         <div className="grid-cols-2">
           <h1
             className={cn(
@@ -88,7 +88,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="container mx-auto border-t border-border p-4">
+      <div className="container border-t border-border p-4">
         <p className="text-center text-text-secondary">
           &copy; {new Date().getFullYear()} {siteConfig.name}. All Rights
           Reserved.

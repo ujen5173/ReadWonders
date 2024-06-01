@@ -1,5 +1,6 @@
 import { type Metadata, type Viewport } from "next";
 import { headers } from "next/headers";
+import { type ReactNode } from "react";
 import { TailwindIndicator } from "~/components/TailwindIndicator";
 import { Toaster } from "~/components/ui/toaster";
 import { fontInter } from "~/config/font";
@@ -11,6 +12,7 @@ import "~/styles/globals.css";
 import { TRPCReactProvider } from "~/trpc/react";
 import { getServerUser } from "~/utils/auth";
 import { cn } from "~/utils/cn";
+import RootContext from "./_components/RootContext";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -73,7 +75,15 @@ export const metadata: Metadata = {
   },
 };
 
-async function RootLayout({ children }: { children: React.ReactNode }) {
+async function RootLayout({
+  sheet,
+  modal,
+  children,
+}: {
+  sheet: ReactNode;
+  modal: ReactNode;
+  children: ReactNode;
+}) {
   const user = await getServerUser();
 
   return (
@@ -87,12 +97,18 @@ async function RootLayout({ children }: { children: React.ReactNode }) {
             fontInter.className,
           )}
         >
+          <div className="fixed -z-10 h-screen w-full bg-gradient-to-br from-primary/20 via-white to-primary/10"></div>
+
           <TRPCReactProvider headers={headers()}>
             <AuthProvider {...user}>
-              <Providers>
-                {children}
-                <Toaster />
-              </Providers>
+              <RootContext>
+                <Providers>
+                  {sheet}
+                  {modal}
+                  {children}
+                  <Toaster />
+                </Providers>
+              </RootContext>
             </AuthProvider>
           </TRPCReactProvider>
           <TailwindIndicator />

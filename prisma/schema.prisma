@@ -322,9 +322,13 @@ model Users {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Profiles {
-  id          String        @id @db.Uuid
-  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
-  role        String        @default("reader")
+  id        String   @id @default(uuid()) @db.Uuid
+  role      String   @default("reader")
+  name      String?
+  profile   String?
+  email     String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
   book        Book[]
   bookmark    Bookmark[]
   author      Users         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -357,6 +361,8 @@ model Book {
   recommended Recommended[]
 
   @@index([authorId])
+  @@index([slug])
+  @@index([title])
   @@index([tags])
   @@map("book")
   @@schema("public")
@@ -379,19 +385,19 @@ model Bookmark {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Chapter {
   id        String   @id @default(uuid()) @db.Uuid
-  title     String
-  slug      String   @unique
-  content   Json
+  title     String?  @default("")
+  slug      String?  @default("")
+  content   Json?    @default("{}")
   thumbnail String?
   reads     Int      @default(0)
-  time      Int
+  time      Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
-  bookId    String   @db.Uuid
   book      Book     @relation(fields: [bookId], references: [id])
+  bookId    String   @db.Uuid
 
-  @@index([bookId])
+  @@index([bookId, slug])
   @@map("chapter")
   @@schema("public")
 }

@@ -13,7 +13,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input hover:bg-accent text-text-primary hover:bg-background transition hover:shadow-md hover:text-accent-foreground",
+          "border border-input bg-white text-text-primary hover:bg-background transition hover:shadow-md hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground transition hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -26,6 +26,7 @@ const buttonVariants = cva(
         sm: "h-9 px-3 rounded-md",
         icon: "size-9 rounded-md",
         lg: "h-11 px-8 rounded-md",
+        rounded: "rounded-full",
       },
     },
     defaultVariants: {
@@ -46,15 +47,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "relative flex select-none items-center justify-center",
+          "relative flex select-none items-center justify-center gap-2",
           buttonVariants({ variant, size, className }),
         )}
         data-loading={loading}
         ref={ref}
         {...props}
       >
-        {loading && <Spinner className="absolute text-primary" />}
-        {loading ? <span className="opacity-0"> {children}</span> : children}
+        {loading && <Spinner className="size-4 text-slate-100" />}
+        {children}
       </button>
     );
   },

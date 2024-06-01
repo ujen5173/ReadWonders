@@ -1,0 +1,683 @@
+[
+  {
+    "title": "The Crimson Shard",
+    "slug": "the-crimson-shard",
+    "description": "A young sorcerer must uncover the secrets of a mysterious crimson shard to save her kingdom from an ancient evil.",
+    "tags": ["fantasy", "adventure", "magic"],
+    "thumbnail": "https://img.wattpad.com/cover/328966835-144-k532379.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 12345,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Cyber Syndicate",
+    "slug": "cyber-syndicate",
+    "description": "In a world ruled by megacorporations, a group of hackers fight for freedom and justice against the oppressive system.",
+    "tags": ["cyberpunk", "thriller", "hacking"],
+    "thumbnail": "https://img.wattpad.com/cover/134163298-144-k496789.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Science Fiction",
+    "reads": 8976,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Enchanting Isle",
+    "slug": "the-enchanting-isle",
+    "description": "A captivating tale of adventure and magic on a mystical island.",
+    "tags": ["fantasy", "adventure", "magic"],
+    "category": "Young Adult",
+    "reads": 123,
+    "thumbnail": "https://img.wattpad.com/cover/217087628-144-k638154.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Starlight Sonata",
+    "slug": "starlight-sonata",
+    "description": "A heartwarming story of music, love, and following your dreams.",
+    "tags": ["romance", "music", "drama"],
+    "category": "Contemporary",
+    "reads": 456,
+    "thumbnail": "https://img.wattpad.com/cover/235006647-144-k254397.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Codex of Shadows",
+    "slug": "codex-of-shadows",
+    "description": "A thrilling urban fantasy about a hidden world of magic and mystery.",
+    "tags": ["urban fantasy", "mystery", "magic"],
+    "category": "Adult",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "thumbnail": "https://img.wattpad.com/cover/145024454-144-k833573.jpg",
+
+    "reads": 789,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Tales from the Wildwood",
+    "slug": "tales-from-the-wildwood",
+    "description": "A collection of enchanting folktales passed down through generations.",
+    "tags": ["fantasy", "folklore", "short stories"],
+    "category": "All Ages",
+    "reads": 101,
+
+    "thumbnail": "https://img.wattpad.com/cover/192639376-144-k71702.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "The Cybernetic Heart",
+    "slug": "the-cybernetic-heart",
+    "description": "A dystopian sci-fi novel exploring love, loss, and humanity in a technological age.",
+    "tags": ["science fiction", "dystopia", "romance"],
+    "category": "Young Adult",
+    "thumbnail": "https://img.wattpad.com/cover/202484599-100-k683626.jpg",
+
+    "reads": 345,
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Whispers of the Bayou",
+    "slug": "whispers-of-the-bayou",
+    "description": "A chilling mystery set in the depths of the Louisiana swamp.",
+    "tags": ["mystery", "gothic", "supernatural"],
+    "category": "Adult",
+    "reads": 258,
+    "isPremium": true,
+    "thumbnail": "https://img.wattpad.com/cover/214468552-144-k591602.jpg",
+
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Astral Academy",
+    "slug": "astral-academy",
+    "description": "Welcome to Astral Academy, where students train to master their psychic abilities.",
+    "tags": ["fantasy", "paranormal", "young adult"],
+    "category": "Young Adult",
+    "reads": 678,
+    "isPremium": true,
+    "isDeleted": false,
+    "thumbnail": "https://img.wattpad.com/cover/261705416-144-k695159.jpg",
+
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Chronicles of a Cyberpunk",
+    "slug": "chronicles-of-a-cyberpunk",
+    "description": "A cyberpunk hacker navigates a neon-lit world of danger and intrigue.",
+    "tags": ["science fiction", "cyberpunk", "action"],
+    "category": "New Adult",
+    "reads": 901,
+    "thumbnail": "https://img.wattpad.com/cover/316396613-100-k682460.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "The Painted Veil",
+    "slug": "the-painted-veil",
+    "description": "A historical romance set against the backdrop of a forbidden love affair.",
+    "tags": ["historical fiction", "romance", "drama"],
+    "category": "Adult",
+    "reads": 423,
+    "thumbnail": "https://img.wattpad.com/cover/192278918-100-k177795.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Culinary Capers",
+    "slug": "culinary-capers",
+    "description": "A cozy mystery with a dash of humor, following a chef who solves culinary crimes.",
+    "tags": ["mystery", "comedy", "foodie"],
+    "category": "Adult",
+    "reads": 878,
+    "thumbnail": "https://img.wattpad.com/cover/316396613-144-k682460.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Galactic Gladiators",
+    "slug": "galactic-gladiators",
+    "description": "In a distant galaxy, warriors fight for glory and survival in brutal arena battles.",
+    "tags": ["science fiction", "action", "adventure"],
+
+    "thumbnail": "https://img.wattpad.com/cover/223224977-100-k549060.jpg",
+    "category": "Young Adult",
+    "reads": 114,
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+
+  {
+    "title": "Eternal Embrace",
+    "slug": "eternal-embrace",
+    "description": "A forbidden love between a vampire and a human tests the boundaries of their worlds.",
+    "tags": ["romance", "paranormal", "drama"],
+
+    "thumbnail": "https://img.wattpad.com/cover/214468552-100-k591602.jpg",
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Fiction",
+    "reads": 25678,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Quantum Enigma",
+    "slug": "quantum-enigma",
+    "description": "A brilliant physicist stumbles upon a groundbreaking discovery that could unlock the secrets of the universe.",
+    "tags": ["science", "mystery", "thriller"],
+
+    "isPremium": true,
+    "thumbnail": "https://img.wattpad.com/cover/223224977-144-k549060.jpg",
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Science Fiction",
+    "reads": 17492,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Celestial Embers",
+    "slug": "celestial-embers",
+    "description": "A young woman discovers her true identity as a powerful celestial being and must navigate a world of ancient powers and cosmic battles.",
+    "tags": ["fantasy", "action", "mythology"],
+    "thumbnail": "https://img.wattpad.com/cover/185669551-144-k138169.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 9876,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Crimson Tears",
+    "slug": "crimson-tears",
+    "description": "A detective's pursuit of a serial killer leads her down a dark path of revenge and self-discovery.",
+    "tags": ["crime", "thriller", "mystery"],
+    "thumbnail": "https://img.wattpad.com/cover/261705416-100-k695159.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Fiction",
+    "reads": 32145,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Echoes of the Past",
+    "slug": "echoes-of-the-past",
+    "description": "A time-traveling historian finds herself trapped in the past, forced to navigate a world she only knew from books.",
+    "tags": ["historical", "adventure", "time-travel"],
+    "thumbnail": "https://img.wattpad.com/cover/356885192-100-k846427.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 14567,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Galactic Odyssey",
+    "slug": "galactic-odyssey",
+    "description": "A ragtag crew of space explorers stumble upon an ancient artifact that holds the key to unraveling the mysteries of the galaxy.",
+    "tags": ["science-fiction", "adventure", "space-opera"],
+    "thumbnail": "https://img.wattpad.com/cover/185669551-100-k138169.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Science Fiction",
+    "reads": 21893,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Whispers of Avalon",
+    "slug": "the-whispers-of-avalon",
+    "description": "A young woman discovers her connection to the legendary Isle of Avalon and is thrust into a world of ancient magic and mythical beings.",
+    "tags": ["fantasy", "mythology", "romance"],
+    "thumbnail": "https://img.wattpad.com/cover/356885192-144-k846427.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 18234,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Cyber Rebellion",
+    "slug": "cyber-rebellion",
+    "description": "In a dystopian future, a group of hackers rise up against the oppressive AI system that controls society.",
+    "tags": ["cyberpunk", "dystopian", "action"],
+    "thumbnail": "https://img.wattpad.com/cover/319056308-100-k200544.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Science Fiction",
+    "reads": 27689,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Cursed Grimoire",
+    "slug": "the-cursed-grimoire",
+    "description": "A young sorcerer's apprentice stumbles upon an ancient cursed book that threatens to unleash a powerful evil upon the world.",
+    "tags": ["fantasy", "magic", "adventure"],
+    "thumbnail": "https://img.wattpad.com/cover/245531654-100-k582783.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 11456,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Interstellar Renegades",
+    "slug": "interstellar-renegades",
+    "description": "A group of misfit space pirates stumble upon a hidden treasure that puts them in the crosshairs of a powerful galactic empire.",
+    "tags": ["science-fiction", "adventure", "space-opera"],
+
+    "thumbnail": "https://img.wattpad.com/cover/192639376-100-k71702.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Science Fiction",
+    "reads": 19876,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Forgotten City",
+    "slug": "the-forgotten-city",
+    "description": "An archaeologist uncovers an ancient city hidden beneath the sands, only to discover a dark secret that has been buried for centuries.",
+    "tags": ["adventure", "mystery", "historical"],
+
+    "thumbnail": "https://img.wattpad.com/cover/258216825-144-k150162.jpg",
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 15432,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Cyber Shadows",
+    "slug": "cyber-shadows",
+    "description": "In a world where virtual reality and the physical world have merged, a group of hackers fight to uncover a sinister conspiracy.",
+    "tags": ["cyberpunk", "thriller", "virtual-reality"],
+    "thumbnail": "https://img.wattpad.com/cover/319056308-144-k200544.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Science Fiction",
+    "reads": 24567,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Immortal Concerto",
+    "slug": "the-immortal-concerto",
+    "description": "A young musician discovers an ancient melody that holds the key to unlocking the secrets of immortality.",
+    "tags": ["fantasy", "music", "mystery"],
+    "thumbnail": "https://img.wattpad.com/cover/258216825-100-k150162.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 10987,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Quantum Entanglement",
+    "slug": "quantum-entanglement",
+    "description": "Two scientists accidentally discover a way to communicate across parallel universes, opening up a pandora's box of possibilities.",
+    "tags": ["science-fiction", "parallel-universes", "thriller"],
+    "thumbnail": "https://img.wattpad.com/cover/217087628-100-k638154.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Science Fiction",
+    "reads": 18432,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Crimson Crown",
+    "slug": "the-crimson-crown",
+    "description": "In a world where magic is outlawed, a young princess must reclaim her rightful throne and restore the balance of power.",
+    "tags": ["fantasy", "political-intrigue", "magic"],
+    "thumbnail": "https://img.wattpad.com/cover/145024454-100-k833573.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fiction",
+    "reads": 22198,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Witch's Curse",
+    "slug": "the-witchs-curse",
+    "description": "A fantasy novel about a witch who casts a curse on an entire village.",
+    "tags": ["fantasy", "witch", "curse"],
+    "thumbnail": "https://img.wattpad.com/cover/245531654-144-k582783.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Fantasy",
+    "reads": 4200,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Shadow of the Assassin",
+    "slug": "shadow-of-the-assassin",
+    "description": "A thrilling story of an assassin who must confront his own past.",
+    "tags": ["thriller", "assassin", "shadow"],
+    "thumbnail": "https://img.wattpad.com/cover/192278918-144-k177795.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Thriller",
+    "reads": 3700,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Mermaid's Tale",
+    "slug": "mermaids-tale",
+    "description": "A fantasy romance between a human and a mermaid.",
+    "tags": ["fantasy", "romance", "mermaid"],
+    "thumbnail": "https://img.wattpad.com/cover/271840263-100-k214671.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fantasy Romance",
+    "reads": 3500,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Legend of the Phoenix",
+    "slug": "legend-of-the-phoenix",
+    "description": "An epic fantasy about the legendary phoenix and its impact on the world.",
+    "tags": ["fantasy", "legend", "phoenix"],
+    "thumbnail": "https://img.wattpad.com/cover/179151423-100-k42071.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fantasy",
+    "reads": 3900,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Whispers in the Wind",
+    "slug": "whispers-in-the-wind",
+    "description": "A tale of a young woman who hears mysterious whispers guiding her to uncover secrets of her past.",
+    "tags": ["mystery", "drama", "secrets"],
+    "thumbnail": "https://img.wattpad.com/cover/164440992-144-k462685.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Drama",
+    "reads": 2400,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Beneath the Waves",
+    "slug": "beneath-the-waves",
+    "thumbnail": "https://img.wattpad.com/cover/202484599-144-k683626.jpg",
+
+    "description": "A fantasy adventure set in an underwater kingdom ruled by merfolk.",
+    "tags": ["fantasy", "adventure", "underwater"],
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fantasy",
+    "reads": 4100,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Code Breaker",
+    "slug": "code-breaker",
+    "description": "A thriller about a hacker who discovers a government conspiracy.",
+    "tags": ["thriller", "hacker", "conspiracy"],
+
+    "thumbnail": "https://img.wattpad.com/cover/354043174-144-k716917.jpg",
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Thriller",
+    "reads": 3700,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Enchanted Sword",
+    "slug": "the-enchanted-sword",
+    "description": "A young warrior embarks on a quest to find a legendary enchanted sword.",
+    "tags": ["fantasy", "quest", "sword"],
+
+    "thumbnail": "https://img.wattpad.com/cover/235006647-100-k254397.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fantasy",
+    "reads": 2800,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Secret Garden",
+    "slug": "the-secret-garden",
+    "description": "A heartwarming story of a young girl who discovers a magical hidden garden.",
+    "thumbnail": "https://img.wattpad.com/cover/354043174-100-k716917.jpg",
+
+    "tags": ["drama", "magic", "garden"],
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Drama",
+    "reads": 2600,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Journey to the North",
+    "slug": "journey-to-the-north",
+    "description": "An epic adventure of explorers on a perilous journey to the icy north.",
+    "tags": ["adventure", "exploration", "north"],
+    "thumbnail": "https://img.wattpad.com/cover/134163298-100-k496789.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Adventure",
+    "reads": 3400,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Haunted Circus",
+    "slug": "the-haunted-circus",
+    "description": "A horror story about a circus haunted by the spirits of past performers.",
+    "tags": ["horror", "circus", "ghosts"],
+
+    "thumbnail": "https://img.wattpad.com/cover/164440992-100-k462685.jpg",
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Horror",
+    "reads": 3100,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "A Dance in the Moonlight",
+    "slug": "a-dance-in-the-moonlight",
+    "description": "A romantic drama about two lovers who meet every night to dance in the moonlight.",
+    "tags": ["romance", "drama", "moonlight"],
+    "thumbnail": "https://img.wattpad.com/cover/179151423-144-k42071.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Romance",
+    "reads": 3300,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "The Shadow Realm",
+    "slug": "the-shadow-realm",
+    "description": "A dark fantasy where a hero must venture into the shadow realm to save his world.",
+    "tags": ["fantasy", "dark", "realm"],
+    "thumbnail": "https://img.wattpad.com/cover/246165505-100-k88015.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Dark Fantasy",
+    "reads": 4000,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Tales of the Forgotten",
+    "slug": "tales-of-the-forgotten",
+    "description": "A collection of short stories about forgotten places and people.",
+    "tags": ["short stories", "forgotten", "places"],
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Short Stories",
+    "reads": 2900,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Robot Uprising",
+    "slug": "robot-uprising",
+    "description": "A sci-fi thriller about robots gaining consciousness and rebelling against humans.",
+    "tags": ["sci-fi", "robots", "uprising"],
+    "thumbnail": "https://img.wattpad.com/cover/128434251-100-k53245.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Science Fiction",
+    "reads": 4300,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Escape from the Underworld",
+    "slug": "escape-from-the-underworld",
+    "description": "A thrilling fantasy about a group of heroes attempting to escape the underworld.",
+    "tags": ["fantasy", "underworld", "escape"],
+    "thumbnail": "https://img.wattpad.com/cover/271840263-144-k214671.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Fantasy",
+    "reads": 3600,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Forbidden City",
+    "slug": "forbidden-city",
+    "description": "An adventurous exploration of an ancient, hidden city full of secrets.",
+    "tags": ["adventure", "exploration", "city"],
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Adventure",
+    "reads": 2700,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Witch Hunter",
+    "slug": "witch-hunter",
+    "description": "A fantasy novel about a hunter tasked with finding and capturing witches.",
+    "tags": ["fantasy", "witches", "hunter"],
+
+    "thumbnail": "https://img.wattpad.com/cover/306216841-144-k64838.jpg",
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Fantasy",
+    "reads": 3800,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Echoes from the Past",
+    "slug": "echoes-from-the-past",
+    "description": "A historical mystery novel that unravels secrets from the past.",
+    "tags": ["historical", "mystery", "past"],
+    "thumbnail": "https://img.wattpad.com/cover/306216841-100-k64838.jpg",
+
+    "isPremium": false,
+    "isDeleted": false,
+    "isMature": false,
+    "category": "Historical Fiction",
+    "reads": 3200,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  },
+  {
+    "title": "Cursed Bloodline",
+    "slug": "cursed-bloodline",
+    "description": "A dark fantasy about a family cursed for generations.",
+    "tags": ["dark fantasy", "curse", "family"],
+    "thumbnail": "https://img.wattpad.com/cover/328966835-100-k532379.jpg",
+
+    "isPremium": true,
+    "isDeleted": false,
+    "isMature": true,
+    "category": "Dark Fantasy",
+    "reads": 4100,
+    "authorId": "4791fb12-84c7-438d-8614-1502fe239376"
+  }
+]

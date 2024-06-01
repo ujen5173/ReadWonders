@@ -1,11 +1,10 @@
-import React from "react";
-import { Icons } from "../Icons/Icons";
 import { type LucideProps } from "lucide-react";
 import { cn } from "~/utils/cn";
+import { Icons } from "../Icons/Icons";
 
 export const Spinner = ({ className, ...props }: LucideProps) => (
   <Icons.spinner
-    className={cn("h-5 w-5 animate-spin text-gray-500", className)}
+    className={cn("animate-spin text-gray-500", className)}
     {...props}
   />
 );

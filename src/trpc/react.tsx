@@ -6,8 +6,8 @@ import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
 
 import { type AppRouter } from "~/server/api/root";
-import { getUrl, transformer } from "./shared";
 import { supabase } from "~/server/supabase/supabaseClient";
+import { getUrl, transformer } from "./shared";
 
 export const api = createTRPCReact<AppRouter>({
   overrides: {
@@ -42,9 +42,9 @@ export function TRPCReactProvider(props: {
 
       links: [
         loggerLink({
-          enabled: (op) =>
-            process.env.NODE_ENV === "development" ||
-            (op.direction === "down" && op.result instanceof Error),
+          // enabled: (op) =>
+          //   process.env.NODE_ENV === "development" ||
+          //   (op.direction === "down" && op.result instanceof Error),
         }),
         unstable_httpBatchStreamLink({
           url: getUrl(),

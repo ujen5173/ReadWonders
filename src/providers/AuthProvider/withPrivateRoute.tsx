@@ -14,7 +14,7 @@ export const withPrivateRoute = <T extends object>(
 
     useEffect(() => {
       if (!user && !isLoading) {
-        router.push("/login");
+        router.push("/auth/login");
       }
     }, [user, router, isLoading]);
 

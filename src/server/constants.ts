@@ -1,4 +1,5 @@
 export const limit = 10;
+export const skip = 0;
 
 export const slugy = {
   lower: true,
@@ -8,5 +9,5 @@ export const slugy = {
   locale: "en",
 };
 
-export const cardWidth = 500;
-export const cardHeight = 800;
+export const cardWidth = 133;
+export const cardHeight = 204;

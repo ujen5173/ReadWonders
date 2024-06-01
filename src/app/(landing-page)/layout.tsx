@@ -1,16 +1,8 @@
-import { type PropsWithChildren } from "react";
-import Footer from "~/components/sections/footer";
-import Header from "~/components/sections/header";
+import { type ReactNode } from "react";
+import { PublicRoute } from "~/components/PublicRoute/PublicRoute";
 
-const Layout = async ({ children }: PropsWithChildren) => {
-  return (
-    <>
-      <div className="fixed -z-10 h-screen w-full bg-gradient-to-br from-primary/20 via-white to-primary/10"></div>
-      <Header />
-      {children}
-      <Footer />
-    </>
-  );
+const LandingPageRootLayout = ({ children }: { children: ReactNode }) => {
+  return <PublicRoute>{children}</PublicRoute>;
 };
 
-export default Layout;
+export default LandingPageRootLayout;

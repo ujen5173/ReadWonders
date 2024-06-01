@@ -5,7 +5,7 @@ import { z } from "zod";
 import { limit, slugy } from "~/server/constants";
 import { authorProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 
-export const bookRouter = createTRPCRouter({
+export const chapterRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return "Chapter router";
   }),
@@ -41,13 +41,13 @@ export const bookRouter = createTRPCRouter({
   getSingeChapter: publicProcedure
     .input(
       z.object({
-        slug: z.string(),
+        id: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const chapter = await ctx.db.chapter.findUnique({
-          where: { slug: input.slug },
+        const chapter = await ctx.db.chapter.findFirst({
+          where: { id: input.id },
         });
 
         if (!chapter) {

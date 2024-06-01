@@ -5,13 +5,13 @@ import {
 } from "@trpc/client";
 import { cookies, headers } from "next/headers";
 
-import { appRouter } from "~/server/api/root";
-import { transformer } from "./shared";
-import { cache } from "react";
-import { createTRPCContext } from "~/server/api/trpc";
-import { observable } from "@trpc/server/observable";
 import { callProcedure } from "@trpc/server";
+import { observable } from "@trpc/server/observable";
 import { type TRPCErrorResponse } from "@trpc/server/rpc";
+import { cache } from "react";
+import { appRouter } from "~/server/api/root";
+import { createTRPCContext } from "~/server/api/trpc";
+import { transformer } from "./shared";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -39,9 +39,9 @@ export const api = createTRPCProxyClient<typeof appRouter>({
   transformer,
   links: [
     loggerLink({
-      enabled: (op) =>
-        process.env.NODE_ENV === "development" ||
-        (op.direction === "down" && op.result instanceof Error),
+      // enabled: (op) =>
+      //   process.env.NODE_ENV === "development" ||
+      //   (op.direction === "down" && op.result instanceof Error),
     }),
     /**
      * Custom RSC link that invokes procedures directly in the server component Don't be too afraid

@@ -10,6 +10,8 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 137, 90%, 60%;
     --secondary-foreground: 0, 0%, 0%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --ring: 215 70% 60%;
     --radius: 0.5rem;
@@ -24,6 +26,8 @@
     --primary-foreground: 0 0% 0%;
     --secondary: 54 100% 70%;
     --secondary-foreground: 0 0% 0%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --ring: 54 100% 50%;
     --radius: 0.5rem;
@@ -38,6 +42,8 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 8.74, 94.5%, 42.75%;
     --secondary-foreground: 0, 0%, 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --ring: 190 100% 50%;
     --radius: 0.5rem;
@@ -52,6 +58,8 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 204, 100%, 60%;
     --secondary-foreground: 0, 0%, 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --ring: 30 100% 50%;
     --radius: 0.5rem;
@@ -66,6 +74,8 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 80, 90%, 60%;
     --secondary-foreground: 0, 0%, 0%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --ring: 260 100% 50%;
     --radius: 0.5rem;
@@ -80,8 +90,11 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 120, 72%, 51%;
     --secondary-foreground: 0, 0%, 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
     --radius: 0.5rem;
+    --ring: 0 100% 50%;
     --text-primary: 222.22 47.37% 11.18%;
     --text-light: 215 19% 35%;
   }
@@ -97,5 +110,95 @@
 
   a {
     @apply outline-none;
+  }
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 80%;
+  max-width: 500px;
+  height: auto;
+  max-height: 500px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  font-weight: 500;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 48px;
+  height: 48px;
+  background-color: transparent;
+  border: none;
+  border-radius: 15px; /* Circular shape */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 24px; /* Adjust font size as needed */
+}
+
+.close-button:hover {
+  background-color: #eee;
+}
+
+.close-button:after {
+  content: "x";
+  color: black;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background-color: #eee;
+  border-radius: 8px;
+  text-decoration: none;
+  color: black;
+  font-size: 24px;
+  font-weight: 500;
+  max-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .card {
+    width: 80%;
   }
 }

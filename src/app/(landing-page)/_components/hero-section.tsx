@@ -9,7 +9,7 @@ import { cn } from "~/utils/cn";
 const HeroSection = () => {
   return (
     <section className="w-full">
-      <div className="container mx-auto flex flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
+      <div className="container flex flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
         <div className="py-12">
           <h1
             className={cn(

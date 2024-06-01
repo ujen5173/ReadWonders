@@ -30,6 +30,7 @@ Welcome to StoryNest, a robust community platform designed for creators to compo
 - **Supabase**
 - **TRPC**
 - **Posthog**
+- **Uploadthing**
 
 ## Features
 
@@ -98,8 +99,8 @@ Create a `.env` file in the root directory and add the environment variables ref
   CREATE OR REPLACE FUNCTION public.handle_new_user()
   RETURNS TRIGGER AS $$
   BEGIN
-    INSERT INTO public.profiles (id) -- replace `profile` with your profile table name
-    VALUES (new.id);
+    INSERT INTO public.profiles (id, name, email, profile) -- replace `profiles` with your profile table name
+    VALUES (new.id, new.raw_user_meta_data ->> 'full_name', new.email, new.raw_user_meta_data ->> 'picture');
     RETURN new;
   END;
   $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -117,7 +118,7 @@ Create a `.env` file in the root directory and add the environment variables ref
   $$ LANGUAGE plpgsql SECURITY DEFINER;
 
   CREATE OR REPLACE TRIGGER on_profile_user_deleted
-  AFTER DELETE ON public.profiles -- replace `profile` with your profile table name
+  AFTER DELETE ON public.profiles -- replace `profiles` with your profile table name
   FOR EACH ROW EXECUTE FUNCTION public.handle_user_delete();
 ```
 

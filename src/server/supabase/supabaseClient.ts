@@ -10,8 +10,8 @@ export const getServiceSupabase = () =>
     env.SUPABASE_SERVICE_KEY,
     {
       auth: {
-        autoRefreshToken: false,
-        persistSession: false,
+        autoRefreshToken: true,
+        persistSession: true,
       },
     },
   );
@@ -19,6 +19,12 @@ export const getServiceSupabase = () =>
 export const clientSupabase = createClient<Database>(
   env.NEXT_PUBLIC_SUPABASE_URL,
   env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+    },
+  },
 );
 
 export const supabase = () =>
