@@ -1,12 +1,15 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 
-const WritingHeader = () => {
+const WritingHeader = ({
+  onSubmit,
+}: {
+  onSubmit: (value: "PUBLISH" | "NEXT") => void;
+}) => {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams().get("title")?.trim() ?? "";
 
   return (
@@ -33,16 +36,15 @@ const WritingHeader = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {pathname.includes("story") ? (
-            <>
-              <Button size="sm" variant="outline">
-                Preview
-              </Button>
-              <Button size="sm">Publish</Button>
-            </>
-          ) : (
-            <Button size="sm">Next</Button>
-          )}
+          <Button size="sm" variant="outline">
+            Preview
+          </Button>
+          <Button onClick={() => onSubmit("NEXT")} size="sm">
+            Next
+          </Button>
+          <Button onClick={() => onSubmit("PUBLISH")} size="sm">
+            Publish
+          </Button>
         </div>
       </div>
     </header>

@@ -1,9 +1,60 @@
+import CharacterCount from "@tiptap/extension-character-count";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import TextStyle from "@tiptap/extension-text-style";
+import Underline from "@tiptap/extension-underline";
+import Youtube from "@tiptap/extension-youtube";
+
+import { generateHTML } from "@tiptap/html";
+import StarterKit from "@tiptap/starter-kit";
 import { TRPCError } from "@trpc/server";
+import { type JSONContent } from "novel";
 import read from "reading-time";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, slugy } from "~/server/constants";
 import { authorProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+
+const JsonContentZod: z.ZodType<unknown> = z.lazy(() =>
+  z
+    .object({
+      type: z.string().optional(),
+      attrs: z.record(z.any()).optional(),
+      content: z.array(JsonContentZod).optional(), // Recursive structure
+      marks: z
+        .array(
+          z
+            .object({
+              type: z.string(),
+              attrs: z.record(z.any()).optional(),
+            })
+            .passthrough(),
+        )
+        .optional(),
+      text: z.string().optional(),
+    })
+    .passthrough(),
+);
+
+const mainSchema = z
+  .object({
+    type: z.string().optional(),
+    attrs: z.record(z.any()).optional(),
+    content: z.array(JsonContentZod).optional(),
+    marks: z
+      .array(
+        z
+          .object({
+            type: z.string(),
+            attrs: z.record(z.any()).optional(),
+          })
+          .passthrough(),
+      )
+      .optional(),
+    text: z.string().optional(),
+  })
+  .passthrough();
 
 export const chapterRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -67,32 +118,24 @@ export const chapterRouter = createTRPCRouter({
     }),
 
   // ----- Mutation -----
+
   new: authorProcedure
     .input(
       z.object({
-        title: z.string(),
-        content: z.string(),
-        thumbnail: z.string(),
         bookId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const slug = slugify(
-          input.title + "-" + Math.random().toString(36).substring(7),
-          slugy,
-        );
-        const time = read(input.content);
         const chapter = await ctx.db.chapter.create({
           data: {
             ...input,
-            slug,
-            time: time.minutes,
           },
         });
 
-        return chapter;
+        return chapter.id;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create chapter",
@@ -105,23 +148,38 @@ export const chapterRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string(),
-        content: z.string(),
-        thumbnail: z.string(),
+        content: mainSchema,
+        thumbnail: z.string().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const time = read(input.content);
+        const { id, ...rest } = input;
+        const time = read(
+          generateHTML(rest.content as JSONContent, [
+            Placeholder,
+            Youtube,
+            Link,
+            Underline,
+            Image,
+            CharacterCount,
+            TextStyle,
+            StarterKit,
+          ]),
+        );
         const chapter = await ctx.db.chapter.update({
-          where: { id: input.id },
+          where: { id: id },
           data: {
-            ...input,
+            ...rest,
+            slug: slugify(input.title, slugy),
             time: time.minutes,
+            content: rest.content as JSONContent,
           },
         });
 
         return chapter;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update chapter",

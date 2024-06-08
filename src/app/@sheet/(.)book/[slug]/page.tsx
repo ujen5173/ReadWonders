@@ -28,9 +28,7 @@ const Book = ({
     },
   );
 
-  console.log({ data, isLoading });
-
-  if (isLoading && !data) return <div>Loading...</div>;
+  if (isLoading && !data) return;
 
   return (
     <Sheet
@@ -40,6 +38,7 @@ const Book = ({
       }}
     >
       <SheetContent>
+        {/* isLoading && !data -> loading skeleton here... */}
         <SheetHeader>
           <div className="flex gap-2">
             <div className="w-4/12">

@@ -38,8 +38,6 @@ const SearchBooks = ({
   defaultValue = "",
   title = "Search Books",
 }: Props) => {
-  console.log({ infiniteScroll });
-
   return (
     <section className="w-full">
       <div className="container border-b border-border px-4 py-8">

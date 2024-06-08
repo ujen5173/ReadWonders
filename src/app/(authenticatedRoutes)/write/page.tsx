@@ -56,8 +56,6 @@ const WriteBook = () => {
     useUploadFile("imageUploader");
   const { mutateAsync, isLoading, isError, error } = api.book.new.useMutation();
 
-  console.log({ uploadedFile });
-
   useEffect(() => {
     if (isError && error) {
       toast({
@@ -83,8 +81,6 @@ const WriteBook = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { thumbnail: _, ...rest } = values;
 
-    console.log({ uploadedFile });
-
     if (uploadedFile) {
       const res = await mutateAsync({
         ...rest,
@@ -92,9 +88,9 @@ const WriteBook = () => {
       });
 
       if (res.chapterId) {
-        replace(`/write/story/${res.chapterId}`);
+        replace(`/write/s/${res.chapterId}`);
         toast({
-          title: "Redirecting...",
+          title: "Book created. Redirecting...",
         });
       }
     }
@@ -119,8 +115,8 @@ const WriteBook = () => {
                   control={form.control}
                   name="thumbnail"
                   render={({ field }) => (
-                    <div className="w-[320px] space-y-6">
-                      <FormItem className="w-full">
+                    <div className="h-[420px] w-[320px] space-y-6">
+                      <FormItem className="h-full w-full">
                         <FormLabel>Upload Book Thumbnail</FormLabel>
                         <FormControl>
                           <FileUploader

@@ -385,7 +385,7 @@ model Bookmark {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Chapter {
   id        String   @id @default(uuid()) @db.Uuid
-  title     String?  @default("")
+  title     String?  @default("Untitled Chapter")
   slug      String?  @default("")
   content   Json?    @default("{}")
   thumbnail String?

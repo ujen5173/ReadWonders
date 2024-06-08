@@ -26,7 +26,10 @@ interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   accept?: DropzoneProps["accept"];
   maxSize?: DropzoneProps["maxSize"];
   multiple?: boolean;
-  uploadedFile: UploadedFile<unknown> | undefined;
+  uploadedFile:
+    | UploadedFile<unknown>
+    | { url: string; name: string }
+    | undefined;
   preparingUpload: boolean;
   imageLoad: boolean;
   setImageLoad: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,7 +37,14 @@ interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
 }
 
-export function FileUploader(props: FileUploaderProps) {
+export function FileUploader({
+  uploadedFile,
+  preparingUpload,
+  imageLoad,
+  setImageLoad,
+  setPreparingUpload,
+  ...props
+}: FileUploaderProps) {
   const { toast } = useToast();
 
   const {
@@ -84,7 +94,7 @@ export function FileUploader(props: FileUploaderProps) {
       }
 
       if (onUpload && newFiles[0]) {
-        props.setPreparingUpload(true);
+        setPreparingUpload(true);
         toast({
           title: "Preparing upload...",
         });
@@ -124,8 +134,8 @@ export function FileUploader(props: FileUploaderProps) {
             {...getRootProps()}
             className={cn(
               "overflow-hidden",
-              !(!!props.uploadedFile && !!props.uploadedFile.url) &&
-                "border-2 border-dashed border-muted-foreground/20",
+              !(!!uploadedFile && !!uploadedFile.url) &&
+                "border-2 border-dashed border-slate-600 py-6",
               "group relative grid h-full w-full cursor-pointer place-items-center rounded-lg",
               "text-center transition hover:bg-primary/5",
               "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -136,19 +146,19 @@ export function FileUploader(props: FileUploaderProps) {
             {...dropzoneProps}
           >
             <input {...getInputProps()} />
-            {!!props.uploadedFile && !!props.uploadedFile.url ? (
+            {!!uploadedFile && !!uploadedFile.url ? (
               <>
-                <div className={cn(props.imageLoad ? "block" : "hidden")}>
+                <div className={cn(imageLoad ? "block" : "hidden")}>
                   <Skeleton className="h-[383px] w-[320px] rounded-xl" />
                 </div>
 
                 <Image
-                  onLoadingComplete={() => props.setImageLoad((prev) => !prev)}
-                  src={props.uploadedFile.url}
-                  alt={props.uploadedFile.name}
+                  onLoadingComplete={() => setImageLoad((prev) => !prev)}
+                  src={uploadedFile.url}
+                  alt={uploadedFile.name}
                   width={840}
                   height={472}
-                  className={`${props.imageLoad ? "opacity-0" : "opacity-1"} absolute h-full w-full object-cover`}
+                  className={`${imageLoad ? "opacity-0" : "opacity-1"} absolute h-full w-full object-cover`}
                 />
               </>
             ) : (
@@ -167,7 +177,7 @@ export function FileUploader(props: FileUploaderProps) {
                   </div>
                 ) : (
                   <>
-                    {progresses === -1 && !props.preparingUpload ? (
+                    {progresses === -1 && !preparingUpload ? (
                       <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
                         <div className="rounded-full border border-dashed border-muted-foreground p-3">
                           <UploadIcon
@@ -194,9 +204,7 @@ export function FileUploader(props: FileUploaderProps) {
                         </div>
                         <div className="w-full space-y-px">
                           <p className="mb-2 font-medium text-muted-foreground">
-                            {props.preparingUpload
-                              ? "Preparing upload"
-                              : "Uploading"}
+                            {preparingUpload ? "Preparing upload" : "Uploading"}
                             ...
                           </p>
                           <Progress value={progresses} />

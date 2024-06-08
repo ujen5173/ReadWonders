@@ -2,6 +2,7 @@ import {
   Inter,
   Merriweather,
   Nunito,
+  Space_Grotesk,
   Urbanist,
   Work_Sans,
 } from "next/font/google";
@@ -29,4 +30,9 @@ export const workSans = Work_Sans({
 export const caveat = Merriweather({
   subsets: ["latin"],
   weight: ["400", "700", "900"],
+});
+
+export const contentFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "300", "500", "600", "700"],
 });
