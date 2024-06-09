@@ -175,6 +175,9 @@ export const chapterRouter = createTRPCRouter({
             time: time.minutes,
             content: rest.content as JSONContent,
           },
+          select: { 
+            slug: true,
+          },
         });
 
         return chapter;

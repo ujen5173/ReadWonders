@@ -6,8 +6,12 @@ import { Button } from "../ui/button";
 
 const WritingHeader = ({
   onSubmit,
+  uploadingChapter,
+  nextChapterLoading,
 }: {
   onSubmit: (value: "PUBLISH" | "NEXT") => void;
+  uploadingChapter: boolean;
+  nextChapterLoading: boolean;
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams().get("title")?.trim() ?? "";
@@ -39,10 +43,20 @@ const WritingHeader = ({
           <Button size="sm" variant="outline">
             Preview
           </Button>
-          <Button onClick={() => onSubmit("NEXT")} size="sm">
+          <Button
+            loading={uploadingChapter}
+            disabled={uploadingChapter || nextChapterLoading}
+            onClick={() => onSubmit("NEXT")}
+            size="sm"
+          >
             Next
           </Button>
-          <Button onClick={() => onSubmit("PUBLISH")} size="sm">
+          <Button
+            loading={nextChapterLoading}
+            disabled={uploadingChapter || nextChapterLoading}
+            onClick={() => onSubmit("PUBLISH")}
+            size="sm"
+          >
             Publish
           </Button>
         </div>

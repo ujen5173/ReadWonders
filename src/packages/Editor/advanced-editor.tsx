@@ -56,31 +56,37 @@ const CustomEditor = ({ details }: { details: Details }) => {
   const debouncedUpdates = useDebouncedCallback(async (e: EditorInstance) => {
     const json = e.getJSON();
 
-    const draftResult = {
-      ...details,
-      content: JSON.stringify(json),
-    };
-
     setCharsCount(e.storage.characterCount.words());
-    autosaveContent(draftResult);
+    autosaveContent({
+      draftKey: "content",
+      value: JSON.stringify(json),
+      bookId: details.bookId,
+      chapterId: details.chapterId,
+    });
 
-    window.localStorage.setItem("html-content", e.getHTML());
-    window.localStorage.setItem("markdown", e.storage.markdown.getMarkdown());
     setSaveStatus("Saved");
-  }, 500);
+  }, 1500);
 
   useEffect(() => {
     void (async () => {
-      const draftContent = await loadDraft(details.bookId, details.chapterId);
+      try {
+        const draftContent = await loadDraft(details.bookId, details.chapterId);
 
-      if (!draftContent) return;
+        if (!draftContent) {
+          setInitialContent(defaultEditorContent);
 
-      const { content } = draftContent;
+          return;
+        }
 
-      if (content) setInitialContent(JSON.parse(content));
-      else setInitialContent(defaultEditorContent);
+        const { content } = draftContent;
+
+        if (content) setInitialContent(JSON.parse(content));
+        else setInitialContent(defaultEditorContent);
+      } catch (err) {
+        setInitialContent(defaultEditorContent);
+      }
     })();
-  }, []);
+  }, [editor]);
 
   if (!initialContent)
     return (

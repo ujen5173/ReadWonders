@@ -7,7 +7,9 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      db.createObjectStore("drafts", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("drafts")) {
+        db.createObjectStore("drafts", { keyPath: "id" });
+      }
     };
 
     request.onsuccess = (event: Event) => {
@@ -23,37 +25,64 @@ function openDatabase(): Promise<IDBDatabase> {
 }
 
 export type Draft = {
+  id?: string;
   bookId: string;
   chapterId: string;
-  content: string;
-  title: string;
-  cover_image: {
+  content?: string;
+  title?: string;
+  cover_image?: {
     url: string;
     name: string;
   } | null;
 };
 
-export async function autosaveContent(data: Draft): Promise<void> {
-  const db = await openDatabase();
-  const transaction = db.transaction(["drafts"], "readwrite");
-  const store = transaction.objectStore("drafts");
+interface AutosaveContentParams {
+  draftKey: keyof Omit<Draft, "id">;
+  value: string | Draft["cover_image"];
+  bookId: string;
+  chapterId: string;
+}
 
-  store.put({
-    ...data,
-    id: `${data.bookId}_${data.chapterId}`,
-  });
+export async function autosaveContent({
+  draftKey,
+  value,
+  bookId,
+  chapterId,
+}: AutosaveContentParams): Promise<void> {
+  try {
+    const db = await openDatabase();
+    const transaction = db.transaction(["drafts"], "readwrite");
+    const store = transaction.objectStore("drafts");
+    const id = `${bookId}_${chapterId}`;
 
-  transaction.oncomplete = () => {
+    const getRequest = store.get(id);
+
+    getRequest.onsuccess = () => {
+      const draft: Draft = getRequest.result || { id };
+
+      // Update the specific field with type assertion
+      (draft[draftKey] as typeof value) = value;
+
+      // Save the updated draft back to the database
+      store.put(draft);
+
+      transaction.oncomplete = () => {
+        // "Draft saved successfully"
+      };
+
+      transaction.onerror = () => {
+        // `Error saving draft: ${(event.target as IDBRequest).error}`
+      };
+    };
+
+    getRequest.onerror = () => {
+      // `Error retrieving draft: ${(event.target as IDBRequest).error}`
+    };
+  } catch (error) {
     toast({
-      title: "Draft saved successfully",
+      title: `Unexpected error`,
     });
-  };
-
-  transaction.onerror = (event: Event) => {
-    toast({
-      title: `Error saving draft: ${(event.target as IDBRequest).error}`,
-    });
-  };
+  }
 }
 
 export async function syncToDatabase(): Promise<void> {
@@ -109,7 +138,7 @@ export async function loadDraft(
       if (draft) {
         resolve(draft);
       } else {
-        reject();
+        reject("Draft not found!");
       }
     };
 
@@ -117,7 +146,7 @@ export async function loadDraft(
       console.error(
         `Error loading draft: ${(event.target as IDBRequest).error}`,
       );
-      reject();
+      reject(`Error loading draft: ${(event.target as IDBRequest).error}`);
     };
   });
 }

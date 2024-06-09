@@ -2,13 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDebouncedCallback } from "use-debounce";
 import { z } from "zod";
 import WritingHeader from "~/components/sections/writing-header";
-import { toast } from "~/components/ui/use-toast";
-import { api } from "~/trpc/react";
-
+import { Button } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
 import {
   Form,
@@ -18,8 +17,10 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Label } from "~/components/ui/label";
+import { toast } from "~/components/ui/use-toast";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import CustomEditor from "~/packages/Editor/advanced-editor";
+import { api } from "~/trpc/react";
 import { defaultEditorContent } from "~/utils/default-content";
 import { autosaveContent, loadDraft } from "./utils/database";
 
@@ -28,21 +29,14 @@ export const chapterSchema = z.object({
 });
 
 export const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
-
+  title: z.string().min(2, { message: "Title must be at least 2 characters." }),
   thumbnail: z.string().nullable(),
 });
 
-const NewStory = ({
-  params,
-}: {
-  params: {
-    chapterId: string;
-  };
-}) => {
+const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const { chapterId } = params;
+  const router = useRouter();
+  const { replace } = router;
 
   const { data: chapter } = api.chapter.getSingeChapter.useQuery({
     id: chapterId,
@@ -50,39 +44,12 @@ const NewStory = ({
 
   const [preparingUpload, setPreparingUpload] = useState(false);
   const [imageLoad, setImageLoad] = useState(true);
-
-  const { replace } = useRouter();
+  const [fileData, setFileData] = useState<
+    { url: string; name: string } | undefined
+  >(undefined);
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
     useUploadFile("imageUploader");
-  const [fileData, setFileData] = useState<
-    | {
-        url: string;
-        name: string;
-      }
-    | undefined
-  >(undefined);
-
-  useEffect(() => {
-    void (async () => {
-      if (uploadedFile) {
-        setFileData({
-          url: uploadedFile.url,
-          name: uploadedFile.name,
-        });
-        if (chapter) {
-          const draftData = await loadDraft(chapter.bookId, chapter.id);
-
-          if (!draftData) return;
-
-          autosaveContent({
-            ...draftData,
-            cover_image: uploadedFile,
-          });
-        }
-      }
-    })();
-  }, [uploadedFile]);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -93,92 +60,102 @@ const NewStory = ({
     },
   });
 
+  const handleFileUpload = useCallback(async () => {
+    if (!uploadedFile || !chapter) return;
+    setFileData({ url: uploadedFile.url, name: uploadedFile.name });
+    const draftData = await loadDraft(chapter.bookId, chapter.id);
+
+    if (draftData) {
+      await autosaveContent({
+        draftKey: "cover_image",
+        value: { name: uploadedFile.name, url: uploadedFile.url },
+        bookId: chapter.bookId,
+        chapterId: chapter.id,
+      });
+    }
+  }, [uploadedFile, chapter]);
+
   useEffect(() => {
-    const loadFormData = async () => {
-      if (!chapter) return;
+    handleFileUpload();
+  }, [handleFileUpload]);
 
-      const draft = await loadDraft(chapter?.bookId, chapter?.id);
-
-      if (!draft) return;
-
-      if (draft.cover_image) setFileData(draft.cover_image);
-
-      form.setValue("title", draft.title);
-    };
-
-    loadFormData();
-  }, [chapter, setFileData]);
-
-  useEffect(() => {
-    void (async () => {
-      if (!chapter) return;
-
-      const image = await loadDraft(chapter.bookId, chapter.id);
-      // const image = window.localStorage.getItem("novel-cover-image");
-
-      if (!image) return;
-
-      if (image.cover_image && !fileData) {
-        setFileData(image.cover_image);
-      }
-    })();
-  }, [uploadedFile]);
-
-  const { mutateAsync } = api.chapter.update.useMutation();
-  const { mutateAsync: newChapterMutation } = api.chapter.new.useMutation();
-
-  async function onSubmit(type: "PUBLISH" | "NEXT" = "PUBLISH") {
+  const loadFormData = useCallback(async () => {
     if (!chapter) return;
+    const draft = await loadDraft(chapter.bookId, chapter.id);
+
+    if (draft) {
+      if (draft.cover_image) setFileData(draft.cover_image);
+      if (draft.title) form.setValue("title", draft.title);
+    }
+  }, [chapter, form]);
+
+  useEffect(() => {
+    loadFormData();
+  }, [loadFormData]);
+
+  const handleImageLoad = useCallback(async () => {
+    if (!chapter) return;
+    const draft = await loadDraft(chapter.bookId, chapter.id);
+
+    if (draft?.cover_image && !fileData) setFileData(draft.cover_image);
+  }, [chapter, fileData]);
+
+  useEffect(() => {
+    handleImageLoad();
+  }, [handleImageLoad]);
+
+  const { mutateAsync, isLoading: uploadingChapter } =
+    api.chapter.update.useMutation();
+  const { mutateAsync: newChapterMutation, isLoading: nextChapterLoading } =
+    api.chapter.new.useMutation();
+
+  const onSubmit = async (type: "PUBLISH" | "NEXT" = "PUBLISH") => {
+    if (!chapter) {
+      toast({ title: "Chapter not found." });
+
+      return;
+    }
 
     const draftData = await loadDraft(chapter.bookId, chapter.id);
 
-    if (!draftData) return;
-
-    const { content } = draftData;
-
-    if (!content) {
-      toast({
-        title: "Please write something before publishing.",
-      });
-    }
-
-    if (!chapter) {
-      toast({
-        title: "Chapter not found.",
-      });
+    if (!draftData?.content) {
+      toast({ title: "Please write something before publishing." });
 
       return;
     }
 
     const publishedChapter = await mutateAsync({
       title: form.getValues("title"),
-      content: JSON.parse(content!),
+      content: JSON.parse(draftData.content),
       thumbnail: uploadedFile?.url ?? null,
-      id: chapter?.id,
+      id: chapter.id,
     });
 
-    if (type) {
-      const newChapterId = await newChapterMutation({
-        bookId: chapter.bookId,
-      });
+    if (type === "NEXT") {
+      const newChapterId = await newChapterMutation({ bookId: chapter.bookId });
 
       if (newChapterId) {
         replace(`/write/s/${newChapterId}`);
-
         toast({
-          title: "Chapter puslished successfully. Redirecting to next chapter",
+          title: "Chapter published successfully. Redirecting to next chapter",
         });
       }
+    } else {
+      toast({ title: "Chapter published successfully" });
+      replace(`/works/${publishedChapter.slug}`);
     }
+  };
 
-    if (publishedChapter && type === "PUBLISH") {
-      toast({
-        title: "Chapter puslished successfully",
+  const debouncedUpdates = useDebouncedCallback(async (e: string) => {
+    if (chapter) {
+      autosaveContent({
+        draftKey: "title",
+        value: e,
+        bookId: chapter.bookId,
+        chapterId: chapter.id,
       });
-
-      replace(`/works/${chapter.slug}`);
     }
-  }
+  }, 1500);
 
   if (!chapter) {
     return null;
@@ -186,10 +163,17 @@ const NewStory = ({
 
   return (
     <>
-      <WritingHeader onSubmit={onSubmit} />
+      <WritingHeader
+        uploadingChapter={uploadingChapter}
+        nextChapterLoading={nextChapterLoading}
+        onSubmit={onSubmit}
+      />
 
       <section className="w-full">
         <div className="mx-auto max-w-[1140px] px-4 py-8">
+          <Button variant="secondary" size="sm" className="mb-4">
+            Enter Writing Mode
+          </Button>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(() => onSubmit("PUBLISH"))}
@@ -197,7 +181,7 @@ const NewStory = ({
             >
               <div className="mb-5">
                 <Label>Cover Image</Label>
-                <div className="h-[283px]">
+                <div className="h-[360px]">
                   <FileUploader
                     maxSize={4 * 1024 * 1024}
                     progresses={progresses}
@@ -226,21 +210,7 @@ const NewStory = ({
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e);
-                          const draftData = await loadDraft(
-                            chapter.bookId,
-                            chapter.id,
-                          );
-
-                          if (!draftData) return;
-
-                          autosaveContent({
-                            ...draftData,
-                            title: e.target.value,
-                          });
-                          // window.localStorage.setItem(
-                          //   "novel-title",
-                          //   e.target.value,
-                          // );
+                          debouncedUpdates(e.target.value);
                         }}
                         className="w-full border-b border-border bg-transparent py-4 text-center text-3xl font-semibold outline-none"
                         defaultValue="Untitled part"
@@ -250,16 +220,13 @@ const NewStory = ({
                 </FormControl>
                 <FormMessage />
               </FormItem>
+
               <CustomEditor
                 details={{
-                  chapterId: chapterId,
-                  bookId: chapter?.bookId,
+                  chapterId,
+                  bookId: chapter.bookId,
                   title: form.getValues("title"),
-                  cover_image:
-                    {
-                      url: uploadedFile?.url || "",
-                      name: uploadedFile?.name || "",
-                    } ?? null,
+                  cover_image: fileData || { url: "", name: "" },
                 }}
               />
             </form>
