@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
-import { z } from "zod";
 import WritingHeader from "~/components/sections/writing-header";
 import { Button } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
@@ -21,17 +20,9 @@ import { toast } from "~/components/ui/use-toast";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import CustomEditor from "~/packages/Editor/advanced-editor";
 import { api } from "~/trpc/react";
+import { formSchema } from "~/types/zod";
 import { defaultEditorContent } from "~/utils/default-content";
 import { autosaveContent, loadDraft } from "./utils/database";
-
-export const chapterSchema = z.object({
-  content: z.string(),
-});
-
-export const formSchema = z.object({
-  title: z.string().min(2, { message: "Title must be at least 2 characters." }),
-  thumbnail: z.string().nullable(),
-});
 
 const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const { chapterId } = params;

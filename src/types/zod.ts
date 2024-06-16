@@ -53,3 +53,12 @@ export const mainSchema = z
     text: z.string().optional(),
   })
   .passthrough();
+
+export const chapterSchema = z.object({
+  content: z.string(),
+});
+
+export const newStoryFormSchema = z.object({
+  title: z.string().min(2, { message: "Title must be at least 2 characters." }),
+  thumbnail: z.string().nullable(),
+});
