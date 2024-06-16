@@ -25,13 +25,13 @@ export const siteConfig = {
   hostingRegion: "us-west-2",
   keywords: [
     "Online Reading Platform",
-    "Free Stories and Books",
+    "Free Stories",
     "Self-Publishing",
     "Fanfiction Community",
     "Fiction Writing",
     "Read and Write Stories",
     "Story Sharing Platform",
-    "Ebook Library",
+    "Estory Library",
     "Romance Novels Online",
     "Young Adult Fiction",
     "Interactive Storytelling",
@@ -42,7 +42,7 @@ export const siteConfig = {
   navItemsMobile: [],
   navItemsFooter: [
     {
-      title: "Books Categories",
+      title: "Stories Categories",
       links: [
         {
           name: "Romance",

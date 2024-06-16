@@ -1,5 +1,5 @@
 import { ArrowDown, BookMarked, ExternalLink, Headphones } from "lucide-react";
-import Card from "~/components/Card";
+import CoverCard from "~/components/cover-card";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -15,14 +15,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-import { allBooks, genres } from "~/data";
+import { allStories, genres } from "~/data";
 
-const AllBooks = () => {
+const AllStories = () => {
   return (
     <section className="w-full">
-      <div className="container border-b border-border px-4 py-8">
+      <div className="max-w-screen-lg border-b border-border px-4 py-8">
         <div className="mb-4 flex items-center gap-2">
-          <h1 className="text-2xl font-semibold text-primary">All Books</h1>
+          <h1 className="text-2xl font-semibold text-primary">All Stories</h1>
           <ArrowDown size={18} className="text-primary" />
         </div>
 
@@ -37,7 +37,7 @@ const AllBooks = () => {
                     <BookMarked size={18} />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Books & Stories</TooltipContent>
+                <TooltipContent>Stories</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -54,14 +54,14 @@ const AllBooks = () => {
           </div>
 
           <Input
-            placeholder="Search books..."
+            placeholder="Search stories..."
             className="w-full bg-white xs:w-4/12"
           />
         </section>
 
         <main className="mb-4 grid grid-cols-1 gap-4 xxs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {allBooks.map((book) => (
-            <Card key={book.id} details={book} />
+          {allStories.map((story) => (
+            <CoverCard key={story.id} details={story} />
           ))}
         </main>
         <div className="flex justify-end">
@@ -75,7 +75,7 @@ const AllBooks = () => {
   );
 };
 
-export default AllBooks;
+export default AllStories;
 
 export const SelectGenre = () => {
   return (

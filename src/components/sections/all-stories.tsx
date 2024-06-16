@@ -12,9 +12,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-import { allBooks, genres } from "~/data";
+import { allStories, genres } from "~/data";
 import { cn } from "~/utils/cn";
-import Card from "../Card";
+import CoverCard from "../cover-card";
 import { Button, buttonVariants } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import {
@@ -27,22 +27,11 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 
-type Props = {
-  infiniteScroll?: boolean;
-  title?: string;
-  defaultValue?: string;
-};
-
-const SearchBooks = ({
-  infiniteScroll = true,
-  defaultValue = "",
-  title = "Search Books",
-}: Props) => {
+const AllStories = () => {
   return (
     <section className="w-full">
-      <div className="container border-b border-border px-4 py-8">
+      <div className="max-w-screen-lg border-b border-border px-4 py-8">
         <div className="mb-4 flex items-center justify-between gap-2">
-          <h1 className="text-2xl font-bold text-primary">{title}</h1>
           <Dialog>
             <DialogTrigger
               className={cn(buttonVariants({ variant: "outline" }), "gap-1")}
@@ -119,7 +108,7 @@ const SearchBooks = ({
                     <BookMarked size={18} />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Books & Stories</TooltipContent>
+                <TooltipContent>Stories</TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -136,15 +125,14 @@ const SearchBooks = ({
           </div>
 
           <Input
-            defaultValue={defaultValue}
-            placeholder="Search books..."
+            placeholder="Search stories..."
             className="w-full bg-white xs:w-4/12"
           />
         </section>
 
         <main className="mb-4 grid grid-cols-1 gap-4 xxs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {allBooks.map((book) => (
-            <Card key={book.id} details={book} />
+          {allStories.map((story) => (
+            <CoverCard key={story.id} details={story} />
           ))}
         </main>
       </div>
@@ -152,7 +140,7 @@ const SearchBooks = ({
   );
 };
 
-export default SearchBooks;
+export default AllStories;
 
 export const SelectGenre = () => {
   return (

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { type z } from "zod";
 
 import { Button } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
@@ -32,29 +32,17 @@ import { toast } from "~/components/ui/use-toast";
 import { genres } from "~/data";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
+import { formSchema } from "~/types/zod";
 
-export const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  category: z.string().optional(),
-  isMature: z.boolean().default(false),
-  isPremium: z.boolean().default(false),
-  tags: z.array(z.string()).optional(),
-  thumbnail: z.instanceof(File).nullable(),
-});
-
-const WriteBook = () => {
+const WriteStory = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
     useUploadFile("imageUploader");
-  const { mutateAsync, isLoading, isError, error } = api.book.new.useMutation();
+  const { mutateAsync, isLoading, isError, error } =
+    api.story.new.useMutation();
 
   useEffect(() => {
     if (isError && error) {
@@ -90,7 +78,7 @@ const WriteBook = () => {
       if (res.chapterId) {
         replace(`/write/s/${res.chapterId}`);
         toast({
-          title: "Book created. Redirecting...",
+          title: "Story created. Redirecting...",
         });
       }
     }
@@ -107,7 +95,7 @@ const WriteBook = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full space-y-8"
           >
-            <h1 className="text-4xl font-bold">Write a new book</h1>
+            <h1 className="text-4xl font-bold">Write a new story</h1>
 
             <div className="flex w-full flex-col gap-8 md:flex-row lg:gap-16">
               <div className="flex justify-center rounded-lg">
@@ -117,7 +105,7 @@ const WriteBook = () => {
                   render={({ field }) => (
                     <div className="h-[420px] w-[320px] space-y-6">
                       <FormItem className="h-full w-full">
-                        <FormLabel>Upload Book Thumbnail</FormLabel>
+                        <FormLabel>Upload Story Thumbnail</FormLabel>
                         <FormControl>
                           <FileUploader
                             value={field.value ?? undefined}
@@ -144,7 +132,7 @@ const WriteBook = () => {
               </div>
 
               <main className="flex-1">
-                <h1 className="mb-6 text-2xl font-bold">Book details</h1>
+                <h1 className="mb-6 text-2xl font-bold">Story details</h1>
 
                 <FormField
                   control={form.control}
@@ -171,7 +159,7 @@ const WriteBook = () => {
                         />
                       </FormControl>
                       <FormDescription>
-                        This is your Book name. Name it carefully.
+                        This is your Story name. Name it carefully.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -277,9 +265,6 @@ const WriteBook = () => {
                   >
                     Next
                   </Button>
-                  {/* <Link href="/write/42342/story/134fdgasg4325t">
-                  </Link> */}
-                  <Button variant="outline">Save as draft</Button>
                 </div>
               </main>
             </div>
@@ -290,4 +275,4 @@ const WriteBook = () => {
   );
 };
 
-export default WriteBook;
+export default WriteStory;

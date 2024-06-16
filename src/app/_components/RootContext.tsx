@@ -1,18 +1,23 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { type ReactNode } from "react";
+import { createContext, useState, type ReactNode } from "react";
 import Header from "~/components/sections/header";
+import { type RootContextType, type TCard } from "~/types";
+
+export const Context = createContext<RootContextType>({
+  activeBook: null,
+  setActiveBook: () => {},
+});
 
 const RootContext = ({ children }: { children: ReactNode }) => {
-  const pathname = usePathname();
+  const [activeBook, setActiveBook] = useState<TCard | null>(null);
 
   return (
-    <div>
-      {!pathname.startsWith("/write") && <Header />}
+    <Context.Provider value={{ activeBook, setActiveBook }}>
+      <Header />
 
       {children}
-    </div>
+    </Context.Provider>
   );
 };
 

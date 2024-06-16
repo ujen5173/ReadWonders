@@ -26,7 +26,7 @@ function openDatabase(): Promise<IDBDatabase> {
 
 export type Draft = {
   id?: string;
-  bookId: string;
+  storyId: string;
   chapterId: string;
   content?: string;
   title?: string;
@@ -39,21 +39,21 @@ export type Draft = {
 interface AutosaveContentParams {
   draftKey: keyof Omit<Draft, "id">;
   value: string | Draft["cover_image"];
-  bookId: string;
+  storyId: string;
   chapterId: string;
 }
 
 export async function autosaveContent({
   draftKey,
   value,
-  bookId,
+  storyId,
   chapterId,
 }: AutosaveContentParams): Promise<void> {
   try {
     const db = await openDatabase();
     const transaction = db.transaction(["drafts"], "readwrite");
     const store = transaction.objectStore("drafts");
-    const id = `${bookId}_${chapterId}`;
+    const id = `${storyId}_${chapterId}`;
 
     const getRequest = store.get(id);
 
@@ -123,13 +123,13 @@ async function saveDraftToDatabase(draft: Draft): Promise<void> {
 // setInterval(syncToDatabase, 300000); // Every 5 minutes
 
 export async function loadDraft(
-  bookId: string,
+  storyId: string,
   chapterId: string,
 ): Promise<Draft | undefined> {
   const db = await openDatabase();
   const transaction = db.transaction(["drafts"], "readonly");
   const store = transaction.objectStore("drafts");
-  const request = store.get(`${bookId}_${chapterId}`);
+  const request = store.get(`${storyId}_${chapterId}`);
 
   return new Promise((resolve, reject) => {
     request.onsuccess = (event: Event) => {

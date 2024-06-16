@@ -9,7 +9,7 @@ function useCallbackRef<T extends (...args: never[]) => unknown>(
     callbackRef.current = callback;
   });
 
-  // https://github.com/facebook/react/issues/19240
+  // https://github.com/facestory/react/issues/19240
   return React.useMemo(
     () => ((...args) => callbackRef.current?.(...args)) as T,
     [],

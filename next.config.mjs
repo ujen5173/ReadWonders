@@ -18,10 +18,22 @@ const config = {
   images: {
     remotePatterns: [
       {
+        hostname: "i.pinimg.com",
+      },
+      {
+        hostname: "cdn.i-scmp.com",
+      },
+      {
+        hostname: "pbs.twimg.com",
+      },
+      {
         hostname: "lh3.googleusercontent.com",
       },
       {
         hostname: "img.wattpad.com",
+      },
+      {
+        hostname: "kavesquare.com",
       },
       {
         hostname: "utfs.io",

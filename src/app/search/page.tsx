@@ -1,18 +1,7 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import SearchBooks from "~/components/sections/search-books";
+import SearchStories from "~/components/sections/search-stories";
 
 const Search = () => {
-  const query = useSearchParams().get("q") || "";
-
-  return (
-    <SearchBooks
-      title={`Search results for "${query}"`}
-      defaultValue={query}
-      infiniteScroll={false}
-    />
-  );
+  return <SearchStories />;
 };
 
 export default Search;

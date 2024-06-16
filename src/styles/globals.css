@@ -4,16 +4,20 @@
 
 @layer base {
   :root {
-    --background: 215 100% 97%;
+    --background: 0 86% 97%;
+    --foreground: 215 25% 26%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 100%;
+    /* --background: 215 100% 97%;
     --foreground: 217 35% 25%;
     --primary: 217 90% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222, 47%, 11%;
-    --secondary-foreground: 210, 40%, 96%;
+    --primary-foreground: 0 0% 100%; */
+    --secondary: 210, 40%, 98%;
+    --secondary-foreground: 222, 47%, 11%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
     --border: 212.73 26.83% 83.92%;
-    --ring: 215 70% 60%;
+    --ring: 0 100% 50%;
     --radius: 0.5rem;
     --text-primary: 222.22 47.37% 11.18%;
     --text-light: 215 19% 35%;
@@ -169,7 +173,7 @@
   color: black;
 }
 
-.cards-container {
+.cards-max-w-screen-lg {
   display: grid;
   grid-template-columns: repeat(3, 200px);
   gap: 16px;
@@ -193,7 +197,7 @@
 }
 
 @media (max-width: 600px) {
-  .cards-container {
+  .cards-max-w-screen-lg {
     grid-template-columns: 1fr;
     justify-items: center;
   }

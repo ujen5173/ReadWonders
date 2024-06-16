@@ -9,5 +9,5 @@ export const slugy = {
   locale: "en",
 };
 
-export const cardWidth = 133;
-export const cardHeight = 204;
+export const cardWidth = 215;
+export const cardHeight = 325;

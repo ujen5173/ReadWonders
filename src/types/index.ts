@@ -13,6 +13,13 @@ export type SupabaseUser = {
   phone_verified: boolean;
 };
 
+export type TCoverCard = {
+  id: string;
+  thumbnail: string;
+  title: string;
+  slug: string;
+};
+
 export type TCard = {
   id: string;
   description: string;
@@ -24,9 +31,20 @@ export type TCard = {
   category: string | null;
   isMature: boolean;
   reads: number;
+  chapter: {
+    id: string;
+    title: string | null;
+    createdAt: Date;
+  }[];
   author: {
     name: string | null;
+    profile: string | null;
   };
+};
+
+export type RootContextType = {
+  activeBook: TCard | null;
+  setActiveBook: React.Dispatch<React.SetStateAction<TCard | null>>;
 };
 
 export interface UploadedFile<T = unknown> extends ClientUploadedFileData<T> {}

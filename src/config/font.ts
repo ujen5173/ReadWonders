@@ -2,7 +2,8 @@ import {
   Inter,
   Merriweather,
   Nunito,
-  Space_Grotesk,
+  Open_Sans,
+  Suez_One,
   Urbanist,
   Work_Sans,
 } from "next/font/google";
@@ -19,20 +20,28 @@ export const fontUrbanist = Urbanist({
 
 export const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-urbanist",
+  variable: "--font-nunito",
 });
 
 export const workSans = Work_Sans({
   subsets: ["latin"],
-  variable: "--font-urbanist",
+  variable: "--font-work-sans",
 });
 
 export const caveat = Merriweather({
   subsets: ["latin"],
   weight: ["400", "700", "900"],
+  variable: "--font-caveat",
 });
 
-export const contentFont = Space_Grotesk({
+export const suezOne = Suez_One({
   subsets: ["latin"],
-  weight: ["400", "300", "500", "600", "700"],
+  variable: "--font-suez-one",
+  weight: ["400"],
+});
+
+export const contentFont = Open_Sans({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700"],
 });

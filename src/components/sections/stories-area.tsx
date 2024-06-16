@@ -2,27 +2,33 @@ import { ArrowDown } from "lucide-react";
 import { type FC } from "react";
 import { api } from "~/trpc/server";
 import { cn } from "~/utils/cn";
-import Card from "../Card";
+import CoverCard from "../cover-card";
 
 type Props = {
   title: string;
   description?: string;
   carasoul?: boolean;
-  perRow?: 6 | 3;
+  perRow?: 3 | 6;
+  skipRow?: number;
 };
 
-const BooksArea: FC<Props> = async ({
+const StoriesArea: FC<Props> = async ({
   title,
   description,
   carasoul = true,
-  perRow = 6,
+  perRow = 3,
+  skipRow = 12,
 }) => {
   // const [carasoulApi, setCarasoulApi] = useState<CarouselApi>();
 
-  const data = await api.book.featuredStories.query({
+  const data = await api.story.featuredStories.query({
     limit: perRow,
-    skip: 5,
+    skip: skipRow,
   });
+
+  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  await wait(5000);
 
   return (
     <section className="w-full">
@@ -83,7 +89,7 @@ const BooksArea: FC<Props> = async ({
                     "md:basis-1/4 lg:basis-1/5 xl:basis-1/6",
                 )}
               >
-                <Card details={item} />
+                <CoverCard details={item} />
               </CarouselItem>
             ))}
             {Array(Math.abs(perRow - (data.length ?? 0)))
@@ -96,22 +102,23 @@ const BooksArea: FC<Props> = async ({
       ) : ( */}
       <main
         className={cn(
-          "flex w-full gap-4 xxs:basis-1/2 sm:basis-1/3",
-          carasoul && perRow === 6 && "md:basis-1/4 lg:basis-1/5 xl:basis-1/6",
+          "flex w-full gap-6 xxs:basis-1/2 sm:basis-1/3",
+          carasoul && perRow === 3 && "md:basis-1/4 lg:basis-1/5 xl:basis-1/6",
+          carasoul && perRow === 6 && "md:basis-1/8 lg:basis-1/8 xl:basis-1/8",
         )}
       >
         {(data ?? []).map((story) => (
-          <Card key={story.id} details={story} />
+          <CoverCard key={story.id} details={story} />
         ))}
+
         {Array(Math.abs(perRow - (data ?? []).length))
           .fill(0)
           .map((_, i) => (
             <div className="mx-auto block flex-1" key={i} />
           ))}
       </main>
-      {/* )} */}
     </section>
   );
 };
 
-export default BooksArea;
+export default StoriesArea;

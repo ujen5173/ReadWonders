@@ -1,6 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import { type FC } from "react";
-import Card from "~/components/Card";
+import CoverCard from "~/components/cover-card";
 
 import { api } from "~/trpc/server";
 import { cn } from "~/utils/cn";
@@ -12,10 +12,11 @@ type Props = {
 const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
   // const [carasoulApi, setCarasoulApi] = useState<CarouselApi>();
 
-  const data = await api.book.featuredStories.query({
+  const data = await api.story.getAll.query({
     limit: 3,
-    skip: 3,
   });
+
+  console.log({ data: data.length });
 
   return (
     <section className="w-full">
@@ -49,9 +50,9 @@ const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
         </div> */}
       </div>
 
-      <main className={cn("flex w-full gap-4 xxs:basis-1/2 sm:basis-1/3")}>
+      <main className={cn("flex w-full gap-6 xxs:basis-1/2 sm:basis-1/3")}>
         {data.map((item, index) => (
-          <Card details={item} key={index} />
+          <CoverCard details={item} key={index} />
         ))}
         {/* <Carousel
           opts={{
@@ -69,7 +70,7 @@ const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
                   perRow === 6 && "md:basis-1/4 lg:basis-1/5 xl:basis-1/6",
                 )}
               >
-                <Card details={item} />
+                <CoverCard details={item} />
               </CarouselItem>
             ))}
             {perRow - featuredStories.length && (
@@ -82,10 +83,10 @@ const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
                 <div className="flex h-96 cursor-pointer flex-col justify-center rounded-md border border-border p-6 text-center transition hover:bg-background">
                   <Plus size={36} className="mx-auto mb-4 text-text-primary" />
                   <h1 className="mb-2 text-2xl font-extrabold text-text-primary">
-                    Add a book
+                    Add a story
                   </h1>
                   <p className="text-text-secondary">
-                    Add a book to your reading list
+                    Add a story to your reading list
                   </p>
                 </div>
               </CarouselItem>

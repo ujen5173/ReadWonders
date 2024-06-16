@@ -2,30 +2,52 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
-import { authorProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  authorProcedure,
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "../trpc";
 
-export const bookRouter = createTRPCRouter({
+export const storyRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
-    return "Book router";
+    return "Story router";
   }),
 
   getAll: publicProcedure
     .input(
       z.object({
-        limit: z.number().optional().default(limit),
+        limit: z.number().default(limit),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const books = await ctx.db.book.findMany({
-          take: limit,
+        const stories = await ctx.db.story.findMany({
+          take: input.limit,
+          include: {
+            chapter: {
+              select: {
+                title: true,
+                id: true,
+                createdAt: true,
+              },
+            },
+            author: {
+              select: {
+                name: true,
+                profile: true,
+              },
+            },
+          },
         });
 
-        return books;
+        console.log({ stories });
+
+        return stories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch books",
+          message: "Failed to fetch stories",
         });
       }
     }),
@@ -38,7 +60,7 @@ export const bookRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const book = await ctx.db.book.findUnique({
+        const story = await ctx.db.story.findUnique({
           where: {
             slug: input.slug,
           },
@@ -56,18 +78,18 @@ export const bookRouter = createTRPCRouter({
           },
         });
 
-        if (!book) {
+        if (!story) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Book not found",
+            message: "Story not found",
           });
         }
 
-        return book;
+        return story;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch book",
+          message: "Failed to fetch story",
         });
       }
     }),
@@ -81,7 +103,7 @@ export const bookRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const books = await ctx.db.book.findMany({
+        const stories = await ctx.db.story.findMany({
           where: {
             slug: {
               in: input.slugs,
@@ -89,11 +111,11 @@ export const bookRouter = createTRPCRouter({
           },
         });
 
-        return books;
+        return stories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch books",
+          message: "Failed to fetch stories",
         });
       }
     }),
@@ -106,7 +128,7 @@ export const bookRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const books = await ctx.db.book.findMany({
+        const stories = await ctx.db.story.findMany({
           take: input.limit,
           select: {
             author: {
@@ -136,7 +158,7 @@ export const bookRouter = createTRPCRouter({
           },
         });
 
-        return books;
+        return stories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -154,7 +176,9 @@ export const bookRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const books = await ctx.db.book.findMany({
+        console.log({ input });
+
+        const stories = await ctx.db.story.findMany({
           take: input.limit,
           skip: input.skip,
           select: {
@@ -168,9 +192,17 @@ export const bookRouter = createTRPCRouter({
             title: true,
             thumbnail: true,
             isMature: true,
+            chapter: {
+              select: {
+                title: true,
+                id: true,
+                createdAt: true,
+              },
+            },
             author: {
               select: {
                 name: true,
+                profile: true,
               },
             },
           },
@@ -182,8 +214,9 @@ export const bookRouter = createTRPCRouter({
           },
         });
 
-        return books;
+        return stories;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch featured stories",
@@ -199,14 +232,14 @@ export const bookRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const books = await ctx.db.book.findMany({
+        const stories = await ctx.db.story.findMany({
           take: input.limit,
           orderBy: {
             createdAt: "desc",
           },
         });
 
-        return books;
+        return stories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -214,6 +247,25 @@ export const bookRouter = createTRPCRouter({
         });
       }
     }),
+
+  work: privateProcedure.query(async ({ ctx }) => {
+    try {
+      const stories = await ctx.db.story.findMany({
+        where: {
+          authorId: ctx.user.id,
+        },
+        take: limit,
+        skip,
+      });
+
+      return stories;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch stories",
+      });
+    }
+  }),
 
   // ----- Mutations -----
   new: authorProcedure
@@ -246,7 +298,7 @@ export const bookRouter = createTRPCRouter({
           slugy,
         );
 
-        const book = await ctx.db.book.create({
+        const story = await ctx.db.story.create({
           data: {
             ...input,
             slug,
@@ -259,7 +311,7 @@ export const bookRouter = createTRPCRouter({
 
         const chapterId = await ctx.db.chapter.create({
           data: {
-            bookId: book.id,
+            storyId: story.id,
           },
           select: {
             id: true,
@@ -273,7 +325,7 @@ export const bookRouter = createTRPCRouter({
         console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create book, please try again",
+          message: "Failed to create story, please try again",
         });
       }
     }),
@@ -295,18 +347,18 @@ export const bookRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { id, ...rest } = input;
-        const book = await ctx.db.book.update({
+        const story = await ctx.db.story.update({
           where: {
             id: id,
           },
           data: rest,
         });
 
-        return book;
+        return story;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update book, please try again",
+          message: "Failed to update story, please try again",
         });
       }
     }),
@@ -319,7 +371,7 @@ export const bookRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.db.book.update({
+        await ctx.db.story.update({
           where: {
             id: input.id,
           },
@@ -332,7 +384,7 @@ export const bookRouter = createTRPCRouter({
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete book, please try again",
+          message: "Failed to delete story, please try again",
         });
       }
     }),

@@ -2,7 +2,7 @@
 
 import { Menu, Plus } from "lucide-react";
 import Link from "next/link";
-import { fontUrbanist } from "~/config/font";
+import { suezOne } from "~/config/font";
 import { siteConfig } from "~/config/site";
 import { cn } from "~/utils/cn";
 import { Button, buttonVariants } from "../ui/button";
@@ -42,28 +42,25 @@ const Header = () => {
 
   return (
     <header className="w-full">
-      <div className="container flex items-center justify-between gap-4 px-4 py-2">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="block md:hidden">
             <MobileMenu />
           </div>
 
-          <Link href="/">
+          <Link className="mr-6" href={user ? "/dashboard" : "/"}>
             <h1
               className={cn(
-                `${fontUrbanist.className} text-xl font-bold text-text-primary`,
+                `${suezOne.className} text-2xl font-medium text-text-primary`,
               )}
             >
-              {siteConfig.name}
+              <span className="text-primary">Read</span>
+              <span>Wonders.</span>
             </h1>
           </Link>
-        </div>
-
-        <div className="flex flex-1 items-center justify-end gap-4">
-          <Link href="/write">
-            <Button className="hidden gap-2 sm:flex" variant="ghost-link">
-              <Plus size={18} />
-              <span>Write a book</span>
+          <Link href="/" className="hidden md:inline">
+            <Button className="gap-2" variant="link">
+              <span>Explore</span>
             </Button>
           </Link>
           <Link href="/" className="hidden md:inline">
@@ -71,66 +68,18 @@ const Header = () => {
               <span>Newsletter</span>
             </Button>
           </Link>
-          <Link href="/" className="hidden md:inline">
-            <Button className="gap-2" variant="link">
-              <span>Stats</span>
+          <Link href="/write">
+            <Button className="hidden gap-2 sm:flex" variant="ghost-link">
+              <Plus size={18} />
+              <span>Write a story</span>
             </Button>
           </Link>
+        </div>
 
-          <form className="w-4/12" onSubmit={handleSubmit}>
-            <Input ref={inputRef} placeholder="Search a book..." />
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <form className="w-6/12" onSubmit={handleSubmit}>
+            <Input ref={inputRef} placeholder="Search a story..." />
           </form>
-
-          <div className="">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="bg-white" asChild>
-                <Button variant="outline" size="sm">
-                  <span className="sr-only">Toggle theme</span>
-                  <span className="text-sm">Change Theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    document.documentElement.setAttribute("data-theme", "red");
-                  }}
-                >
-                  Red
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    document.documentElement.setAttribute("data-theme", "cyan");
-                  }}
-                >
-                  Cyan
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    document.documentElement.setAttribute(
-                      "data-theme",
-                      "orange",
-                    );
-                  }}
-                >
-                  Orange
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    document.documentElement.setAttribute(
-                      "data-theme",
-                      "purple",
-                    );
-                  }}
-                >
-                  Purple
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
 
           {user ? (
             <DropdownMenu>
@@ -148,25 +97,33 @@ const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[250px] bg-white" align="end">
                 <DropdownMenuItem className="pointer-events-none cursor-default rounded-none border-b border-border">
-                  <div className="py-1">
+                  <div className="py-[0.2rem]">
                     <p className="text-sm font-semibold">
                       {user.user_metadata.full_name}
                     </p>
                     <p className="text-sm">{user.user_metadata.email}</p>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-none border-b border-border px-[2px]">
+                <DropdownMenuItem className="rounded-none border-b border-border px-[2px] py-[3px]">
                   <Link
-                    className="block w-full rounded-sm p-2 hover:bg-foreground/10"
+                    className="block w-full rounded-sm p-2 transition hover:bg-foreground/10"
                     href="/"
                   >
-                    <span>Settings</span>
+                    <span>My Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-none px-[2px]">
+                <DropdownMenuItem className="rounded-none border-b border-border px-[2px] py-[3px]">
                   <Link
-                    className="block w-full rounded-sm p-2 hover:bg-foreground/10"
+                    className="block w-full rounded-sm p-2 transition hover:bg-foreground/10"
                     href="/"
+                  >
+                    <span>Reading List</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="rounded-none px-[2px] py-[3px]">
+                  <Link
+                    className="block w-full rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground"
+                    href="/auth/logout"
                   >
                     <span>Logout</span>
                   </Link>
@@ -199,7 +156,7 @@ const MobileMenu = () => {
           <SheetTitle className="mb-4">
             <h1
               className={cn(
-                `${fontUrbanist.className} text-left text-xl font-bold text-text-primary`,
+                `${suezOne.className} text-left text-xl font-bold text-text-primary`,
               )}
             >
               {siteConfig.name}
@@ -218,7 +175,7 @@ const MobileMenu = () => {
           <li>
             <Link href="/">
               <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
-                Books
+                Stories
               </span>
             </Link>
           </li>
@@ -249,7 +206,7 @@ const MobileMenu = () => {
           <Link href="/">
             <Button className="w-full gap-2" variant="ghost-link">
               <Plus size={18} />
-              <span>Write a book</span>
+              <span>Write a story</span>
             </Button>
           </Link>
           <Link href="/auth/login">

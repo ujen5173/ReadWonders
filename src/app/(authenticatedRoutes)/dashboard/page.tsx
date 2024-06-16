@@ -1,6 +1,9 @@
+import { Suspense } from "react";
+import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
 import TopPicks from "~/app/(landing-page)/_components/top-picks";
-import BooksArea from "~/components/sections/books-area";
+import { LoadingColumn, LoadingRow } from "~/components/Cardloading";
 import Footer from "~/components/sections/footer";
+import StoriesArea from "~/components/sections/stories-area";
 import { getServerUser } from "~/utils/auth";
 import ReadingList from "./_components/reading-list";
 
@@ -10,9 +13,9 @@ const Dashboard = async () => {
   return (
     <>
       <section className="w-full">
-        <div className="container px-4 pb-6 pt-12">
+        <div className="mx-auto w-full max-w-[1440px] px-4 pb-6 pt-12">
           <div className="flex items-center justify-between">
-            <h1 className="text-5xl font-semibold text-primary">
+            <h1 className="text-4xl font-semibold text-primary">
               Welcome home, {user?.user_metadata.full_name}!
             </h1>
           </div>
@@ -20,13 +23,24 @@ const Dashboard = async () => {
       </section>
 
       <section className="w-full">
-        <div className="container flex flex-col gap-4 border-b border-border px-4 py-8 lg:flex-row">
-          <BooksArea title="Current Reads" carasoul={false} perRow={3} />
-          <ReadingList perRow={3} />
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 border-b border-border px-4 py-8 lg:flex-row">
+          <Suspense fallback={<LoadingColumn />}>
+            <StoriesArea title="Current Reads" carasoul={false} perRow={3} />
+          </Suspense>
+
+          <Suspense fallback={<LoadingColumn />}>
+            <ReadingList perRow={3} />
+          </Suspense>
         </div>
       </section>
-      {/* <FeaturedAndLatest /> */}
-      <TopPicks />
+
+      <Suspense fallback={<LoadingRow />}>
+        <TopPicks />
+      </Suspense>
+
+      <Suspense fallback={<LoadingRow />}>
+        <FeaturedAndLatest />
+      </Suspense>
       <Footer />
     </>
   );

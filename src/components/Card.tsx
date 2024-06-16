@@ -1,30 +1,89 @@
+import { BookOpen, Bookmark, Eye, LayoutList, Star } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { type FC } from "react";
-import { cardHeight, cardWidth } from "~/server/constants";
+import { nunito } from "~/config/font";
 import { type TCard } from "~/types";
+import { formatNumber, formatReadingTime } from "~/utils/helpers";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
-const Card: FC<{ details: TCard }> = ({ details }) => {
+const Card = ({ details }: { details: TCard }) => {
   return (
-    <Link
-      href={"/book/" + details.slug}
-      passHref
-      className="mx-auto max-w-[270px] flex-1"
+    <div
+      className={`flex gap-4 rounded-md border border-border bg-white p-2 ${nunito.className}`}
     >
-      <Image
-        className="mb-2 min-h-96 w-auto rounded-lg border border-border object-cover"
-        src={details.thumbnail}
-        width={cardWidth}
-        height={cardHeight}
-        alt={details.thumbnail}
-      />
-      <div>
-        <h1 className="text-md font-bold text-slate-800">{details.title}</h1>
-        <p className="text-sm font-medium text-slate-600">
-          {details.author.name}
-        </p>
+      <div className="h-full w-48 overflow-hidden rounded-md">
+        <Image
+          src={details.thumbnail}
+          alt={details.title}
+          width={130}
+          className="h-full w-full rounded-md object-cover"
+          height={100}
+        />
       </div>
-    </Link>
+
+      <div className="relative flex-1 py-2">
+        <div className="absolute right-0 top-0">
+          <button>
+            <Bookmark size={22} />
+          </button>
+        </div>
+
+        <h1 className="mb-4 text-xl font-bold text-foreground">
+          {details.title}
+        </h1>
+
+        <div className="mb-4 flex items-center gap-2">
+          <Badge>Mature</Badge>
+          <Badge variant="green">On Going</Badge>
+        </div>
+
+        <div className="mb-2 flex items-center gap-2">
+          <div className="flex flex-col items-center px-2">
+            <div className="flex gap-2">
+              <Eye size={16} className="mt-1" />
+              <p>Reads</p>
+            </div>
+            <p className="font-bold">{formatNumber(details.reads)}</p>
+          </div>
+          <Separator orientation="vertical" className="h-8" />
+          <div className="flex flex-col items-center px-2">
+            <div className="flex gap-2">
+              <Star size={16} className="mt-1" />
+              <p>Likes</p>
+            </div>
+            <p className="font-bold">{formatNumber(details.reads / 4)}</p>
+          </div>
+          <Separator orientation="vertical" className="h-8" />
+          <div className="flex flex-col items-center px-2">
+            <div className="flex gap-2">
+              <LayoutList className="mt-1" size={16} />
+              <p>Chapters</p>
+            </div>
+            <p className="font-bold">{12}</p>
+          </div>
+          <Separator orientation="vertical" className="h-8" />
+          <div className="flex flex-col items-center px-2">
+            <div className="flex gap-2">
+              <BookOpen className="mt-1" size={16} />
+              <p>Time</p>
+            </div>
+            <p className="font-bold">{formatReadingTime(details.reads)}</p>
+          </div>
+        </div>
+
+        <p className="mb-4 text-foreground">
+          {details.description.length > 150
+            ? `${details.description.substr(0, 150)}...`
+            : details.description}
+        </p>
+
+        <div className="flex items-center gap-2">
+          <Button>Start Reading</Button>
+          <Button variant="secondary">Add to Reading List</Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

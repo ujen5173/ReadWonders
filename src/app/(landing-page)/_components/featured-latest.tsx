@@ -1,18 +1,18 @@
-import BooksArea from "~/components/sections/books-area";
+import StoriesArea from "~/components/sections/stories-area";
 
 const FeaturedAndLatest = () => {
   return (
     <section className="w-full">
-      <div className="container flex flex-col gap-4 border-b border-border px-4 py-8 lg:flex-row">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-4 border-b border-border px-4 py-8 lg:flex-row">
         {/* <Featured /> */}
-        <BooksArea
+        <StoriesArea
           title="Featured"
           // data={featuredStories}
           carasoul={false}
           perRow={3}
         />
         {/* <Latest /> */}
-        <BooksArea
+        <StoriesArea
           title="Latest"
           // data={latestStories}
           carasoul={false}

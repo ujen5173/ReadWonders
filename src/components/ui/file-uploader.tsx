@@ -146,12 +146,17 @@ export function FileUploader({
             {...dropzoneProps}
           >
             <input {...getInputProps()} />
+
             {!!uploadedFile && !!uploadedFile.url ? (
               <>
-                <div className={cn(imageLoad ? "block" : "hidden")}>
-                  <Skeleton className="h-[383px] w-[320px] rounded-xl" />
+                <div
+                  className={cn(
+                    imageLoad ? "block" : "hidden",
+                    "absolute left-0 top-0 h-full w-full",
+                  )}
+                >
+                  <Skeleton className="h-full min-h-[383px] w-full rounded-xl" />
                 </div>
-
                 <Image
                   onLoadingComplete={() => setImageLoad((prev) => !prev)}
                   src={uploadedFile.url}

@@ -14,47 +14,8 @@ import read from "reading-time";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, slugy } from "~/server/constants";
+import { mainSchema } from "~/types/zod";
 import { authorProcedure, createTRPCRouter, publicProcedure } from "../trpc";
-
-const JsonContentZod: z.ZodType<unknown> = z.lazy(() =>
-  z
-    .object({
-      type: z.string().optional(),
-      attrs: z.record(z.any()).optional(),
-      content: z.array(JsonContentZod).optional(), // Recursive structure
-      marks: z
-        .array(
-          z
-            .object({
-              type: z.string(),
-              attrs: z.record(z.any()).optional(),
-            })
-            .passthrough(),
-        )
-        .optional(),
-      text: z.string().optional(),
-    })
-    .passthrough(),
-);
-
-const mainSchema = z
-  .object({
-    type: z.string().optional(),
-    attrs: z.record(z.any()).optional(),
-    content: z.array(JsonContentZod).optional(),
-    marks: z
-      .array(
-        z
-          .object({
-            type: z.string(),
-            attrs: z.record(z.any()).optional(),
-          })
-          .passthrough(),
-      )
-      .optional(),
-    text: z.string().optional(),
-  })
-  .passthrough();
 
 export const chapterRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -64,14 +25,14 @@ export const chapterRouter = createTRPCRouter({
   getChapters: publicProcedure
     .input(
       z.object({
-        bookId: z.string(),
+        storyId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
         const chapters = await ctx.db.chapter.findMany({
           where: {
-            bookId: input.bookId,
+            storyId: input.storyId,
           },
           take: limit,
           select: {
@@ -89,16 +50,43 @@ export const chapterRouter = createTRPCRouter({
       }
     }),
 
-  getSingeChapter: publicProcedure
+  getSingeChapterById: publicProcedure
     .input(
       z.object({
-        id: z.string(),
+        chapterId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
         const chapter = await ctx.db.chapter.findFirst({
-          where: { id: input.id },
+          where: { id: input.chapterId },
+        });
+
+        if (!chapter) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Chapter not found",
+          });
+        }
+
+        return chapter;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch chapter",
+        });
+      }
+    }),
+  getSingeChapter: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const chapter = await ctx.db.chapter.findFirst({
+          where: { slug: input.slug },
         });
 
         if (!chapter) {
@@ -122,7 +110,7 @@ export const chapterRouter = createTRPCRouter({
   new: authorProcedure
     .input(
       z.object({
-        bookId: z.string(),
+        storyId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -175,7 +163,7 @@ export const chapterRouter = createTRPCRouter({
             time: time.minutes,
             content: rest.content as JSONContent,
           },
-          select: { 
+          select: {
             slug: true,
           },
         });

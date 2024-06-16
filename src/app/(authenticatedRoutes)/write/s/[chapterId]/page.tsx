@@ -38,8 +38,8 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const router = useRouter();
   const { replace } = router;
 
-  const { data: chapter } = api.chapter.getSingeChapter.useQuery({
-    id: chapterId,
+  const { data: chapter } = api.chapter.getSingeChapterById.useQuery({
+    chapterId: chapterId,
   });
 
   const [preparingUpload, setPreparingUpload] = useState(false);
@@ -63,13 +63,14 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const handleFileUpload = useCallback(async () => {
     if (!uploadedFile || !chapter) return;
     setFileData({ url: uploadedFile.url, name: uploadedFile.name });
-    const draftData = await loadDraft(chapter.bookId, chapter.id);
+    const draftData = await loadDraft(chapter.storyId, chapter.id);
 
     if (draftData) {
       await autosaveContent({
         draftKey: "cover_image",
+
         value: { name: uploadedFile.name, url: uploadedFile.url },
-        bookId: chapter.bookId,
+        storyId: chapter.storyId,
         chapterId: chapter.id,
       });
     }
@@ -81,7 +82,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
 
   const loadFormData = useCallback(async () => {
     if (!chapter) return;
-    const draft = await loadDraft(chapter.bookId, chapter.id);
+    const draft = await loadDraft(chapter.storyId, chapter.id);
 
     if (draft) {
       if (draft.cover_image) setFileData(draft.cover_image);
@@ -95,7 +96,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
 
   const handleImageLoad = useCallback(async () => {
     if (!chapter) return;
-    const draft = await loadDraft(chapter.bookId, chapter.id);
+    const draft = await loadDraft(chapter.storyId, chapter.id);
 
     if (draft?.cover_image && !fileData) setFileData(draft.cover_image);
   }, [chapter, fileData]);
@@ -116,7 +117,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       return;
     }
 
-    const draftData = await loadDraft(chapter.bookId, chapter.id);
+    const draftData = await loadDraft(chapter.storyId, chapter.id);
 
     if (!draftData?.content) {
       toast({ title: "Please write something before publishing." });
@@ -132,7 +133,9 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     });
 
     if (type === "NEXT") {
-      const newChapterId = await newChapterMutation({ bookId: chapter.bookId });
+      const newChapterId = await newChapterMutation({
+        storyId: chapter.storyId,
+      });
 
       if (newChapterId) {
         replace(`/write/s/${newChapterId}`);
@@ -151,15 +154,15 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       autosaveContent({
         draftKey: "title",
         value: e,
-        bookId: chapter.bookId,
+        storyId: chapter.storyId,
         chapterId: chapter.id,
       });
     }
   }, 1500);
 
-  if (!chapter) {
-    return null;
-  }
+  // if (!chapter) {
+  //   return null;
+  // }
 
   return (
     <>
@@ -224,7 +227,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
               <CustomEditor
                 details={{
                   chapterId,
-                  bookId: chapter.bookId,
+                  storyId: "chapter.storyId",
                   title: form.getValues("title"),
                   cover_image: fileData || { url: "", name: "" },
                 }}

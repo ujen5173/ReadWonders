@@ -60,7 +60,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
     autosaveContent({
       draftKey: "content",
       value: JSON.stringify(json),
-      bookId: details.bookId,
+      storyId: details.storyId,
       chapterId: details.chapterId,
     });
 
@@ -70,7 +70,10 @@ const CustomEditor = ({ details }: { details: Details }) => {
   useEffect(() => {
     void (async () => {
       try {
-        const draftContent = await loadDraft(details.bookId, details.chapterId);
+        const draftContent = await loadDraft(
+          details.storyId,
+          details.chapterId,
+        );
 
         if (!draftContent) {
           setInitialContent(defaultEditorContent);

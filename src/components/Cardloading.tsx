@@ -1,0 +1,42 @@
+import { cardHeight, cardWidth } from "~/server/constants";
+import { Skeleton } from "./ui/skeleton";
+
+const LoadingRow = () => {
+  return (
+    <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">
+      <Skeleton className="mb-4 h-8 w-56" />
+      <div className="flex w-full items-center justify-between gap-2">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton
+            key={i}
+            style={{
+              width: cardWidth + "px",
+              height: cardHeight + "px",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const LoadingColumn = () => {
+  return (
+    <div>
+      <Skeleton className="mb-4 h-8 w-56" />
+      <div className="flex w-full items-center justify-between gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton
+            key={i}
+            style={{
+              width: cardWidth + "px",
+              height: cardHeight + "px",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export { LoadingColumn, LoadingRow };

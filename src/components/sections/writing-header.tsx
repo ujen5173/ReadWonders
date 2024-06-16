@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 
 const WritingHeader = ({
@@ -14,6 +14,8 @@ const WritingHeader = ({
   nextChapterLoading: boolean;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
+
   const searchParams = useSearchParams().get("title")?.trim() ?? "";
 
   return (
@@ -33,8 +35,8 @@ const WritingHeader = ({
           <div>
             <p className="text-xl font-bold text-text-secondary">
               {searchParams.length > 0
-                ? `Writing: ${searchParams}`
-                : "Write a new book"}
+                ? searchParams
+                : `${pathname.includes("/write/s") ? "Untitled Chapter" : "Untitled Story"}`}
             </p>
           </div>
         </div>

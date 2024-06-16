@@ -1,16 +1,17 @@
-import BooksArea from "~/components/sections/books-area";
+import StoriesArea from "~/components/sections/stories-area";
 
 const TopPicks = () => {
-  // const topPicks = api.book.topPicks.query({});
+  // const topPicks = api.story.topPicks.query({});
 
   return (
     <section className="w-full">
-      <div className="container border-b border-border px-4 py-8">
-        <BooksArea
+      <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">
+        <StoriesArea
           title="Top Picks on different genres"
           // data={topPicks}
           carasoul={true}
           perRow={6}
+          skipRow={14}
         />
       </div>
     </section>

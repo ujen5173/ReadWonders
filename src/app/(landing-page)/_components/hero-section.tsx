@@ -9,7 +9,7 @@ import { cn } from "~/utils/cn";
 const HeroSection = () => {
   return (
     <section className="w-full">
-      <div className="container flex flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
+      <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
         <div className="py-12">
           <h1
             className={cn(
@@ -71,7 +71,7 @@ const HeroSection = () => {
                 <Image
                   key={i}
                   src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                  alt="A person reading a book"
+                  alt="A person reading a story"
                   className="rounded-lg object-cover"
                   width={cardWidth}
                   height={cardHeight}
@@ -85,7 +85,7 @@ const HeroSection = () => {
                 <Image
                   key={i}
                   src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                  alt="A person reading a book"
+                  alt="A person reading a story"
                   className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
                   width={cardWidth}
                   height={cardHeight}
@@ -99,7 +99,7 @@ const HeroSection = () => {
                 <Image
                   key={i}
                   src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                  alt="A person reading a book"
+                  alt="A person reading a story"
                   className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
                   width={cardWidth}
                   height={cardHeight}
@@ -113,7 +113,7 @@ const HeroSection = () => {
                 <Image
                   key={i}
                   src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                  alt="A person reading a book"
+                  alt="A person reading a story"
                   className={`rounded-lg object-cover ${i === 0 ? "-mb-24" : ""}`}
                   width={cardWidth}
                   height={cardHeight}

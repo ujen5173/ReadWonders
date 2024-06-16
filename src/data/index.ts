@@ -1,248 +1,459 @@
 import { type TCard } from "~/types";
 
-export const featuredStories: TCard[] = [
+export const allStories: TCard[] = [
   {
-    id: "1",
-    title: "The Crimson Shard",
-    slug: "the-crimson-shard",
+    id: "bf67b9ac-5602-46eb-a79e-3d50bc0e0b5a",
+    title: "Our Manager Twice x Male Reader",
+    slug: "our-manager-twice-male-reader",
     description:
-      "A young sorcerer must uncover the secrets of a mysterious crimson shard to save her kingdom from an ancient evil.",
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-    tags: ["fantasy", "adventure", "magic"],
+      "A useless 23 year old who just lives with his bestfriend who workouts eat sleeps and repeat but what happens when he desperately needs a job and lands on the door of JYP Entertainment?",
+    thumbnail:
+      "https://pbs.twimg.com/media/FEODNKJVcAAu4o-?format=jpg&name=large",
+    tags: [],
     isPremium: false,
-
+    isMature: true,
+    category: "Drama",
+    reads: 44600,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "b015b8a3-0bf0-4ea2-a87e-d7faa853ee4f",
+    title: "Collab to Love",
+    slug: "collab-to-love",
+    description:
+      "Twice is a world wide known girl group...\nwe all know who they are\n\nBut the world doesn't know you. \nA dead beat local artist that has been looking for a big break. \n\nBut when members of Twice takes liking to your music and asks you to help them with their comeback, will you help them or will you continue to pursue your own dreams as a solo artist, or is there even a chance to fall in love. And finding out that a certain someone from the past, blocked by your memory will be coming back into your life, how will you handle a forgotten friendship.",
+    thumbnail:
+      "https://i.pinimg.com/564x/9f/54/51/9f5451f696774fc8f7f8427b0ab03162.jpg",
+    tags: [
+      "jihyo",
+      "mina",
+      "momo",
+      "kpop",
+      "twice",
+      "twicexreaders",
+      "tzuyu",
+      "nayeon",
+    ],
+    isPremium: false,
+    isMature: true,
+    category: "Drama",
+    reads: 44600,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "a1b2c3d4-5678-9101-1121-314151617181",
+    title: "Exploring the Cosmos",
+    slug: "exploring-the-cosmos",
+    description:
+      "A journey through the universe, exploring the wonders of the cosmos.",
+    thumbnail:
+      "https://i.pinimg.com/140x140_RS/8e/b1/28/8eb1284c7152634a7629bf6e46280f12.jpg",
+    tags: [],
+    isPremium: true,
     isMature: false,
-    category: "Fiction",
-    reads: 12345,
+    category: "Science",
+    reads: 1500,
     author: {
-      name: "Jihyo",
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
+    chapter: [],
   },
   {
-    id: "2",
-    title: "Cyber Syndicate",
-    slug: "cyber-syndicate",
+    id: "b2c3d4e5-6789-1011-1213-141516171819",
+    title: "Mastering Python",
+    slug: "mastering-python",
     description:
-      "In a world ruled by megacorporations, a group of hackers fight for freedom and justice against the oppressive system.",
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-    tags: ["cyberpunk", "thriller", "hacking"],
-    isPremium: true,
-
-    isMature: true,
-    category: "Science Fiction",
-    reads: 8976,
+      "An advanced guide to mastering the Python programming language.",
+    thumbnail:
+      "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Programming",
+    reads: 2300,
     author: {
-      name: "Jihyo",
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
+    chapter: [],
   },
   {
-    id: "ash45hdc",
-    title: "The Enchanting Isle",
-    slug: "the-enchanting-isle",
+    id: "c3d4e5f6-7890-1112-1314-151617181920",
+    title: "Healthy Eating Habits Part 2",
+    slug: "healthy-eating-habits-part-2",
     description:
-      "A captivating tale of adventure and magic on a mystical island.",
-    tags: ["fantasy", "adventure", "magic"],
-    category: "Young Adult",
-    reads: 123,
-    isPremium: true,
-
-    isMature: true,
+      "Tips and tricks for maintaining a healthy diet and lifestyle.",
+    thumbnail:
+      "https://i.pinimg.com/236x/7a/2a/95/7a2a95721f9017947ec7915d04e12eab.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Health",
+    reads: 900,
     author: {
-      name: "Jihyo",
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
+    chapter: [],
+  },
+  {
+    id: "871a4ed2-bd69-4593-b9e7-3b41f0862ceb",
+    title: "Adventures in Cooking Part 2",
+    slug: "adventures-in-cooking-part-2",
+    description: "Delicious recipes and cooking tips for culinary enthusiasts.",
+    thumbnail:
+      "https://i.pinimg.com/236x/c0/dc/6e/c0dc6ecd09dbe3ec793fa1b57db14e5f.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Cooking",
+    reads: 1850,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "be350450-3415-4790-855a-191260bda6c1",
+    title: "Investing 101 Part 2",
+    slug: "investing-101-part-2",
+    description: "A beginner's guide to investing and financial management.",
+    thumbnail:
+      "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Finance",
+    reads: 1200,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "9f2b0766-0c23-4bda-b134-b3c1fd64411a",
+    title: "Digital Art Techniques",
+    slug: "digital-art-techniques",
+    description:
+      "A guide to creating stunning digital artwork using various techniques.",
+    thumbnail:
+      "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Art",
+    reads: 600,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "e9f73b0c-6f96-453a-8ad4-daa6a30dd8be",
+    title: "The World of Quantum Physics",
+    slug: "the-world-of-quantum-physics",
+    description:
+      "An exploration into the fascinating world of quantum physics.",
+    thumbnail:
+      "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Science",
+    reads: 1750,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "a35690c3-8e91-48f8-9052-c524682bf990",
+    title: "Traveling the World",
+    slug: "traveling-the-world",
+    description: "A comprehensive guide to traveling around the world.",
+    thumbnail:
+      "https://i.pinimg.com/474x/5c/1a/bc/5c1abcdf90cea86d253b259d48aa645e.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Travel",
+    reads: 3000,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "bb89c551-5acb-492e-9d5f-98877d8d3cb9",
+    title: "Mindfulness and Meditation",
+    slug: "mindfulness-and-meditation",
+    description:
+      "Techniques and benefits of practicing mindfulness and meditation.",
+    thumbnail:
+      "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Wellness",
+    reads: 800,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "5d4e6047-d47f-4fa0-99b6-ad8e923b6cf6",
+    title: "Building Your First Website",
+    slug: "building-your-first-website",
+    description:
+      "A step-by-step guide to building and launching your first website.",
+    thumbnail:
+      "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Technology",
+    reads: 1400,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "27b67330-b7a5-4f72-b7eb-da081a906bac",
+    title: "History of Ancient Civilizations",
+    slug: "history-of-ancient-civilizations",
+    description:
+      "An in-depth look at the history and culture of ancient civilizations.",
+    thumbnail:
+      "https://i.pinimg.com/236x/7a/2a/95/7a2a95721f9017947ec7915d04e12eab.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "History",
+    reads: 950,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "acb122cd-9e6d-4f6e-bc9c-883b71bb49c6",
+    title: "Exploring the Cosmos Part 2",
+    slug: "exploring-the-cosmos-part-2",
+    description:
+      "A journey through the universe, exploring the wonders of the cosmos.",
+    thumbnail:
+      "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Science",
+    reads: 1500,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "a6a06893-eac1-4281-985f-f6e3ae6cc6d7",
+    title: "Mastering Python Part 2",
+    slug: "mastering-python-part-2",
+    description:
+      "An advanced guide to mastering the Python programming language.",
+    thumbnail:
+      "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Programming",
+    reads: 2300,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "f118ce56-fc79-4724-8ef1-1aa09aa94bca",
+    title: "Healthy Eating Habits",
+    slug: "healthy-eating-habits",
+    description:
+      "Tips and tricks for maintaining a healthy diet and lifestyle.",
+    thumbnail:
+      "https://i.pinimg.com/474x/97/71/42/9771427a21f1ffa610169a725f861dcf.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Health",
+    reads: 900,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "4d7194a3-c674-4915-b4e8-73770a73d7f7",
+    title: "Adventures in Cooking",
+    slug: "adventures-in-cooking",
+    description: "Delicious recipes and cooking tips for culinary enthusiasts.",
+    thumbnail:
+      "https://i.pinimg.com/236x/fb/6c/9f/fb6c9f8c5fb4cb48054a1d59fb570179.jpg",
+    tags: [],
+    isPremium: true,
+    isMature: false,
+    category: "Cooking",
+    reads: 1850,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "66417121-3dc7-4f7a-96f8-9e65d69718ce",
+    title: "Investing 101",
+    slug: "investing-101",
+    description: "A beginner's guide to investing and financial management.",
+    thumbnail:
+      "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Finance",
+    reads: 1200,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "5008d8f6-856c-41ff-a9c0-457598220d55",
+    title: "Gardening for Beginners",
+    slug: "gardening-for-beginners",
+    description: "Simple and effective tips for starting your own garden.",
+    thumbnail:
+      "https://i.pinimg.com/564x/9a/dd/ba/9addba73b934854f9e03dc158399fd83.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "Hobbies",
+    reads: 110000,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "55332c5c-d90c-467c-b4e1-fef4373d6ad9",
+    title: "More 2YEON Oneshots",
+    slug: "more-2yeon-oneshots",
+    description:
+      "Just a collection of oneshots of my favorite Twice ship. Expect lots of fluff and maybe a little bit of angst, but absolutely no deaths because I hate when that happens. Let 2yeon live!\n\n\nHighest Rank\n#1 Jeongyeon 🥇\n#1 2yeon 🥇\n#2 najeong \n#1 imnayeon 🥇 \n#1 yoojeongyeon 🥇 \n#5 Jihyo\n#110 Twice (😮)\n#111 kpopfanfic",
+    thumbnail:
+      "https://i.pinimg.com/564x/7e/8c/59/7e8c59c2941b5030d081a6b713524c15.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: true,
+    category: "Programming",
+    reads: 6516546,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "f989dcc7-a4e0-41ee-ab26-5f29bd20678b",
+    title: "The 6 Worlds || Twice X Reader",
+    slug: "the-6-worlds-twice-x-reader",
+    description:
+      'There are a total of six worlds, captain" \n\nThe captain of the strongest knight order has been resurrected into another world with no memories of the life she had lived before her death.\n\nWill she be able to survive when she is forced to go back to her original world?\n\n-\n\nGenre: Fanfiction and fantasy\n\nTwice X fem!Reader',
+    thumbnail: "https://img.wattpad.com/cover/202484599-512-k683626.jpg",
+    tags: [],
+    isPremium: false,
+    isMature: false,
+    category: "History",
+    reads: 6987621,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
+  },
+  {
+    id: "29570f03-4d59-4d0d-9efc-6a576abcbddb",
+    title: "Twice's Private Manager",
+    slug: "twice-private-manager",
+    description:
+      "You are hired by JYPE to be a manager for Twice, in charge of their more personal requirements. For fear of scandals, Twice members are not allowed to have relationships, so your job requires you to fulfill their intimate and emotional needs.\n\nHeavily biased towards the J-line, but will contain smut for most members.",
+    thumbnail:
+      "https://pbs.twimg.com/media/GP3ZxtQboAAj0GZ?format=jpg&name=900x900",
+    tags: [
+      "nayeon",
+      "nahyo",
+      "tzuyu",
+      "cheayoung",
+      "twice",
+      "kpop",
+      "jihyo",
+      "mina",
+      "momo",
+    ],
+    isPremium: false,
+    isMature: true,
+    category: "Finance",
+    reads: 5173,
+    author: {
+      name: "Ujen Basi",
+      profile:
+        "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
+    },
+    chapter: [],
   },
 ];
-
-export const latestStories: TCard[] = [
-  {
-    id: "Asdcq3rhewrj4g",
-    title: "The Painted Veil",
-    slug: "the-painted-veil",
-    description:
-      "A historical romance set against the backdrop of a forbidden love affair.",
-    tags: ["historical fiction", "romance", "drama"],
-    category: "Adult",
-    reads: 423,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcqfgn3r4g",
-
-    title: "Culinary Capers",
-    slug: "culinary-capers",
-    description:
-      "A cozy mystery with a dash of humor, following a chef who solves culinary crimes.",
-    tags: ["mystery", "comedy", "foodie"],
-    category: "Adult",
-    reads: 878,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-];
-
-export const topPicks: TCard[] = [
-  {
-    id: "Asdc3452yhq3r4g",
-
-    title: "Starlight Sonata",
-    slug: "starlight-sonata",
-    description:
-      "A heartwarming story of music, love, and following your dreams.",
-    tags: ["romance", "music", "drama"],
-    category: "Contemporary",
-    reads: 456,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcq3wegr4g",
-    title: "Codex of Shadows",
-    slug: "codex-of-shadows",
-    description:
-      "A thrilling urban fantasy about a hidden world of magic and mystery.",
-    tags: ["urban fantasy", "mystery", "magic"],
-    category: "Adult",
-    isPremium: true,
-
-    isMature: true,
-    reads: 789,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcq3sdhfr4g",
-    title: "Tales from the Wildwood",
-    slug: "tales-from-the-wildwood",
-    description:
-      "A collection of enchanting folktales passed down through generations.",
-    tags: ["fantasy", "folklore", "short stories"],
-    category: "All Ages",
-    reads: 101,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcq3r4g",
-    title: "The Cybernetic Heart",
-    slug: "the-cybernetic-heart",
-    description:
-      "A dystopian sci-fi novel exploring love, loss, and humanity in a technological age.",
-    tags: ["science fiction", "dystopia", "romance"],
-    category: "Young Adult",
-    reads: 345,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcqacw43r4g",
-    title: "Whispers of the Bayou",
-    slug: "whispers-of-the-bayou",
-    description: "A chilling mystery set in the depths of the Louisiana swamp.",
-    tags: ["mystery", "gothic", "supernatural"],
-    category: "Adult",
-    reads: 258,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-  {
-    id: "Asdcq314trr4g",
-    title: "Astral Academy",
-    slug: "astral-academy",
-    description:
-      "Welcome to Astral Academy, where students train to master their psychic abilities.",
-    tags: ["fantasy", "paranormal", "young adult"],
-    category: "Young Adult",
-    reads: 678,
-    isPremium: true,
-
-    isMature: true,
-    author: {
-      name: "Jihyo",
-    },
-    thumbnail: "https://img.wattpad.com/cover/289021793-512-k747088.jpg",
-  },
-];
-
-export const allBooks: TCard[] = Array(12)
-  .fill(0)
-  .map((_, i) => {
-    const folderName = [
-      {
-        name: "hero-stories",
-        files: ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"],
-      },
-      {
-        name: "featured-stories",
-        files: ["1.jpg", "2.jpg", "3.jpg"],
-      },
-      { name: "latest-stories", files: ["1.jpg", "2.jpg", "3.jpg"] },
-      {
-        name: "top-picks",
-        files: [
-          "adventure.jpg",
-          "humor.jpg",
-          "mystery.jpg",
-          "science-fiction.jpg",
-          "teen-fiction.jpg",
-        ],
-      },
-    ][Math.floor(Math.random() * 3 + 1)];
-
-    const fileName =
-      folderName!.files[Math.floor(Math.random() * folderName!.files.length)];
-
-    return {
-      id: i.toString(),
-      thumbnail: `/${folderName!.name}/${fileName}`,
-      isMature: false,
-      slug: "collab-to-love448100-624960269890-3873890691210-7371520",
-      title: "The Last of the Dragons-Set 1",
-      tags: ["fantasy", "adventure", "magic"],
-      isPremium: false,
-
-      category: "Fiction",
-      reads: 12345,
-      description:
-        "A young sorcerer must uncover the secrets of a mysterious crimson shard to save her kingdom from an ancient evil.",
-      author: {
-        name: "By Dragonfly🇨🇦",
-      },
-    };
-  });
 
 export const genres = [
   { name: "All" },
