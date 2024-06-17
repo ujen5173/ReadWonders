@@ -20,13 +20,10 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
       style={{
         width: cardWidth + "px",
       }}
+      onClick={() => setActiveBook(details)}
       className="group relative"
     >
-      <Link
-        onClick={() => setActiveBook(details)}
-        href={"/story/" + details.slug}
-        passHref
-      >
+      <Link href={"/story/" + details.slug} passHref>
         <div className="relative">
           <Image
             className="mb-2 rounded-lg border border-border object-cover"

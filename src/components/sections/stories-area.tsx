@@ -26,10 +26,6 @@ const StoriesArea: FC<Props> = async ({
     skip: skipRow,
   });
 
-  const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-  await wait(5000);
-
   return (
     <section className="w-full">
       <div>

@@ -6,7 +6,7 @@ const LoadingRow = () => {
     <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">
       <Skeleton className="mb-4 h-8 w-56" />
       <div className="flex w-full items-center justify-between gap-2">
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton
             key={i}
             style={{
@@ -25,7 +25,7 @@ const LoadingColumn = () => {
     <div>
       <Skeleton className="mb-4 h-8 w-56" />
       <div className="flex w-full items-center justify-between gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton
             key={i}
             style={{
