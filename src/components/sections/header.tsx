@@ -77,7 +77,7 @@ const Header = () => {
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-4">
-          <form className="w-6/12" onSubmit={handleSubmit}>
+          <form className="hidden w-6/12 md:block" onSubmit={handleSubmit}>
             <Input ref={inputRef} placeholder="Search a story..." />
           </form>
 
