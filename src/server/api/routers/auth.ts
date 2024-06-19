@@ -4,7 +4,6 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { type SupabaseUser } from "~/types";
 
 export const authRouter = createTRPCRouter({
   getProfile: privateProcedure.query(async ({ ctx }) => {
@@ -12,16 +11,16 @@ export const authRouter = createTRPCRouter({
       where: {
         id: ctx.user.id,
       },
-      include: {
-        author: {
-          select: {
-            rawUserMetaData: true,
-          },
-        },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        name: true,
+        profile: true,
       },
     });
 
-    return user.author.rawUserMetaData as SupabaseUser | null;
+    return user;
   }),
 
   userProfile: publicProcedure
@@ -40,8 +39,9 @@ export const authRouter = createTRPCRouter({
             include: {
               chapter: {
                 select: {
-                  title: true,
                   id: true,
+                  title: true,
+                  slug: true,
                   createdAt: true,
                 },
               },
@@ -57,5 +57,31 @@ export const authRouter = createTRPCRouter({
       });
 
       return userDetails;
+    }),
+
+  readingLists: publicProcedure
+    .input(z.object({ authorId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        console.log({ data: input.authorId });
+        const readingLists = await ctx.db.readingList.findMany({
+          where: {
+            authorId: input.authorId,
+          },
+          include: {
+            stories: {
+              select: {
+                thumbnail: true,
+              },
+            },
+          },
+        });
+
+        return readingLists;
+      } catch (err) {
+        console.log({ err });
+        // throw new Error("Error fetching reading lists");
+        return null;
+      }
     }),
 });

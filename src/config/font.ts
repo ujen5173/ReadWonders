@@ -1,10 +1,10 @@
 import {
   Inter,
+  Merienda,
   Merriweather,
   Nunito,
   Open_Sans,
-  Suez_One,
-  Urbanist,
+  Rubik,
   Work_Sans,
 } from "next/font/google";
 
@@ -13,9 +13,9 @@ export const fontInter = Inter({
   variable: "--font-inter",
 });
 
-export const fontUrbanist = Urbanist({
+export const fontUrbanist = Rubik({
   subsets: ["latin"],
-  variable: "--font-urbanist",
+  variable: "--font-rubik",
 });
 
 export const nunito = Nunito({
@@ -34,10 +34,10 @@ export const caveat = Merriweather({
   variable: "--font-caveat",
 });
 
-export const suezOne = Suez_One({
+export const suezOne = Merienda({
   subsets: ["latin"],
   variable: "--font-suez-one",
-  weight: ["400"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const contentFont = Open_Sans({

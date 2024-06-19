@@ -33,9 +33,9 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               height="860"
               style={{
                 width: cardWidth * 2 + "px",
-                height: cardHeight * 1.75 + "px",
+                height: cardHeight * 2.1 + "px",
               }}
-              className="w-full overflow-hidden rounded-lg object-cover shadow-2xl"
+              className="w-full overflow-hidden rounded-lg object-fill shadow-2xl"
             />
             <div className="flex w-full flex-col gap-4">
               <Button className="w-full" variant="default">

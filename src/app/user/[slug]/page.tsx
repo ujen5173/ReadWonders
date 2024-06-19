@@ -31,10 +31,10 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
             <div>
               <div className="mb-1 flex items-baseline gap-1">
-                <h1 className="mb-2 text-4xl font-black text-primary">
+                <h1 className="mb-2 text-4xl font-semibold text-primary">
                   {userDetails.name!}
                 </h1>
-                <span className="text-center text-2xl font-bold text-slate-600">
+                <span className="text-center text-2xl font-medium text-slate-600">
                   @{userDetails.username!}
                 </span>
               </div>

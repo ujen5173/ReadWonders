@@ -30,6 +30,7 @@ export const storyRouter = createTRPCRouter({
                 title: true,
                 id: true,
                 createdAt: true,
+                slug: true,
               },
             },
             author: {
@@ -197,6 +198,7 @@ export const storyRouter = createTRPCRouter({
                 title: true,
                 id: true,
                 createdAt: true,
+                slug: true,
               },
             },
             author: {
@@ -385,6 +387,62 @@ export const storyRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete story, please try again",
+        });
+      }
+    }),
+
+  addToReadingList: privateProcedure
+    .input(
+      z.object({
+        readingListId: z.string(),
+        storyId: z.string(),
+        newListTitle: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const exisitingReadingList = await ctx.db.readingList.findFirst({
+          where: {
+            id: input.readingListId,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (!exisitingReadingList) {
+          await ctx.db.readingList.create({
+            data: {
+              title: input.newListTitle ?? "New Reading lists",
+              stories: {
+                connect: {
+                  id: input.storyId,
+                },
+              },
+              id: input.readingListId,
+              authorId: ctx.user.id,
+            },
+          });
+        } else {
+          await ctx.db.readingList.update({
+            where: {
+              id: input.readingListId,
+            },
+            data: {
+              stories: {
+                connect: {
+                  id: input.storyId,
+                },
+              },
+            },
+          });
+        }
+
+        return true;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to add story to reading list",
         });
       }
     }),

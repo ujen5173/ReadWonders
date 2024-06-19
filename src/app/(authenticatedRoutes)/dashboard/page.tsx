@@ -23,9 +23,9 @@ const Dashboard = async () => {
       </section>
 
       <section className="w-full">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 border-b border-border px-4 py-8 lg:flex-row">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 border-b border-border px-4 py-8 xl:flex-row">
           <Suspense fallback={<LoadingColumn />}>
-            <StoriesArea title="Current Reads" carasoul={false} perRow={3} />
+            <StoriesArea title="Current Reads" perRow={3} />
           </Suspense>
 
           <Suspense fallback={<LoadingColumn />}>

@@ -1,5 +1,30 @@
 import { type TCard } from "~/types";
 
+export const images = [
+  "https://bookcoverzone.com/logo1.jpg",
+  "https://bookcoverzone.com/images/Fiction_Menu_Banner.jpg",
+  "https://bookcoverzone.com/images/Non-Fiction_Menu_Banner.png",
+  "https://bookcoverzone.com/images/Customization_Menu_Banner.jpg",
+  "https://bookcoverzone.com/images/Keywords_Menu_Banner.jpg",
+  "https://bookcoverzone.com/logo1.jpg",
+  "https://bookcoverzone.com/img/hero-slider/ColumnBanner1.jpg",
+  "https://bookcoverzone.com/img/hero-slider/ColumnBanner2.jpg",
+  "https://bookcoverzone.com/img/hero-slider/01.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0031053.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029242.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023723.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0011342.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023926.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0021869.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028652.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028425.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0008138.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029453.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0024898.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030332.jpg",
+  "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028291.jpg",
+];
+
 export const allStories: TCard[] = [
   {
     id: "bf67b9ac-5602-46eb-a79e-3d50bc0e0b5a",

@@ -5,7 +5,7 @@ import { Separator } from "~/components/ui/separator";
 const NotFound = () => {
   return (
     <section className="w-full">
-      <div className="flex max-w-[1440px] items-center justify-center gap-4 px-4 py-32">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-center gap-4 px-4 py-32">
         <h1 className="text-5xl font-black">404</h1>
         <Separator orientation="vertical" className="h-20" />
         <div>

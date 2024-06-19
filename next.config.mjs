@@ -21,6 +21,12 @@ const config = {
         hostname: "i.pinimg.com",
       },
       {
+        hostname: "bookcoverzone.com",
+      },
+      {
+        hostname: "covers.bookcoverzone.com",
+      },
+      {
         hostname: "cdn.i-scmp.com",
       },
       {

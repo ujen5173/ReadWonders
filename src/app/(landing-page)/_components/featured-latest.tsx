@@ -5,24 +5,14 @@ import StoriesArea from "~/components/sections/stories-area";
 const FeaturedAndLatest = () => {
   return (
     <section className="w-full">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-4 border-b border-border px-4 py-8 lg:flex-row">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 border-b border-border px-2 py-8 xl:flex-row">
         {/* <Featured /> */}
         <Suspense fallback={<LoadingColumn />}>
-          <StoriesArea
-            title="Featured"
-            // data={featuredStories}
-            carasoul={false}
-            perRow={3}
-          />
+          <StoriesArea title="Featured" perRow={3} />
         </Suspense>
         {/* <Latest /> */}
         <Suspense fallback={<LoadingColumn />}>
-          <StoriesArea
-            title="Latest"
-            // data={latestStories}
-            carasoul={false}
-            perRow={3}
-          />
+          <StoriesArea title="Latest" perRow={3} />
         </Suspense>
       </div>
     </section>

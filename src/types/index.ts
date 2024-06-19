@@ -34,6 +34,7 @@ export type TCard = {
   chapter: {
     id: string;
     title: string | null;
+    slug: string | null;
     createdAt: Date;
   }[];
   author: {

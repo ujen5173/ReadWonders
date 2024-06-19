@@ -1,16 +1,16 @@
 "use client";
 
-import React, {
-  type ReactNode,
+import {
   createContext,
   useContext,
   useEffect,
   useState,
+  type ReactNode,
 } from "react";
 
 import { type Session, type User } from "@supabase/supabase-js";
-import { supabase } from "~/server/supabase/supabaseClient";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { supabase } from "~/server/supabase/supabaseClient";
 
 export const AuthContext = createContext<{
   user: User | null;
@@ -93,7 +93,7 @@ export const useUser = () => {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error("useUser must be used within a AuthContextProvider.");
+    throw new Error("User must be used within a AuthContextProvider.");
   }
 
   return context;

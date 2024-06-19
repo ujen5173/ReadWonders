@@ -330,35 +330,54 @@ model Profiles {
   email     String?
   createdAt DateTime @default(now()) @db.Timestamptz(6)
 
-  story       Story[]
-  bookmark    Bookmark[]
-  author      Users         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  recommended Recommended[]
+  stories      Story[]
+  bookmarks    Bookmark[]
+  recommended  Recommended[]
+  readingLists ReadingList[]
+  author       Users         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("profiles")
   @@schema("public")
 }
 
-model Story {
-  id          String        @id @default(uuid()) @db.Uuid
+model ReadingList {
+  id          String   @id @default(uuid()) @db.Uuid
+  authorId    String   @db.Uuid
   title       String
-  slug        String        @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  author  Profiles @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  stories Story[]
+
+  @@index([authorId])
+  @@map("reading_list")
+  @@schema("public")
+}
+
+model Story {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String   @unique
   description String
   thumbnail   String
   tags        String[]
-  isPremium   Boolean       @default(false)
-  isDeleted   Boolean       @default(false)
-  isMature    Boolean       @default(false)
+  isPremium   Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+  isMature    Boolean  @default(false)
   category    String?
-  reads       Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  authorId    String        @db.Uuid
-  author      Profiles      @relation(fields: [authorId], references: [id])
-  bookmark    Bookmark[]
-  chapter     Chapter[]
-  discussion  Discussion[]
-  recommended Recommended[]
+  reads       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId String   @db.Uuid
+  author   Profiles @relation(fields: [authorId], references: [id])
+
+  bookmarks    Bookmark[]
+  chapters     Chapter[]
+  discussions  Discussion[]
+  recommended  Recommended[]
+  readingLists ReadingList[]
 
   @@index([authorId])
   @@index([slug])

@@ -13,16 +13,14 @@ const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
   // const [carasoulApi, setCarasoulApi] = useState<CarouselApi>();
 
   const data = await api.story.getAll.query({
-    limit: 3,
+    limit: perRow,
   });
 
-  console.log({ data: data.length });
-
   return (
-    <section className="w-full">
+    <section className="flex-1">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold text-primary lg:text-2xl">
+          <h1 className="text-2xl font-semibold text-primary lg:text-2xl">
             Reading List
           </h1>
           <ArrowDown size={18} className="text-primary" />
@@ -50,7 +48,11 @@ const ReadingList: FC<Props> = async ({ perRow = 3 }) => {
         </div> */}
       </div>
 
-      <main className={cn("flex w-full gap-6 xxs:basis-1/2 sm:basis-1/3")}>
+      <main
+        className={cn(
+          "flex w-full flex-wrap justify-center gap-6 sm:justify-start md:justify-center xl:flex-nowrap",
+        )}
+      >
         {data.map((item, index) => (
           <CoverCard details={item} key={index} />
         ))}

@@ -101,6 +101,7 @@ async function RootLayout({
               backgroundImage: "url(/ooorganize.svg)",
               backgroundBlendMode: "overlay",
               backgroundAttachment: "fixed",
+              backgroundSize: "cover",
             }}
           ></div>
 

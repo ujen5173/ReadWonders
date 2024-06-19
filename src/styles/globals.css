@@ -2,8 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+.cover-card {
+  width: 100%;
+  height: auto;
+  max-width: var(--card-width);
+}
+
+.cover-card-img {
+  width: 100%;
+  height: auto;
+}
+
 @layer base {
   :root {
+    --card-width: 217.5px;
+    --card-height: 330px;
+
+    --card-width-lg: 320px;
+    --card-height-lg: 450px;
+
     --background: 0 86% 97%;
     --foreground: 215 25% 26%;
     --primary: 0 72% 51%;

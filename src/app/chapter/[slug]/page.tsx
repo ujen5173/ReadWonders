@@ -43,13 +43,13 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
   );
 
   const { data: recommendations } = api.story.getAll.useQuery(
-    {},
+    {
+      limit: 6,
+    },
     {
       refetchOnWindowFocus: false,
     },
   );
-
-  console.log({ chapterDetails, isLoading, error });
 
   if (!chapterDetails) return null;
 
@@ -63,7 +63,7 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
               alt={chapterDetails.title!}
               width={1200}
               height={480}
-              className="mb-8 h-72 w-full rounded-lg object-cover"
+              className="mb-8 h-96 w-full rounded-lg object-cover"
             />
           )}
 
@@ -165,7 +165,7 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
           <div className="w-full">
-            <h1 className="text-2xl font-semibold text-foreground">
+            <h1 className="mb-4 text-2xl font-semibold text-foreground">
               <h1>Recommendations</h1>
             </h1>
             <div className="flex gap-4">
