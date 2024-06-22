@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { Context } from "~/app/_components/RootContext";
-import ReadingListButton from "~/components/reading-list-button";
+import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -165,8 +165,8 @@ const Story = () => {
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     Chapter
                   </h1>
-                  {(activeBook?.chapter ?? []).length > 0 ? (
-                    activeBook?.chapter.map((chapter) => (
+                  {(activeBook?.chapters ?? []).length > 0 ? (
+                    activeBook?.chapters.map((chapter) => (
                       <Link
                         key={chapter.id}
                         target="_blank"
@@ -204,7 +204,8 @@ const Story = () => {
                 </Button>
               </Link>
               <div className="w-full flex-1">
-                <ReadingListButton bookId={activeBook?.id as string} />
+                {/* <ReadingListButton bookId={activeBook?.id as string} /> */}
+                <ReadingListModel bookId={activeBook?.id as string} />
               </div>
               {/* <Button
                 onClick={addToReadingList}

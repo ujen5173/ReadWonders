@@ -98,10 +98,21 @@ Create a `.env` file in the root directory and add the environment variables ref
 ```sql
   CREATE OR REPLACE FUNCTION public.handle_new_user()
   RETURNS TRIGGER AS $$
+  DECLARE
+      username_suffix TEXT;
   BEGIN
-    INSERT INTO public.profiles (id, name, email, profile) -- replace `profiles` with your profile table name
-    VALUES (new.id, new.raw_user_meta_data ->> 'full_name', new.email, new.raw_user_meta_data ->> 'picture');
-    RETURN new;
+      -- Generate a random number between 0 and 9999
+      SELECT to_char(floor(random() * 10000)::int, 'FM0000') INTO username_suffix;
+
+      -- Inserting into the profiles table
+      INSERT INTO public.profiles (id, name, email, profile, username)
+      VALUES (NEW.id,
+              NEW.raw_user_meta_data ->> 'full_name',
+              NEW.email,
+              NEW.raw_user_meta_data ->> 'picture',
+              lower(regexp_replace(NEW.raw_user_meta_data ->> 'full_name', '\s+', '', 'g')) || username_suffix);
+
+      RETURN NEW;
   END;
   $$ LANGUAGE plpgsql SECURITY DEFINER;
 

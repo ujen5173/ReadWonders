@@ -362,16 +362,16 @@ model Story {
   description String
   thumbnail   String
   tags        String[]
-  isPremium   Boolean  @default(false)
-  isDeleted   Boolean  @default(false)
-  isMature    Boolean  @default(false)
+  is_premium  Boolean  @default(false)
+  is_deleted  Boolean  @default(false)
+  is_mature   Boolean  @default(false)
   category    String?
   reads       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  authorId String   @db.Uuid
-  author   Profiles @relation(fields: [authorId], references: [id])
+  author_id String   @db.Uuid
+  author    Profiles @relation(fields: [author_id], references: [id])
 
   bookmarks    Bookmark[]
   chapters     Chapter[]
@@ -379,24 +379,11 @@ model Story {
   recommended  Recommended[]
   readingLists ReadingList[]
 
-  @@index([authorId])
+  @@index([author_id])
   @@index([slug])
   @@index([title])
   @@index([tags])
   @@map("story")
-  @@schema("public")
-}
-
-model Bookmark {
-  id        String   @id @default(uuid()) @db.Uuid
-  storyId   String   @db.Uuid
-  userId    String   @db.Uuid
-  createdAt DateTime @default(now())
-  story     Story    @relation(fields: [storyId], references: [id])
-  user      Profiles @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@map("bookmark")
   @@schema("public")
 }
 
@@ -411,11 +398,24 @@ model Chapter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
-  storyId   String   @db.Uuid
-  story     Story    @relation(fields: [storyId], references: [id])
+  story_id  String   @db.Uuid
+  story     Story    @relation(fields: [story_id], references: [id])
 
-  @@index([storyId, slug])
+  @@index([story_id, slug])
   @@map("chapter")
+  @@schema("public")
+}
+
+model Bookmark {
+  id        String   @id @default(uuid()) @db.Uuid
+  storyId   String   @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  story     Story    @relation(fields: [storyId], references: [id])
+  user      Profiles @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("bookmark")
   @@schema("public")
 }
 

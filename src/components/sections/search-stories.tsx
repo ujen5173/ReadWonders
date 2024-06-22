@@ -1,11 +1,14 @@
-"use client";
-
 import { Filter } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 
-const SearchStories = () => {
-  const query = useSearchParams().get("q") || "";
+const SearchStories = ({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) => {
+  console.log({ params, searchParams });
 
   return (
     <section className="w-full">
@@ -13,19 +16,17 @@ const SearchStories = () => {
         <div className="mb-8 flex items-center justify-between">
           <h1 className="space-x-1 text-2xl font-bold">
             <span>Search results for</span>
-            <span className="text-primary">&quot;{query}&quot;</span>
+            {/* <span className="text-primary">&quot;{params.q}&quot;</span> */}
           </h1>
           <Button variant="secondary">
             <Filter size={18} className="text-foreground" />
             <span className="text-base">Filter</span>
           </Button>
         </div>
-        <main className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <p className="text-center text-lg text-slate-600">
-            No results found for &quot;{query}&quot;. Try searching for
-            something else.
-          </p>
-        </main>
+        <p className="text-center text-lg text-slate-600">
+          {/* No results found for &quot;{params.q}&quot;. Try searching for */}
+          {/* something else. */}
+        </p>
       </div>
     </section>
   );

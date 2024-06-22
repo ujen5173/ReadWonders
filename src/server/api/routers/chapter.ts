@@ -32,7 +32,7 @@ export const chapterRouter = createTRPCRouter({
       try {
         const chapters = await ctx.db.chapter.findMany({
           where: {
-            storyId: input.storyId,
+            story_id: input.storyId,
           },
           take: limit,
           select: {
@@ -77,6 +77,7 @@ export const chapterRouter = createTRPCRouter({
         });
       }
     }),
+
   getSingeChapter: publicProcedure
     .input(
       z.object({
@@ -110,14 +111,16 @@ export const chapterRouter = createTRPCRouter({
   new: authorProcedure
     .input(
       z.object({
-        storyId: z.string(),
+        story_id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const { story_id, ...rest } = input;
         const chapter = await ctx.db.chapter.create({
           data: {
-            ...input,
+            ...rest,
+            story_id: story_id,
           },
         });
 
@@ -143,6 +146,7 @@ export const chapterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { id, ...rest } = input;
+
         const time = read(
           generateHTML(rest.content as JSONContent, [
             Placeholder,
@@ -155,6 +159,7 @@ export const chapterRouter = createTRPCRouter({
             StarterKit,
           ]),
         );
+
         const chapter = await ctx.db.chapter.update({
           where: { id: id },
           data: {

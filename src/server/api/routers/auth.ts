@@ -35,9 +35,9 @@ export const authRouter = createTRPCRouter({
           username: input.username,
         },
         include: {
-          story: {
+          stories: {
             include: {
-              chapter: {
+              chapters: {
                 select: {
                   id: true,
                   title: true,
@@ -63,7 +63,6 @@ export const authRouter = createTRPCRouter({
     .input(z.object({ authorId: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
-        console.log({ data: input.authorId });
         const readingLists = await ctx.db.readingList.findMany({
           where: {
             authorId: input.authorId,

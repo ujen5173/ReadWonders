@@ -1,6 +1,6 @@
 import { Lightbulb, Send } from "lucide-react";
 import Link from "next/link";
-import { fontUrbanist } from "~/config/font";
+import { contentFont } from "~/config/font";
 import { siteConfig } from "~/config/site";
 import { cn } from "~/utils/cn";
 import { Button } from "../ui/button";
@@ -20,7 +20,7 @@ const Footer = () => {
           <div className="grid-cols-2">
             <h1
               className={cn(
-                `${fontUrbanist.className} mb-4 text-2xl font-bold text-text-primary`,
+                `${contentFont.className} mb-4 text-2xl font-bold text-text-primary`,
               )}
             >
               {siteConfig.name}

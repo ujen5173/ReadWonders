@@ -11,10 +11,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
 import { Context } from "~/app/_components/RootContext";
+import ReadingListModel from "~/app/_components/reading-list-modal";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { type TCard } from "~/types";
 import { formatNumber } from "~/utils/helpers";
-import ReadingListButton from "./reading-list-button";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
@@ -40,7 +40,7 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
         />
 
         <div className="w-full">
-          <h1 className="line-clamp-1 text-lg font-bold text-slate-800">
+          <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
             {details.title}
           </h1>
         </div>
@@ -69,14 +69,16 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
               <div className="flex gap-2">
                 <Eye size={16} className="mt-1" />
               </div>
-              <p className="text-sm font-bold">{formatNumber(details.reads)}</p>
+              <p className="text-sm font-semibold">
+                {formatNumber(details.reads)}
+              </p>
             </div>
             <Separator orientation="vertical" className="h-8" />
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
                 <Star size={16} className="mt-1" />
               </div>
-              <p className="text-sm font-bold">
+              <p className="text-sm font-semibold">
                 {formatNumber(details.reads / 4)}
               </p>
             </div>
@@ -85,7 +87,7 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
               <div className="flex gap-2">
                 <LayoutList className="mt-1" size={16} />
               </div>
-              <p className="text-sm font-bold">{12}</p>
+              <p className="text-sm font-semibold">{12}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -95,11 +97,11 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
                 <span>Start Reading</span>
               </Button>
             </Link>
-            <ReadingListButton bookId={details.id} />
+            <ReadingListModel bookId={details.id} />
           </div>
         </div>
         <div className="invisible w-full">
-          <h1 className="line-clamp-1 text-lg font-bold text-slate-800">
+          <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
             {details.title}
           </h1>
         </div>

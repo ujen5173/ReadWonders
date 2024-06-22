@@ -26,7 +26,7 @@ function openDatabase(): Promise<IDBDatabase> {
 
 export type Draft = {
   id?: string;
-  storyId: string;
+  story_id: string;
   chapterId: string;
   content?: string;
   title?: string;
@@ -39,21 +39,21 @@ export type Draft = {
 interface AutosaveContentParams {
   draftKey: keyof Omit<Draft, "id">;
   value: string | Draft["cover_image"];
-  storyId: string;
+  story_id: string;
   chapterId: string;
 }
 
 export async function autosaveContent({
   draftKey,
   value,
-  storyId,
+  story_id,
   chapterId,
 }: AutosaveContentParams): Promise<void> {
   try {
     const db = await openDatabase();
     const transaction = db.transaction(["drafts"], "readwrite");
     const store = transaction.objectStore("drafts");
-    const id = `${storyId}_${chapterId}`;
+    const id = `${story_id}_${chapterId}`;
 
     const getRequest = store.get(id);
 

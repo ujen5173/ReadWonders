@@ -8,6 +8,8 @@ export const helpersRouter = createTRPCRouter({
         createdAt: "desc",
       },
       select: {
+        title: true,
+        slug: true,
         thumbnail: true,
       },
     });

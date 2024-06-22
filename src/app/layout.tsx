@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { type ReactNode } from "react";
 import { TailwindIndicator } from "~/components/TailwindIndicator";
 import { Toaster } from "~/components/ui/toaster";
-import { fontUrbanist } from "~/config/font";
+import { contentFont } from "~/config/font";
 import { siteConfig } from "~/config/site";
 import { env } from "~/env.mjs";
 import { Providers } from "~/providers";
@@ -91,9 +91,7 @@ async function RootLayout({
       <html lang="en">
         <head />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <body
-          className={cn("min-h-screen antialiased", fontUrbanist.className)}
-        >
+        <body className={cn("min-h-screen antialiased", contentFont.className)}>
           <div className="fixed -z-10 h-screen w-full bg-gradient-to-br from-primary/20 via-white to-primary/10"></div>
           <div
             className="fixed -z-10 h-screen w-full opacity-30"

@@ -25,7 +25,7 @@ import { type JSONContent } from "novel";
 import CoverCard from "~/components/cover-card";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { contentFont, fontInter } from "~/config/font";
+import { contentFont, merriweather } from "~/config/font";
 import { api } from "~/trpc/react";
 import { formatNumber, formatReadingTime } from "~/utils/helpers";
 
@@ -68,7 +68,7 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
           )}
 
           <h1
-            className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl ${fontInter.className}`}
+            className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl ${merriweather.className}`}
           >
             {chapterDetails.title}
           </h1>

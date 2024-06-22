@@ -1,18 +1,11 @@
-import {
-  BookOpen,
-  Eye,
-  Hash,
-  Heart,
-  LayoutList,
-  Notebook,
-  Star,
-} from "lucide-react";
+import { BookOpen, Eye, Hash, LayoutList, Notebook, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { contentFont, fontInter } from "~/config/font";
+import { contentFont } from "~/config/font";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { api } from "~/trpc/server";
 import { formatNumber, formatReadingTime } from "~/utils/helpers";
@@ -49,10 +42,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 <Star className="size-4" />
                 <span>4.5</span>
               </Button>
-              <Button className="w-full" variant="secondary">
-                <Heart className="size-4" />
-                Add to Reading list
-              </Button>
+              <ReadingListModel bookId={storyDetails.id} />
               <Button className="w-full" variant="secondary">
                 <Notebook className="size-4" />
                 Add notes
@@ -62,13 +52,16 @@ const Story = async ({ params }: { params: { slug: string } }) => {
           <div className="w-full flex-1 space-y-8">
             <header className="space-y-2">
               <h1
-                className={`scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-5xl ${fontInter.className}`}
+                className={`scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-5xl`}
               >
                 {storyDetails.title}
               </h1>
               <div className="flex items-center space-x-1 text-lg text-foreground">
                 <p className="">By</p>
-                <Link className="hover:underline" href="/u">
+                <Link
+                  className="hover:underline"
+                  href={`/user/${storyDetails.author.username}`}
+                >
                   <h2>{storyDetails.author.name}</h2>
                 </Link>
               </div>
@@ -162,8 +155,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
                 Chapters:
               </h4>
-              {storyDetails.chapter.length > 0 ? (
-                storyDetails.chapter.map((ch, index) => (
+              {storyDetails.chapters.length > 0 ? (
+                storyDetails.chapters.map((ch, index) => (
                   <Link href={`/chapter/${ch.id}`} key={ch.id}>
                     <div className="flex cursor-pointer items-center justify-between border-b border-border p-4 last:border-0 hover:bg-slate-100">
                       <p className="text-xl font-bold text-slate-700">

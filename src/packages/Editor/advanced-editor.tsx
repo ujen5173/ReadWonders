@@ -27,7 +27,6 @@ import {
 } from "~/app/(authenticatedRoutes)/write/s/[chapterId]/utils/database";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
-import { contentFont } from "~/config/font";
 import "~/styles/prosemirror.css";
 import { defaultEditorContent } from "~/utils/default-content";
 import { uploadFn } from "./image-upload";
@@ -60,7 +59,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
     autosaveContent({
       draftKey: "content",
       value: JSON.stringify(json),
-      storyId: details.storyId,
+      story_id: details.story_id,
       chapterId: details.chapterId,
     });
 
@@ -71,7 +70,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
     void (async () => {
       try {
         const draftContent = await loadDraft(
-          details.storyId,
+          details.story_id,
           details.chapterId,
         );
 
@@ -128,7 +127,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
             handleDrop: (view, event, _slice, moved) =>
               handleImageDrop(view, event, moved, uploadFn),
             attributes: {
-              class: `prose prose-lg h-full min-h-96 dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full ${contentFont.className}`,
+              class: `prose prose-lg h-full min-h-96 dark:prose-invert prose-headings:font-title focus:outline-none max-w-full`,
             },
           }}
           onUpdate={({ editor: e }: { editor: EditorInstance }) => {

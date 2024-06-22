@@ -21,8 +21,16 @@ export const formatDate = (date: Date) => {
   });
 };
 
-export const chunkIntoN = (arr: string[], n: number) => {
+export const chunkIntoN = (
+  arr: {
+    slug: string;
+    title: string;
+    thumbnail: string;
+  }[],
+  n: number,
+) => {
   const size = Math.ceil(arr.length / n);
+
   return Array.from({ length: n }, (v, i) =>
     arr.slice(i * size, i * size + size),
   );

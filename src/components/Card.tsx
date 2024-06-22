@@ -1,6 +1,6 @@
 import { BookOpen, Bookmark, Eye, LayoutList, Star } from "lucide-react";
 import Image from "next/image";
-import { nunito } from "~/config/font";
+import { merriweather } from "~/config/font";
 import { type TCard } from "~/types";
 import { formatNumber, formatReadingTime } from "~/utils/helpers";
 import { Badge } from "./ui/badge";
@@ -10,7 +10,7 @@ import { Separator } from "./ui/separator";
 const Card = ({ details }: { details: TCard }) => {
   return (
     <div
-      className={`flex gap-4 rounded-md border border-border bg-white p-2 ${nunito.className}`}
+      className={`flex gap-4 rounded-md border border-border bg-white p-2 ${merriweather.className}`}
     >
       <div className="h-full w-48 overflow-hidden rounded-md">
         <Image

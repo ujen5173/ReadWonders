@@ -11,12 +11,22 @@ import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { api } from "~/trpc/react";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Sheet,
   SheetContent,
@@ -26,7 +36,7 @@ import {
 } from "../ui/sheet";
 
 const Header = () => {
-  const { data, isLoading } = api.auth.getProfile.useQuery(undefined, {
+  const { data } = api.auth.getProfile.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -71,9 +81,35 @@ const Header = () => {
             </Button>
           </Link>
           <Link href="/" className="hidden md:inline">
-            <Button className="gap-2" variant="link">
-              <span>Newsletter</span>
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="link">Newsletter</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">
+                    Subscribe to Newsletter
+                  </DialogTitle>
+                  <DialogDescription className="text-base">
+                    Never miss an update. Stay up to date with the latest
+                    stories.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2 py-2">
+                  <Label htmlFor="username" className="text-left">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="newsletter@readwonders.com"
+                    className=""
+                  />
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Subscribe</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </Link>
           <Link href="/write">
             <Button className="hidden gap-2 sm:flex" variant="ghost-link">

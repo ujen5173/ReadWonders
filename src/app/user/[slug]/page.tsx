@@ -12,13 +12,11 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
     username: params.slug,
   });
 
-  console.log({ userDetails });
-
   if (!userDetails) return null;
 
   return (
     <>
-      <div className="mx-auto min-h-96 w-full max-w-screen-xl px-4">
+      <div className="mx-auto min-h-96 w-full max-w-[1440px] px-4">
         <div className="border-b border-border py-8">
           <div className="mb-6 flex gap-2">
             <Image
@@ -34,14 +32,14 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
                 <h1 className="mb-2 text-4xl font-semibold text-primary">
                   {userDetails.name!}
                 </h1>
-                <span className="text-center text-2xl font-medium text-slate-600">
+                <span className="text-center text-2xl font-medium text-slate-600 underline">
                   @{userDetails.username!}
                 </span>
               </div>
 
               <div className="flex items-center text-base font-medium text-slate-700">
                 <div>
-                  <span>{userDetails.story?.length} works</span>
+                  <span>{userDetails.stories?.length} works</span>
                 </div>
                 <Dot size={20} />
                 <div>
@@ -54,12 +52,12 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
           </div>
-          <p className="my-4 text-base text-foreground">
+          <p className="my-4 text-lg text-foreground">
             {userDetails.bio || "No bio provided"}
           </p>
 
           {userDetails.tagline && (
-            <blockquote className="border-l-2 border-primary pl-2 font-medium italic">
+            <blockquote className="border-l-2 border-primary pl-2 text-lg font-medium italic">
               &quot;{userDetails.tagline}&quot;
             </blockquote>
           )}
@@ -91,26 +89,40 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
           </div>
         </div>
         <div className="border-b border-border py-6">
-          <h1 className="mb-4 text-2xl font-bold">
+          <h1 className="mb-4 text-2xl font-medium">
             {userDetails.name!}&apos;s Works
           </h1>
-          <div className="flex flex-wrap gap-2">
-            {userDetails.story?.slice(0, 4).map((story) => (
-              // <Card key={story.id} details={story} />
-              <CoverCard key={story.id} details={story} />
-            ))}
-          </div>
+          <main className="flex w-full flex-wrap gap-5">
+            {userDetails.stories.length > 0 ? (
+              userDetails.stories.map((story) => (
+                <CoverCard key={story.id} details={story} />
+              ))
+            ) : (
+              <div className="flex h-40 w-full items-center justify-center">
+                <h1 className="text-2xl font-medium text-slate-600">
+                  No works found
+                </h1>
+              </div>
+            )}
+          </main>
         </div>
         <div className="border-b border-border py-6">
-          <h1 className="mb-4 text-2xl font-bold">
+          <h1 className="mb-4 text-2xl font-medium">
             {userDetails.name!}&apos;s Reading List
           </h1>
-          <div className="flex flex-wrap gap-2">
-            {userDetails.story?.slice(8, 16).map((story) => (
-              <CoverCard key={story.id} details={story} />
-              // <CoverCard key={story.id} details={story} />
-            ))}
-          </div>
+          <main className="flex w-full flex-wrap gap-5">
+            {userDetails.stories.length > 0 ? (
+              userDetails.stories.map((story) => (
+                <CoverCard key={story.id} details={story} />
+              ))
+            ) : (
+              <div className="flex h-40 w-full items-center justify-center">
+                <h1 className="text-2xl font-medium text-slate-600">
+                  No Reading List created
+                </h1>
+              </div>
+            )}
+          </main>
         </div>
         <Footer />
       </div>

@@ -1,7 +1,9 @@
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
+import { TCard } from "~/types";
 import {
   authorProcedure,
   createTRPCRouter,
@@ -25,7 +27,7 @@ export const storyRouter = createTRPCRouter({
         const stories = await ctx.db.story.findMany({
           take: input.limit,
           include: {
-            chapter: {
+            chapters: {
               select: {
                 title: true,
                 id: true,
@@ -41,8 +43,6 @@ export const storyRouter = createTRPCRouter({
             },
           },
         });
-
-        console.log({ stories });
 
         return stories;
       } catch (err) {
@@ -66,7 +66,7 @@ export const storyRouter = createTRPCRouter({
             slug: input.slug,
           },
           include: {
-            chapter: true,
+            chapters: true,
             author: {
               include: {
                 author: {
@@ -141,16 +141,16 @@ export const storyRouter = createTRPCRouter({
               },
             },
             reads: true,
-            isPremium: true,
-            isDeleted: false,
-            authorId: false,
+            is_premium: true,
+            is_deleted: false,
+            author_id: false,
             description: true,
             slug: true,
             category: true,
             id: true,
             title: true,
             thumbnail: true,
-            isMature: true,
+            is_mature: true,
           },
 
           orderBy: {
@@ -177,14 +177,12 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        console.log({ input });
-
         const stories = await ctx.db.story.findMany({
           take: input.limit,
           skip: input.skip,
           select: {
             reads: true,
-            isPremium: true,
+            is_premium: true,
             description: true,
             tags: true,
             slug: true,
@@ -192,8 +190,8 @@ export const storyRouter = createTRPCRouter({
             id: true,
             title: true,
             thumbnail: true,
-            isMature: true,
-            chapter: {
+            is_mature: true,
+            chapters: {
               select: {
                 title: true,
                 id: true,
@@ -209,7 +207,7 @@ export const storyRouter = createTRPCRouter({
             },
           },
           where: {
-            isDeleted: false,
+            is_deleted: false,
           },
           orderBy: {
             reads: "desc",
@@ -254,7 +252,7 @@ export const storyRouter = createTRPCRouter({
     try {
       const stories = await ctx.db.story.findMany({
         where: {
-          authorId: ctx.user.id,
+          author_id: ctx.user.id,
         },
         take: limit,
         skip,
@@ -268,6 +266,87 @@ export const storyRouter = createTRPCRouter({
       });
     }
   }),
+
+  search: publicProcedure
+    .input(
+      z.object({
+        query: z.string(),
+        limit: z.number().optional().default(limit),
+        cursor: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { query, limit, cursor } = input;
+        console.log({ input });
+        const searchTerms = query.toLowerCase().split(/\s+/);
+
+        const searchConditions = searchTerms.map(
+          (term) => Prisma.sql`
+            (
+              LOWER(story.title) LIKE ${`%${term}%`} OR
+              LOWER(story.slug) LIKE ${`%${term}%`} OR
+              LOWER(story.description) LIKE ${`%${term}%`} OR
+              LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
+              EXISTS (
+                SELECT 1 FROM chapter
+                WHERE chapter.story_id = story.id AND LOWER(chapter.title) LIKE ${`%${term}%`}
+              )
+            )
+          `,
+        );
+
+        const cursorCondition = cursor
+          ? Prisma.sql`AND story.id::text > ${cursor}`
+          : Prisma.empty;
+
+        const stories = await ctx.db.$queryRaw<TCard[]>`
+          SELECT
+            story.id,
+            story.description,
+            story.slug,
+            story.title,
+            story.thumbnail,
+            story.tags,
+            story.is_premium,
+            story.category,
+            story.is_mature,
+            story.reads,
+            json_agg(json_build_object(
+              'id', chapter.id,
+              'title', chapter.title,
+              'slug', chapter.slug,
+              'createdAt', chapter."createdAt"
+            )) AS chapters,
+            json_build_object(
+              'name', author.name,
+              'profile', author.profile
+            ) AS author
+          FROM story
+          LEFT JOIN chapter ON chapter.story_id = story.id
+          LEFT JOIN profiles AS author ON author.id = story.author_id
+          WHERE ${Prisma.join(searchConditions, " AND ")} ${cursorCondition}
+          GROUP BY story.id, author.name, author.profile
+          ORDER BY story.id
+          LIMIT ${limit + 1}
+        `;
+
+        const hasNextPage = stories.length > limit + 2;
+        if (hasNextPage) {
+          stories.pop();
+        }
+
+        const nextCursor = stories[stories.length - 1]?.id;
+        return { stories, hasNextPage, nextCursor };
+      } catch (err) {
+        console.log({ err });
+        console.log("hi world");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to search stories",
+        });
+      }
+    }),
 
   // ----- Mutations -----
   new: authorProcedure
@@ -304,7 +383,7 @@ export const storyRouter = createTRPCRouter({
           data: {
             ...input,
             slug,
-            authorId: ctx.user.id,
+            author_id: ctx.user.id,
           },
           select: {
             id: true,
@@ -313,7 +392,7 @@ export const storyRouter = createTRPCRouter({
 
         const chapterId = await ctx.db.chapter.create({
           data: {
-            storyId: story.id,
+            story_id: story.id,
           },
           select: {
             id: true,
@@ -378,7 +457,7 @@ export const storyRouter = createTRPCRouter({
             id: input.id,
           },
           data: {
-            isDeleted: true,
+            is_deleted: true,
           },
         });
 
