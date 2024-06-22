@@ -8,22 +8,11 @@ export default {
       center: true,
       padding: "2rem",
     },
-    "sm-container": {
-      center: true,
-      padding: "2rem",
-      screens: {
-        sm: "100%",
-        md: "540px",
-        lg: "720px",
-        xl: "960px",
-        "2xl": "1140px",
-      },
-    },
     extend: {
       screens: {
         "2xl": "1536px",
-        xs: "575px",
-        xxs: "415px",
+        xs: "495px",
+        xxs: "435px",
       },
       colors: {
         border: "hsl(var(--border))",

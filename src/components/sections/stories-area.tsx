@@ -41,7 +41,7 @@ const StoriesArea: FC<Props> = async ({
 
       <main
         className={cn(
-          "flex w-full flex-wrap justify-center gap-5 sm:justify-start md:justify-center xl:flex-nowrap",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
         )}
       >
         {(data ?? []).map((story) => (

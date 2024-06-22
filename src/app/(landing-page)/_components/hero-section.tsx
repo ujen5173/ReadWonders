@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/tooltip";
 import { merriweather } from "~/config/font";
 import { siteConfig } from "~/config/site";
+import useWindowSize from "~/hooks/use-window-size";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
@@ -21,18 +22,27 @@ import { chunkIntoN } from "~/utils/helpers";
 const HeroSection = () => {
   const { data, isLoading, error } = api.helpers.images.useQuery();
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
-  const { mutate, isLoading: updating } = api.example.update.useMutation();
+  const { width } = useWindowSize();
+  // const { mutate, isLoading: updating } = api.example.update.useMutation();
+
+  const calcHeroImagesLength = () => {
+    if (width < 1280) {
+      return 3;
+    } else {
+      return 4;
+    }
+  };
 
   return (
     <section className="w-full">
-      <Button
+      {/* <Button
         onClick={() => {
           mutate();
         }}
         loading={updating}
       >
         Update
-      </Button>
+      </Button> */}
       <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
         <div className="py-12">
           <h1
@@ -157,44 +167,46 @@ const HeroSection = () => {
                   </div>
                 </>
               ) : (
-                chunkIntoN(data ?? [], 4).map((chunk, index) => {
-                  return (
-                    <div key={index} className="flex flex-1 flex-col gap-2">
-                      {chunk.map((image, i) => (
-                        <TooltipProvider delayDuration={10}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Link href={`/story/${image.slug}`}>
-                                <Image
-                                  onMouseEnter={() =>
-                                    setHoveredImage(image.slug)
-                                  }
-                                  onMouseLeave={() => setHoveredImage(null)}
-                                  key={i}
-                                  src={image.thumbnail}
-                                  alt="A person reading a story"
-                                  className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`}
-                              border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
-                                  style={{
-                                    marginTop:
-                                      i === 0
-                                        ? -((index + 1) * 2.5) + "rem"
-                                        : 0,
-                                  }}
-                                  width={cardWidth}
-                                  height={cardHeight}
-                                />
-                              </Link>
-                            </TooltipTrigger>
-                            <TooltipContent className="border-transparent bg-primary text-slate-100">
-                              <p>{image.title}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
-                  );
-                })
+                chunkIntoN(data ?? [], calcHeroImagesLength()).map(
+                  (chunk, index) => {
+                    return (
+                      <div key={index} className="flex flex-1 flex-col gap-2">
+                        {chunk.map((image, i) => (
+                          <TooltipProvider delayDuration={10}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link href={`/story/${image.slug}`}>
+                                  <Image
+                                    onMouseEnter={() =>
+                                      setHoveredImage(image.slug)
+                                    }
+                                    onMouseLeave={() => setHoveredImage(null)}
+                                    key={i}
+                                    src={image.thumbnail}
+                                    alt="A person reading a story"
+                                    className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`} 
+                                    border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
+                                    style={{
+                                      marginTop:
+                                        i === 0
+                                          ? -((index + 1) * 2.5) + "rem"
+                                          : 0,
+                                    }}
+                                    width={cardWidth}
+                                    height={cardHeight}
+                                  />
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent className="border-transparent bg-primary text-slate-100">
+                                <p>{image.title}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ))}
+                      </div>
+                    );
+                  },
+                )
               )}
             </>
           )}

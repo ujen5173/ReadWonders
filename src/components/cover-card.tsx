@@ -29,14 +29,14 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
     >
       <Link href={"/story/" + details.slug} passHref>
         <Image
-          className="cover-card-img mb-2 rounded-lg border border-border object-fill"
+          className="cover-card-img mb-2 rounded-lg object-fill"
           src={details.thumbnail}
           alt={details.thumbnail}
           width={cardWidth}
-          style={{
-            aspectRatio: "1/1.7",
-          }}
           height={cardHeight}
+          style={{
+            aspectRatio: "1/1.5",
+          }}
         />
 
         <div className="w-full">

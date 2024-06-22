@@ -51,37 +51,48 @@ const SearchArea = ({
   }, [reachedBottom]);
 
   return (
-    <main className={cn("relative flex w-full flex-wrap gap-5")}>
-      {stories.map((story) => (
-        <CoverCard key={story.id} details={story} />
-      ))}
-      {(hasNextPage === undefined || hasNextPage) && isFetching
-        ? Array(15)
-            .fill(null)
-            .map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton
-                  style={{
-                    width: cardWidth + "px",
-                    height: cardHeight * 1.19 + "px",
-                  }}
-                />
-                <Skeleton style={{ width: "80%", height: "20px" }} />
-              </div>
-            ))
-        : !(hasNextPage === undefined || hasNextPage) && (
-            <div className="w-full py-4 text-center">
-              <p className="text-xl text-gray-500">No more stories to load</p>
-            </div>
-          )}
-      <div
-        ref={bottomRef}
-        className="absolute"
-        style={{
-          bottom: cardWidth * 1.5 + "px",
-        }}
-      />
-    </main>
+    <div className="space-y-2">
+      <main
+        className={cn(
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+        )}
+      >
+        {stories.map((story) => (
+          <CoverCard key={story.id} details={story} />
+        ))}
+
+        {(hasNextPage === undefined || hasNextPage) && isFetching
+          ? Array(15)
+              .fill(null)
+              .map((_, i) => (
+                <div key={i} className="relative h-full w-full space-y-2">
+                  <Skeleton
+                    style={{
+                      width: "100%",
+                      minHeight: cardHeight + "px",
+                      height: "calc(100% - 22px - 0.8rem)",
+                    }}
+                  />
+                  <Skeleton style={{ width: "80%", height: "20px" }} />
+                </div>
+              ))
+          : null}
+
+        <div
+          ref={bottomRef}
+          className="absolute"
+          style={{
+            bottom: cardWidth * 1.5 + "px",
+          }}
+        />
+      </main>
+
+      {!(hasNextPage === undefined || hasNextPage) && (
+        <div className="w-full pb-4 pt-8 text-center">
+          <p className="text-xl text-gray-500">No more stories to load</p>
+        </div>
+      )}
+    </div>
   );
 };
 
