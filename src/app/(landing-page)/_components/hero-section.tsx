@@ -95,100 +95,108 @@ const HeroSection = () => {
                     ))}
                 </div>
               ))
-          ) : error ? (
-            <>
-              <div className="flex flex-1 flex-col gap-4">
-                {Array(3)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Image
-                      key={i}
-                      src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                      alt="A person reading a story"
-                      className="rounded-lg object-cover"
-                      width={cardWidth}
-                      height={cardHeight}
-                    />
-                  ))}
-              </div>
-              <div className="flex flex-1 flex-col gap-4">
-                {Array(3)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Image
-                      key={i}
-                      src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                      alt="A person reading a story"
-                      className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
-                      width={cardWidth}
-                      height={cardHeight}
-                    />
-                  ))}
-              </div>
-              <div className="flex flex-1 flex-col gap-4">
-                {Array(3)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Image
-                      key={i}
-                      src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                      alt="A person reading a story"
-                      className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
-                      width={cardWidth}
-                      height={cardHeight}
-                    />
-                  ))}
-              </div>
-              <div className="flex flex-1 flex-col gap-4">
-                {Array(3)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Image
-                      key={i}
-                      src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
-                      alt="A person reading a story"
-                      className={`rounded-lg object-cover ${i === 0 ? "-mb-24" : ""}`}
-                      width={cardWidth}
-                      height={cardHeight}
-                    />
-                  ))}
-              </div>
-            </>
           ) : (
-            chunkIntoN(data ?? [], 4).map((chunk, index) => {
-              return (
-                <div key={index} className="flex flex-1 flex-col gap-2">
-                  {chunk.map((image, i) => (
-                    <TooltipProvider delayDuration={10}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link href={`/story/${image.slug}`}>
-                            <Image
-                              onMouseEnter={() => setHoveredImage(image.slug)}
-                              onMouseLeave={() => setHoveredImage(null)}
-                              key={i}
-                              src={image.thumbnail}
-                              alt="A person reading a story"
-                              className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`}
+            <>
+              {error ? (
+                <>
+                  <div className="flex flex-1 flex-col gap-4">
+                    {Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <Image
+                          key={i}
+                          src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
+                          alt="A person reading a story"
+                          className="rounded-lg object-cover"
+                          width={cardWidth}
+                          height={cardHeight}
+                        />
+                      ))}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4">
+                    {Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <Image
+                          key={i}
+                          src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
+                          alt="A person reading a story"
+                          className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
+                          width={cardWidth}
+                          height={cardHeight}
+                        />
+                      ))}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4">
+                    {Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <Image
+                          key={i}
+                          src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
+                          alt="A person reading a story"
+                          className={`rounded-lg object-cover ${i === 0 ? "-mt-24" : ""}`}
+                          width={cardWidth}
+                          height={cardHeight}
+                        />
+                      ))}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4">
+                    {Array(3)
+                      .fill(0)
+                      .map((_, i) => (
+                        <Image
+                          key={i}
+                          src={`/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`}
+                          alt="A person reading a story"
+                          className={`rounded-lg object-cover ${i === 0 ? "-mb-24" : ""}`}
+                          width={cardWidth}
+                          height={cardHeight}
+                        />
+                      ))}
+                  </div>
+                </>
+              ) : (
+                chunkIntoN(data ?? [], 4).map((chunk, index) => {
+                  return (
+                    <div key={index} className="flex flex-1 flex-col gap-2">
+                      {chunk.map((image, i) => (
+                        <TooltipProvider delayDuration={10}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Link href={`/story/${image.slug}`}>
+                                <Image
+                                  onMouseEnter={() =>
+                                    setHoveredImage(image.slug)
+                                  }
+                                  onMouseLeave={() => setHoveredImage(null)}
+                                  key={i}
+                                  src={image.thumbnail}
+                                  alt="A person reading a story"
+                                  className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`}
                               border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
-                              style={{
-                                marginTop:
-                                  i === 0 ? -((index + 1) * 2.5) + "rem" : 0,
-                              }}
-                              width={cardWidth}
-                              height={cardHeight}
-                            />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent className="border-transparent bg-primary text-slate-100">
-                          <p>{image.title}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
-                </div>
-              );
-            })
+                                  style={{
+                                    marginTop:
+                                      i === 0
+                                        ? -((index + 1) * 2.5) + "rem"
+                                        : 0,
+                                  }}
+                                  width={cardWidth}
+                                  height={cardHeight}
+                                />
+                              </Link>
+                            </TooltipTrigger>
+                            <TooltipContent className="border-transparent bg-primary text-slate-100">
+                              <p>{image.title}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
+                    </div>
+                  );
+                })
+              )}
+            </>
           )}
         </div>
       </div>

@@ -1,4 +1,5 @@
 "use client";
+
 import { Plus, PlusSquare } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
@@ -25,33 +26,7 @@ import {
 import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-
 const ReadingListModel = ({ bookId }: { bookId: string }) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-
   const [readingLists, setReadingLists] = useState<
     {
       id: string;
@@ -107,8 +82,6 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
       toast({
         title: "Failed to add story to reading list",
       });
-
-      console.log({ error });
     }
   };
 

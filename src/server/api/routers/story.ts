@@ -278,7 +278,7 @@ export const storyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const { query, limit, cursor } = input;
-        console.log({ input });
+
         const searchTerms = query.toLowerCase().split(/\s+/);
 
         const searchConditions = searchTerms.map(
@@ -332,15 +332,15 @@ export const storyRouter = createTRPCRouter({
         `;
 
         const hasNextPage = stories.length > limit + 2;
+
         if (hasNextPage) {
           stories.pop();
         }
 
         const nextCursor = stories[stories.length - 1]?.id;
+
         return { stories, hasNextPage, nextCursor };
       } catch (err) {
-        console.log({ err });
-        console.log("hi world");
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to search stories",
