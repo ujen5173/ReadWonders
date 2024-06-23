@@ -4,6 +4,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { limit } from "~/server/constants";
 
 export const authRouter = createTRPCRouter({
   getProfile: privateProcedure.query(async ({ ctx }) => {
@@ -36,6 +37,7 @@ export const authRouter = createTRPCRouter({
         },
         include: {
           stories: {
+            take: limit,
             include: {
               chapters: {
                 select: {

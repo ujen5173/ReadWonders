@@ -1,5 +1,13 @@
 import { type TCard } from "~/types";
 
+export const heroImagesFallback = Array(12)
+  .fill(0)
+  .map((_, i) => ({
+    title: null,
+    slug: null,
+    thumbnail: `/hero-stories/${Math.floor(Math.random() * 7) + 1}.jpg`,
+  }));
+
 export const images = [
   "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030933.jpg",
   "https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030013.jpg",

@@ -1,14 +1,17 @@
+"use client";
+
 import { Dot, Mail, PlusSquare } from "lucide-react";
 import Image from "next/image";
+import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import CoverCard from "~/components/cover-card";
 import Footer from "~/components/sections/footer";
 import { Button } from "~/components/ui/button";
-import { api } from "~/trpc/server";
+import { api } from "~/trpc/react";
 import { formatNumber } from "~/utils/helpers";
 
-const UserProfile = async ({ params }: { params: { slug: string } }) => {
-  const userDetails = await api.auth.userProfile.query({
+const UserProfile = ({ params }: { params: { slug: string } }) => {
+  const { data: userDetails } = api.auth.userProfile.useQuery({
     username: params.slug,
   });
 
@@ -52,6 +55,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
           </div>
+
           <p className="my-4 text-lg text-foreground">
             {userDetails.bio || "No bio provided"}
           </p>
@@ -88,11 +92,13 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
             </Button>
           </div>
         </div>
+
         <div className="border-b border-border py-6">
           <h1 className="mb-4 text-2xl font-medium">
             {userDetails.name!}&apos;s Works
           </h1>
-          <main className="flex w-full flex-wrap gap-5">
+
+          <main className="relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {userDetails.stories.length > 0 ? (
               userDetails.stories.map((story) => (
                 <CoverCard key={story.id} details={story} />
@@ -106,24 +112,15 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
             )}
           </main>
         </div>
+
         <div className="border-b border-border py-6">
           <h1 className="mb-4 text-2xl font-medium">
             {userDetails.name!}&apos;s Reading List
           </h1>
-          <main className="flex w-full flex-wrap gap-5">
-            {userDetails.stories.length > 0 ? (
-              userDetails.stories.map((story) => (
-                <CoverCard key={story.id} details={story} />
-              ))
-            ) : (
-              <div className="flex h-40 w-full items-center justify-center">
-                <h1 className="text-2xl font-medium text-slate-600">
-                  No Reading List created
-                </h1>
-              </div>
-            )}
-          </main>
+
+          <ReadingListSection userId={userDetails.id} />
         </div>
+
         <Footer />
       </div>
     </>

@@ -1,8 +1,6 @@
-"use client";
-
 import CharacterCount from "@tiptap/extension-character-count";
 import TImage from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
+import TLink from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
@@ -21,41 +19,91 @@ import {
   Twitter,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { type JSONContent } from "novel";
-import CoverCard from "~/components/cover-card";
+import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Button } from "~/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+} from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
 import { contentFont, merriweather } from "~/config/font";
-import { api } from "~/trpc/react";
-import { formatNumber, formatReadingTime } from "~/utils/helpers";
+import { api } from "~/trpc/server";
+import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import SimilarStories from "./_components/similar-stories";
 
-const Chapter = ({ params }: { params: { slug: string } }) => {
+const Chapter = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
-  const {
-    data: chapterDetails,
-    isLoading,
-    error,
-  } = api.chapter.getSingeChapter.useQuery(
-    { slug },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  const { data: recommendations } = api.story.getAll.useQuery(
-    {
-      limit: 6,
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
+  const chapterDetails = await api.chapter.getSingeChapter.query({ slug });
+  console.log({ chapterDetails });
 
   if (!chapterDetails) return null;
 
   return (
     <section className="w-full">
       <div className="mx-auto max-w-screen-xl px-4">
+        <div className="flex items-center justify-between border-b border-border py-2">
+          <Select>
+            <SelectTrigger className="h-auto w-[450px] bg-white focus:outline-none focus:ring-0 focus:ring-offset-0">
+              <div className="flex items-center gap-2">
+                <Image
+                  src={chapterDetails.story.thumbnail}
+                  alt={chapterDetails.story.title}
+                  width={32}
+                  height={32}
+                  className="w-8  rounded-sm object-fill"
+                />
+                <div>
+                  <p className="text-left text-base font-semibold">
+                    {chapterDetails.story.title}
+                  </p>
+                  <p className="text-left text-sm text-gray-700">
+                    By {chapterDetails.story.author.username}
+                  </p>
+                </div>
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectGroup>
+                <div className="border-b border-border px-4 py-2">
+                  <Link
+                    href={`/story/${chapterDetails.story.slug}`}
+                    key={chapterDetails.story.slug}
+                  >
+                    <h1 className="line-clamp-1 text-center text-base font-medium hover:underline">
+                      {chapterDetails.story.title}
+                    </h1>
+                  </Link>
+
+                  <SelectLabel className="px-4 text-center text-slate-500">
+                    Table of Contents
+                  </SelectLabel>
+                </div>
+                <div className="py-2">
+                  {chapterDetails.story.chapters.map((chapter) => (
+                    <Link href={`/chapter/${chapter.slug}`} key={chapter.slug}>
+                      <div className="focus:text-text-light focus:bg-accent relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-4 pr-2 text-sm outline-none hover:bg-slate-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                        {chapter.title}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <div className="flex items-center gap-2">
+            <ReadingListModel bookId={chapterDetails.story!.id} />
+            <Button>
+              <Plus size={16} />
+              <span>Follow</span>
+            </Button>
+          </div>
+        </div>
         <div className="border-b border-border pb-6 pt-12">
           {chapterDetails.thumbnail && (
             <Image
@@ -121,6 +169,7 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
+
         <div className="mx-auto flex max-w-screen-lg flex-col items-center justify-stretch gap-8 py-8">
           <div
             className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line`}
@@ -128,7 +177,7 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
               __html: generateHTML(chapterDetails.content as JSONContent, [
                 Placeholder,
                 Youtube,
-                Link,
+                TLink,
                 Underline,
                 TImage,
                 CharacterCount,
@@ -137,8 +186,30 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
               ]),
             }}
           ></div>
-          <Button className="mx-auto w-96">Continue to next Chapter</Button>
-          <div className="flex w-full items-center justify-between border-b border-border pb-6">
+
+          {chapterDetails.nextChapter ? (
+            <Link href={`/chapter/${chapterDetails.nextChapter?.slug}`}>
+              <Button className="mx-auto w-96">Continue to next Chapter</Button>
+            </Link>
+          ) : (
+            <div className="py-8">
+              <p className="my-2 text-center text-xl font-medium text-foreground">
+                You have reached the end of this story
+              </p>
+
+              <p className="my-2 text-center text-base text-gray-500">
+                Last Updated:{" "}
+                <span className="font-medium">
+                  {formatDate(chapterDetails.updatedAt)}
+                </span>
+              </p>
+              <p className="my-2 text-center text-base text-gray-500">
+                Follow the author to get notified when they publish a new story
+              </p>
+            </div>
+          )}
+
+          <div className="flex w-full items-center justify-between pb-6">
             <div className="flex items-center">
               <Button variant="ghost-link">
                 <Plus size={16} />
@@ -164,18 +235,10 @@ const Chapter = ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
           </div>
-          <div className="w-full">
-            <h1 className="mb-4 text-2xl font-semibold text-foreground">
-              <h1>Recommendations</h1>
-            </h1>
-            <div className="flex gap-4">
-              {recommendations?.map((recommendation) => (
-                <CoverCard key={recommendation.id} details={recommendation} />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
+
+      <SimilarStories />
     </section>
   );
 };

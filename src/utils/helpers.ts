@@ -23,8 +23,8 @@ export const formatDate = (date: Date) => {
 
 export const chunkIntoN = (
   arr: {
-    slug: string;
-    title: string;
+    slug: string | null;
+    title: string | null;
     thumbnail: string;
   }[],
   n: number,

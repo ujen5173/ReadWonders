@@ -6,6 +6,7 @@ import {
   MoveRight,
   SquareArrowOutUpRight,
   Star,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +20,12 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 
-const CoverCard: FC<{ details: TCard }> = ({ details }) => {
+const CoverCard: FC<{
+  removeFromList?: (id: string) => Promise<void>;
+  readingList?: boolean;
+  removing?: boolean;
+  details: TCard;
+}> = ({ removeFromList, removing, readingList = false, details }) => {
   const { setActiveBook } = useContext(Context);
 
   return (
@@ -43,6 +49,11 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
           <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
             {details.title}
           </h1>
+          {readingList && (
+            <p className="line-clamp-1 text-base text-gray-600">
+              {details.author.name}
+            </p>
+          )}
         </div>
       </Link>
 
@@ -97,13 +108,30 @@ const CoverCard: FC<{ details: TCard }> = ({ details }) => {
                 <span>Start Reading</span>
               </Button>
             </Link>
-            <ReadingListModel bookId={details.id} />
+            {!readingList ? (
+              <ReadingListModel bookId={details.id} />
+            ) : (
+              <Button
+                variant={"secondary"}
+                onClick={() => void removeFromList!(details.id)}
+                loading={removing}
+                className="w-full gap-2"
+              >
+                <X size={16} />
+                <span>Remove from List</span>
+              </Button>
+            )}
           </div>
         </div>
         <div className="invisible w-full">
           <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
             {details.title}
           </h1>
+          {readingList && (
+            <p className="line-clamp-1 text-base text-gray-600">
+              {details.author.name}
+            </p>
+          )}
         </div>
       </div>
     </div>

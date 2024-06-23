@@ -1,11 +1,11 @@
-# StoryNest
+# ReadWonders
 
-Welcome to StoryNest, a robust community platform designed for creators to compose and share their narratives, articulate their emotions, and engage with a supportive audience. Whether you are an experienced writer or a novice, StoryNest offers a versatile environment to unleash your creativity and refine your voice.
+Welcome to ReadWonders, a robust community platform designed for creators to compose and share their narratives, articulate their emotions, and engage with a supportive audience. Whether you are an experienced writer or a novice, ReadWonders offers a versatile environment to unleash your creativity and refine your voice.
 
 > **Warning**
 > This is a work-in-progress and not the finished product.
 >
-> StoryNest is in its very early days of development. We are working hard to provide an initial version as soon as possible and are accepting contributions.
+> ReadWonders is in its very early days of development. We are working hard to provide an initial version as soon as possible and are accepting contributions.
 >
 > Feel free to leave feature suggestions but please don't open issues for bugs or support requests just yet.
 >
@@ -60,13 +60,13 @@ Make sure you have the following installed on your system:
 1. Clone the repository:
 
 ```bash
-  git clone https://github.com/your-username/storynest.git
+  git clone https://github.com/your-username/ReadWonders.git
 ```
 
 2. Navigate to the project directory:
 
 ```bash
-  cd storynest
+  cd ReadWonders
 ```
 
 3. Install dependencies:
@@ -175,4 +175,4 @@ We welcome contributions from the community. Please follow these steps to contri
 
 Please make sure your code adheres to our coding standards.
 
-Thank you for contributing to StoryNest! Together, we can build a platform where every story matters and every voice is heard.
+Thank you for contributing to ReadWonders! Together, we can build a platform where every story matters and every voice is heard.

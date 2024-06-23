@@ -1,5 +1,6 @@
 import { type Metadata, type Viewport } from "next";
 import { headers } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 import { type ReactNode } from "react";
 import { TailwindIndicator } from "~/components/TailwindIndicator";
 import { Toaster } from "~/components/ui/toaster";
@@ -92,6 +93,7 @@ async function RootLayout({
         <head />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <body className={cn("min-h-screen antialiased", contentFont.className)}>
+          <NextTopLoader height={5} color={"#e11d48"} />
           <div className="fixed -z-10 h-screen w-full bg-gradient-to-br from-primary/20 via-white to-primary/10"></div>
           <div
             className="fixed -z-10 h-screen w-full opacity-30"

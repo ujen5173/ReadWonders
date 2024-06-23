@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 import { getServerUser } from "~/utils/auth";
 import ReadingListSection from "./_components/reading-list-section";
 
-const ReadingList = async () => {
+const ReadingLists = async () => {
   const user = await getServerUser();
 
   return (
@@ -30,4 +30,4 @@ const ReadingList = async () => {
   );
 };
 
-export default ReadingList;
+export default ReadingLists;

@@ -8,13 +8,15 @@ type Props = {
   title: string;
   description?: string;
   perRow?: 3 | 6;
+  inRow?: boolean;
   skipRow?: number;
 };
 
 const StoriesArea: FC<Props> = async ({
   title,
   description,
-  perRow = 4,
+  inRow = false,
+  perRow = 3,
   skipRow = 12,
 }) => {
   const data = await api.story.featuredStories.query({
@@ -41,7 +43,9 @@ const StoriesArea: FC<Props> = async ({
 
       <main
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+          inRow
+            ? "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3"
+            : "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
         )}
       >
         {(data ?? []).map((story) => (

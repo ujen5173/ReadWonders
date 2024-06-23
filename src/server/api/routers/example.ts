@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { images } from "~/data";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -16,6 +15,7 @@ export const exampleRouter = createTRPCRouter({
     const stories = await ctx.db.story.findMany({
       select: {
         id: true,
+        tags: true,
       },
     });
 
@@ -26,7 +26,10 @@ export const exampleRouter = createTRPCRouter({
             id: story.id,
           },
           data: {
-            thumbnail: images[index],
+            tags: [
+              ...(stories.find((s) => s.id === story.id)?.tags ?? []),
+              "update",
+            ],
           },
         });
       }),

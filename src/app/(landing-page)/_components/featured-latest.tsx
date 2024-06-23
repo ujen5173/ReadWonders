@@ -8,11 +8,11 @@ const FeaturedAndLatest = () => {
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 border-b border-border px-2 py-8 xl:flex-row">
         {/* <Featured /> */}
         <Suspense fallback={<LoadingColumn />}>
-          <StoriesArea title="Featured" perRow={3} />
+          <StoriesArea title="Featured" perRow={3} inRow={true} />
         </Suspense>
         {/* <Latest /> */}
         <Suspense fallback={<LoadingColumn />}>
-          <StoriesArea title="Latest" perRow={3} />
+          <StoriesArea title="Latest" perRow={3} inRow={true} />
         </Suspense>
       </div>
     </section>

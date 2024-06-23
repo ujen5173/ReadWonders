@@ -4,9 +4,9 @@ import { Plus, PlusSquare } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,9 +24,11 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { toast } from "~/components/ui/use-toast";
+import { useUser } from "~/providers/AuthProvider/AuthProvider";
 import { api } from "~/trpc/react";
 
 const ReadingListModel = ({ bookId }: { bookId: string }) => {
+  const { user } = useUser();
   const [readingLists, setReadingLists] = useState<
     {
       id: string;
@@ -67,6 +69,13 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
 
   const addReadingList = async (listId: string, newTitle?: string) => {
     try {
+      if (!user) {
+        toast({
+          title: "You need to be logged in to add a story to a reading list",
+        });
+        return;
+      }
+
       const res = await mutateAsync({
         readingListId: listId,
         storyId: bookId,
@@ -87,17 +96,17 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
 
   const inputRef = createRef<HTMLInputElement>();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     try {
       const newTitle = inputRef.current?.value;
 
       const newId = v4();
 
-      if (newTitle) {
-        addReadingList(newId, newTitle);
-        inputRef.current.value = "";
+      if (newTitle?.trim()) {
+        addReadingList(newId, newTitle.trim());
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
       }
 
       localStorage.setItem(
@@ -119,13 +128,12 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         },
       ]);
     } catch (error) {
-      console.log({ error });
-
       toast({
         title: "Failed to add story to reading list",
       });
     }
   };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -134,21 +142,31 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
           <span>Reading List</span>
         </Button>
       </DialogTrigger>
+
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Reading List</DialogTitle>
-          <DialogDescription className="text-lg">
+          <DialogDescription className="text-base">
             Select a reading list to add this story to or create a new list.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-2">
           <h1>Available Lists</h1>
+
           <div className="mb-2">
-            <Select>
+            <Select
+              onValueChange={(data) => {
+                const listId = readingLists.filter(
+                  (list) => list.title === data,
+                )[0]?.id!;
+                addReadingList(listId);
+              }}
+            >
               <SelectTrigger className="bg-white outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0">
-                <SelectValue placeholder="My Reading List" />
+                <SelectValue placeholder="Select a reading list" />
               </SelectTrigger>
+
               <SelectContent className="w-full bg-white">
                 <SelectGroup>
                   {readingLists.map((list, index) => (
@@ -160,7 +178,9 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
               </SelectContent>
             </Select>
           </div>
+
           <span className="text-center">Or</span>
+
           <form onSubmit={handleSubmit}>
             <div className="flex items-center gap-2">
               <Input
@@ -168,15 +188,15 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
                 ref={inputRef}
                 className="h-10 bg-white"
               />
-              <Button variant="secondary" className="h-10 w-12" size={"icon"}>
-                <Plus size={16} />
-              </Button>
+
+              <DialogClose asChild>
+                <Button type="submit" className="h-10 w-12" size={"icon"}>
+                  <Plus size={16} />
+                </Button>
+              </DialogClose>
             </div>
           </form>
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -30,6 +30,7 @@ import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 const Story = () => {
   const router = useRouter();
   const { activeBook } = useContext(Context);
+  console.log({ activeBook });
 
   const { mutateAsync } = api.story.addToReadingList.useMutation();
 

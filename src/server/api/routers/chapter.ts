@@ -88,6 +88,28 @@ export const chapterRouter = createTRPCRouter({
       try {
         const chapter = await ctx.db.chapter.findFirst({
           where: { slug: input.slug },
+          include: {
+            story: {
+              select: {
+                id: true,
+                thumbnail: true,
+                title: true,
+                slug: true,
+                author: {
+                  select: {
+                    username: true,
+                  },
+                },
+                chapters: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                  },
+                },
+              },
+            },
+          },
         });
 
         if (!chapter) {
@@ -97,7 +119,37 @@ export const chapterRouter = createTRPCRouter({
           });
         }
 
-        return chapter;
+        // to get next chapter select next chapter after finding the current chapter
+        let nextChapter = chapter.story.chapters.reduce(
+          (acc, curr, index) => {
+            if (
+              curr.id === chapter.id &&
+              index < chapter.story.chapters.length - 1
+            ) {
+              acc = chapter.story.chapters[index + 1] as {
+                id: string;
+                title: string;
+                slug: string;
+              };
+            }
+
+            return acc;
+          },
+          <
+            {
+              id: string;
+              title: string;
+              slug: string;
+            } | null
+          >null,
+        );
+
+        const result = {
+          ...chapter,
+          nextChapter: nextChapter,
+        };
+
+        return result;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

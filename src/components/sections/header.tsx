@@ -9,7 +9,11 @@ import { Button, buttonVariants } from "../ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import { toast } from "sonner";
+import useKeyPress from "~/hooks/use-key-press";
+import { supabase } from "~/server/supabase/supabaseClient";
 import { api } from "~/trpc/react";
+import Logo from "../Logo";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +56,12 @@ const Header = () => {
     router.push(`/search?q=${searchQuery}`);
   };
 
+  const handleKeyPress = (): void => {
+    inputRef.current?.focus();
+  };
+
+  useKeyPress(handleKeyPress);
+
   return (
     <header className="w-full">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-2">
@@ -59,58 +69,48 @@ const Header = () => {
           <div className="block md:hidden">
             <MobileMenu user={data} />
           </div>
-
           <Link
             className="mr-6 flex items-end gap-1"
             href={data ? "/dashboard" : "/"}
           >
-            {/* <LibraryBig stroke={"#1e293b"} size={31} /> */}
-            {/* <LibraryBig stroke={"#e11d48"} size={31} /> */}
-            <h1
-              className={cn(
-                `${suezOne.className} text-2xl font-bold text-text-primary`,
-              )}
-            >
-              <span className="text-primary">Read</span>
-              <span>Wonders.</span>
-            </h1>
+            <Logo />
           </Link>
           <Link href="/" className="hidden md:inline">
             <Button className="gap-2" variant="link">
               <span>Explore</span>
             </Button>
           </Link>
-          <Link href="/" className="hidden md:inline">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="link">Newsletter</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl">
-                    Subscribe to Newsletter
-                  </DialogTitle>
-                  <DialogDescription className="text-base">
-                    Never miss an update. Stay up to date with the latest
-                    stories.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-2 py-2">
-                  <Label htmlFor="username" className="text-left">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    placeholder="newsletter@readwonders.com"
-                    className=""
-                  />
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Subscribe</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </Link>
+
+          <Dialog>
+            <DialogTrigger className="hidden sm:block" asChild>
+              <Button variant="link">Newsletter</Button>
+            </DialogTrigger>
+            <DialogContent className="hidden sm:max-w-[425px] md:inline">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">
+                  Subscribe to Newsletter
+                </DialogTitle>
+                <DialogDescription className="text-sm">
+                  Never miss an update. Stay up to date with the latest stories.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-2 py-2">
+                <Label htmlFor="username" className="text-left">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  placeholder="newsletter@readwonders.com"
+                  className=""
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit">Subscribe</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <Link href="/write">
             <Button className="hidden gap-2 sm:flex" variant="ghost-link">
               <Plus size={18} />
@@ -120,8 +120,16 @@ const Header = () => {
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-4">
-          <form className="hidden w-6/12 md:block" onSubmit={handleSubmit}>
-            <Input ref={inputRef} placeholder="Search a story..." />
+          <form
+            className="relative hidden w-6/12 md:block"
+            onSubmit={handleSubmit}
+          >
+            <Input ref={inputRef} placeholder="Search anything..." />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-white">
+              <kbd className="pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </div>
           </form>
 
           {data ? (
@@ -138,6 +146,7 @@ const Header = () => {
                   />
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent className="w-[250px] bg-white" align="end">
                 <DropdownMenuItem className="pointer-events-none cursor-default rounded-none border-b border-border">
                   <div className="py-[0.2rem]">
@@ -145,6 +154,7 @@ const Header = () => {
                     <p className="text-sm">{data.email!}</p>
                   </div>
                 </DropdownMenuItem>
+
                 <Link
                   className="block rounded-none border-b border-border px-[2px] py-[3px]"
                   href={`/user/${data.username!}`}
@@ -163,14 +173,20 @@ const Header = () => {
                   </DropdownMenuItem>
                 </Link>
 
-                <Link
+                <div
                   className="block rounded-none px-[2px] py-[3px]"
-                  href="/auth/logout"
+                  onClick={async () => {
+                    try {
+                      await supabase().auth.signOut();
+                    } catch (err) {
+                      toast("Error logging out");
+                    }
+                  }}
                 >
                   <DropdownMenuItem className="block w-full rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
                     <span>Logout</span>
                   </DropdownMenuItem>
-                </Link>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

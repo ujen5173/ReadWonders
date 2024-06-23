@@ -23,7 +23,6 @@ const SearchArea = ({
         limit: 7,
       },
       {
-        enabled: false,
         initialCursor:
           defaultResults.stories[defaultResults.stories.length - 1]?.id,
         refetchOnWindowFocus: false,
@@ -89,7 +88,7 @@ const SearchArea = ({
 
       {!(hasNextPage === undefined || hasNextPage) && (
         <div className="w-full pb-4 pt-8 text-center">
-          <p className="text-xl text-gray-500">No more stories to load</p>
+          <p className="text-xl text-gray-500">You have reached the end.</p>
         </div>
       )}
     </div>

@@ -20,12 +20,60 @@ export const storyRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().default(limit),
+        skip: z.number().default(skip),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
         const stories = await ctx.db.story.findMany({
           take: input.limit,
+          skip: input.skip,
+          include: {
+            chapters: {
+              select: {
+                title: true,
+                id: true,
+                createdAt: true,
+                slug: true,
+              },
+            },
+            author: {
+              select: {
+                name: true,
+                profile: true,
+              },
+            },
+          },
+        });
+
+        return stories;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch stories",
+        });
+      }
+    }),
+
+  fromGenre: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+        limit: z.number().default(limit),
+        skip: z.number().default(skip),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const stories = await ctx.db.story.findMany({
+          take: input.limit,
+          skip: input.skip,
+          where: {
+            category: {
+              equals: input.slug,
+              mode: "insensitive",
+            },
+          },
           include: {
             chapters: {
               select: {
@@ -91,6 +139,75 @@ export const storyRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch story",
+        });
+      }
+    }),
+
+  getReadingList: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const readingList = await ctx.db.readingList.findUnique({
+          where: {
+            id: input.slug,
+          },
+          select: {
+            id: true,
+            title: true,
+            author: {
+              select: {
+                name: true,
+                bio: true,
+                profile: true,
+              },
+            },
+            stories: {
+              select: {
+                id: true,
+                description: true,
+                slug: true,
+                title: true,
+                thumbnail: true,
+                tags: true,
+                is_premium: true,
+                category: true,
+                is_mature: true,
+                reads: true,
+                chapters: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    createdAt: true,
+                  },
+                },
+                author: {
+                  select: {
+                    name: true,
+                    profile: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (!readingList) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Reading list not found",
+          });
+        }
+
+        return readingList;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch reading list",
         });
       }
     }),
@@ -312,12 +429,14 @@ export const storyRouter = createTRPCRouter({
             story.category,
             story.is_mature,
             story.reads,
-            json_agg(json_build_object(
-              'id', chapter.id,
-              'title', chapter.title,
-              'slug', chapter.slug,
-              'createdAt', chapter."createdAt"
-            )) AS chapters,
+            COALESCE(json_agg(
+                json_build_object(
+                  'id', chapter.id,
+                  'title', chapter.title,
+                  'slug', chapter.slug,
+                  'createdAt', chapter."createdAt"
+                )
+              ) FILTER (WHERE chapter.id IS NOT NULL), '[]') AS chapters,
             json_build_object(
               'name', author.name,
               'profile', author.profile
@@ -331,7 +450,7 @@ export const storyRouter = createTRPCRouter({
           LIMIT ${limit + 1}
         `;
 
-        const hasNextPage = stories.length > limit + 2;
+        const hasNextPage = stories.length > limit;
 
         if (hasNextPage) {
           stories.pop();
@@ -522,6 +641,37 @@ export const storyRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to add story to reading list",
+        });
+      }
+    }),
+
+  removeReadingListStory: privateProcedure
+    .input(
+      z.object({
+        storyId: z.string(),
+        readingListId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.readingList.update({
+          where: {
+            id: input.readingListId,
+          },
+          data: {
+            stories: {
+              disconnect: {
+                id: input.storyId,
+              },
+            },
+          },
+        });
+
+        return true;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to remove story from reading list",
         });
       }
     }),

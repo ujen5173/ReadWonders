@@ -24,6 +24,9 @@ const config = {
         hostname: "bookcoverzone.com",
       },
       {
+        hostname: "www.kpop.ae",
+      },
+      {
         hostname: "covers.bookcoverzone.com",
       },
       {
