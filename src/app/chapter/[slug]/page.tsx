@@ -38,8 +38,8 @@ import SimilarStories from "./_components/similar-stories";
 
 const Chapter = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
+
   const chapterDetails = await api.chapter.getSingeChapter.query({ slug });
-  console.log({ chapterDetails });
 
   if (!chapterDetails) return null;
 

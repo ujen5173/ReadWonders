@@ -1,4 +1,5 @@
 export const limit = 10;
+
 export const skip = 0;
 
 export const slugy = {
@@ -9,9 +10,8 @@ export const slugy = {
   locale: "en",
 };
 
-// export const cardWidth = 217.5;
 export const cardWidth = 217.5;
-// export const cardHeight = 330;
+
 export const cardHeight = 310;
 
 const genres: {
@@ -120,8 +120,11 @@ export const getGenre = () => {
       "Start writing your book today with our easy-to-use writing tools.",
     stories: null,
   });
+
   return genres;
 };
+
 // reading list mini book size
 export const bookWidth = cardWidth / 1.5;
+
 export const bookHeight = cardHeight / 1.4;

@@ -54,7 +54,9 @@ const ReadingLists = ({
 
     if (res) {
       const updatedList = data.stories.filter((story) => story.id !== id);
+
       setList(updatedList);
+
       toast.success("Story removed from reading list");
     }
   };
@@ -63,7 +65,10 @@ const ReadingLists = ({
     <>
       {list.length > 0 ? (
         list.map((story) => (
-          <div className="relative grid w-full grid-cols-1 place-items-center gap-5 border-b border-border py-6 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          <div
+            key={story.id}
+            className="relative grid w-full grid-cols-1 place-items-center gap-5 border-b border-border py-6 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+          >
             <CoverCard
               readingList={true}
               removeFromList={removeFromList}

@@ -29,6 +29,7 @@ import { api } from "~/trpc/react";
 
 const ReadingListModel = ({ bookId }: { bookId: string }) => {
   const { user } = useUser();
+
   const [readingLists, setReadingLists] = useState<
     {
       id: string;
@@ -73,6 +74,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         toast({
           title: "You need to be logged in to add a story to a reading list",
         });
+
         return;
       }
 
@@ -160,6 +162,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
                 const listId = readingLists.filter(
                   (list) => list.title === data,
                 )[0]?.id!;
+
                 addReadingList(listId);
               }}
             >

@@ -30,7 +30,9 @@ import {
 
 const Footer = () => {
   const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
   return (
     <footer className="w-full">
       <div className="mx-auto max-w-[1440px]">

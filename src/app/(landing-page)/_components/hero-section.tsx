@@ -91,7 +91,7 @@ const HeroSection = () => {
                   >
                     {Array(6)
                       .fill(0)
-                      .map((_, i) => (
+                      .map((__, i) => (
                         <div
                           key={i}
                           style={{

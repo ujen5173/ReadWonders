@@ -80,9 +80,7 @@ export const authRouter = createTRPCRouter({
 
         return readingLists;
       } catch (err) {
-        console.log({ err });
-        // throw new Error("Error fetching reading lists");
-        return null;
+        throw new Error("Error fetching reading lists");
       }
     }),
 });

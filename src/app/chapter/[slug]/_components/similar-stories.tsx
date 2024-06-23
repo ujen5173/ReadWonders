@@ -20,7 +20,7 @@ const SimilarStories = () => {
     <div className="w-full">
       <div className="mx-auto max-w-[1440px] border-y border-border py-8">
         <h1 className="mb-4 text-2xl font-semibold text-foreground">
-          You'll also like
+          You&apos;ll also like
         </h1>
         <div className="flex gap-4">
           {isLoading

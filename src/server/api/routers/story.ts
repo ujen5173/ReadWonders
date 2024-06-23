@@ -394,7 +394,7 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { query, limit, cursor } = input;
+        const { query, cursor } = input;
 
         const searchTerms = query.toLowerCase().split(/\s+/);
 
@@ -447,10 +447,10 @@ export const storyRouter = createTRPCRouter({
           WHERE ${Prisma.join(searchConditions, " AND ")} ${cursorCondition}
           GROUP BY story.id, author.name, author.profile
           ORDER BY story.id
-          LIMIT ${limit + 1}
+          LIMIT ${input.limit + 1}
         `;
 
-        const hasNextPage = stories.length > limit;
+        const hasNextPage = stories.length > input.limit;
 
         if (hasNextPage) {
           stories.pop();
