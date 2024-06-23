@@ -344,7 +344,6 @@ model ReadingList {
   id          String   @id @default(uuid()) @db.Uuid
   authorId    String   @db.Uuid
   title       String
-  slug        String
   description String?
   private     Boolean  @default(false)
   createdAt   DateTime @default(now())
