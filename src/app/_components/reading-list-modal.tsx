@@ -159,11 +159,12 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
           <div className="mb-2">
             <Select
               onValueChange={(data) => {
-                const listId = readingLists.filter(
-                  (list) => list.title === data,
-                )[0]?.id!;
+                const list = readingLists.find((list) => list.title === data);
+                const listId = list?.id;
 
-                addReadingList(listId);
+                if (listId) {
+                  addReadingList(listId);
+                }
               }}
             >
               <SelectTrigger className="bg-white outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0">

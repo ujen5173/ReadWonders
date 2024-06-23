@@ -120,29 +120,25 @@ export const chapterRouter = createTRPCRouter({
         }
 
         // to get next chapter select next chapter after finding the current chapter
-        const nextChapter = chapter.story.chapters.reduce(
-          (acc, curr, index) => {
-            if (
-              curr.id === chapter.id &&
-              index < chapter.story.chapters.length - 1
-            ) {
-              acc = chapter.story.chapters[index + 1] as {
-                id: string;
-                title: string;
-                slug: string;
-              };
-            }
-
-            return acc;
-          },
-          <
-            {
+        const nextChapter = chapter.story.chapters.reduce<{
+          id: string;
+          title: string;
+          slug: string;
+        } | null>((acc, curr, index) => {
+          if (
+            acc === null &&
+            curr.id === chapter.id &&
+            index < chapter.story.chapters.length - 1
+          ) {
+            return chapter.story.chapters[index + 1] as {
               id: string;
               title: string;
               slug: string;
-            } | null
-          >null,
-        );
+            };
+          }
+
+          return acc;
+        }, null);
 
         const result = {
           ...chapter,

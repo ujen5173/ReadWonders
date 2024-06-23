@@ -24,27 +24,11 @@ import {
   SheetHeader,
 } from "~/components/ui/sheet";
 import { cardHeight, cardWidth } from "~/server/constants";
-import { api } from "~/trpc/react";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
 const Story = () => {
   const router = useRouter();
   const { activeBook } = useContext(Context);
-  console.log({ activeBook });
-
-  const { mutateAsync } = api.story.addToReadingList.useMutation();
-
-  const addToReadingList = async () => {
-    try {
-      console.log("Adding to reading list");
-      // const res = await mutateAsync({
-      //   storyId: activeBook?.id as string,
-      // });
-      // console.log({ res });
-    } catch (error) {
-      console.log({ error });
-    }
-  };
 
   return (
     <Sheet
@@ -83,6 +67,7 @@ const Story = () => {
               </div>
             </div>
           </SheetHeader>
+
           <div
             className="relative"
             style={{
@@ -99,6 +84,7 @@ const Story = () => {
                     {activeBook?.description}
                   </SheetDescription>
                 </div>
+
                 <div className="mb-8">
                   <div className="xs: mb-2 flex flex-wrap items-center justify-center gap-1">
                     <div className="flex flex-col items-center px-2">
@@ -110,6 +96,7 @@ const Story = () => {
                         {formatNumber(activeBook!.reads)}
                       </p>
                     </div>
+
                     <Separator orientation="vertical" className="h-8" />
                     <div className="flex flex-col items-center px-2">
                       <div className="flex gap-2">
@@ -120,6 +107,7 @@ const Story = () => {
                         {formatNumber(activeBook!.reads / 4)}
                       </p>
                     </div>
+
                     <Separator orientation="vertical" className="h-8" />
                     <div className="flex flex-col items-center px-2">
                       <div className="flex gap-2">
@@ -128,6 +116,7 @@ const Story = () => {
                       </div>
                       <p className="font-bold">{12}</p>
                     </div>
+
                     <Separator orientation="vertical" className="h-8" />
                     <div className="flex flex-col items-center px-2">
                       <div className="flex gap-2">
@@ -140,10 +129,12 @@ const Story = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="mb-8">
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     Tags
                   </h1>
+
                   {(activeBook?.tags ?? []).length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {activeBook?.tags.map((tag) => (
@@ -162,10 +153,12 @@ const Story = () => {
                     </p>
                   )}
                 </div>
+
                 <div>
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     Chapter
                   </h1>
+
                   {(activeBook?.chapters ?? []).length > 0 ? (
                     activeBook?.chapters.map((chapter) => (
                       <Link
@@ -178,6 +171,7 @@ const Story = () => {
                           <h2 className="text-lg font-semibold">
                             {chapter.title}
                           </h2>
+
                           <p className="text-base text-slate-600">
                             {formatDate(chapter.createdAt)}
                           </p>
@@ -193,6 +187,7 @@ const Story = () => {
                 </div>
               </div>
             </ScrollArea>
+
             <div className="absolute bottom-0 left-0 flex w-full flex-col items-center gap-2 bg-background pt-4 sm:flex-row">
               <Link
                 className="w-full flex-1"
@@ -205,17 +200,8 @@ const Story = () => {
                 </Button>
               </Link>
               <div className="w-full flex-1">
-                {/* <ReadingListButton bookId={activeBook?.id as string} /> */}
                 <ReadingListModel bookId={activeBook?.id as string} />
               </div>
-              {/* <Button
-                onClick={addToReadingList}
-                className="w-full flex-1 gap-2"
-                variant={"secondary"}
-              >
-                <PlusSquare size={16} />
-                <span>Add to Reading List</span>
-              </Button> */}
             </div>
           </div>
         </div>
