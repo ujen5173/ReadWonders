@@ -159,7 +159,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
           <div className="mb-2">
             <Select
               onValueChange={(data) => {
-                const list = readingLists.find((list) => list.title === data);
+                const list = readingLists.find((l) => l.title === data);
                 const listId = list?.id;
 
                 if (listId) {
