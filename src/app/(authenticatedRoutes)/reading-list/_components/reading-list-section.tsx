@@ -28,14 +28,18 @@ const ReadingListSection = ({ userId }: { userId: string }) => {
             key={index}
           />
         ))
-      ) : (readingLists ?? []).length > 0 ? (
-        readingLists?.map((readingList) => (
-          <ReadingListCard key={readingList.id} readingList={readingList} />
-        ))
       ) : (
-        <div className="w-full text-center text-lg text-gray-500">
-          No stories found!
-        </div>
+        <>
+          {(readingLists ?? []).length > 0 ? (
+            readingLists?.map((readingList) => (
+              <ReadingListCard key={readingList.id} readingList={readingList} />
+            ))
+          ) : (
+            <div className="w-full text-center text-lg text-gray-500">
+              No stories found!
+            </div>
+          )}
+        </>
       )}
     </div>
   );
