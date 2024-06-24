@@ -29,7 +29,9 @@ const StoriesArea: FC<Props> = async ({
       <div>
         <div className="flex items-center justify-between gap-4">
           <div className="mb-4 flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-primary">{title}</h1>
+            <h1 className="text-xl font-semibold text-primary sm:text-2xl">
+              {title}
+            </h1>
             <ArrowDown size={18} className="text-primary" />
           </div>
         </div>
@@ -44,8 +46,8 @@ const StoriesArea: FC<Props> = async ({
       <main
         className={cn(
           inRow
-            ? "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3"
-            : "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+            ? "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3"
+            : "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
         )}
       >
         {(data ?? []).map((story) => (

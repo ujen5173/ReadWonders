@@ -46,7 +46,7 @@ const CoverCard: FC<{
         />
 
         <div className="w-full">
-          <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
+          <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
             {details.title}
           </h1>
           {readingList && (
@@ -57,7 +57,7 @@ const CoverCard: FC<{
         </div>
       </Link>
 
-      <div className="absolute inset-0 flex flex-col">
+      <div className="absolute inset-0 hidden flex-col sm:flex">
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
           <div className="flex items-center justify-between">
             <div className="mb-2 w-full">
@@ -66,6 +66,7 @@ const CoverCard: FC<{
               </Badge>
             </div>
           </div>
+
           <div className="flex items-center justify-center py-4">
             <Link
               href={`/story/${details.slug}`}
@@ -75,6 +76,7 @@ const CoverCard: FC<{
               <MoveRight size={16} />
             </Link>
           </div>
+
           <div className="flex items-center justify-between pb-4">
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
@@ -117,14 +119,15 @@ const CoverCard: FC<{
                 loading={removing}
                 className="w-full gap-2"
               >
-                <X size={16} />
+                {!removing && <X size={16} />}
                 <span>Remove from List</span>
               </Button>
             )}
           </div>
         </div>
+
         <div className="invisible w-full">
-          <h1 className="line-clamp-1 text-lg font-medium text-slate-800">
+          <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
             {details.title}
           </h1>
           {readingList && (

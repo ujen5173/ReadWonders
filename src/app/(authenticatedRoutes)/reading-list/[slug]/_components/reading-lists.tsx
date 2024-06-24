@@ -7,9 +7,9 @@ import { api } from "~/trpc/react";
 
 const ReadingLists = ({
   data,
-  listId,
+  listSlug,
 }: {
-  listId: string;
+  listSlug: string;
   data: {
     id: string;
     title: string;
@@ -48,7 +48,7 @@ const ReadingLists = ({
 
   const removeFromList = async (id: string) => {
     const res = await mutateAsync({
-      readingListId: listId,
+      readingListSlug: listSlug,
       storyId: id,
     });
 
@@ -64,20 +64,19 @@ const ReadingLists = ({
   return (
     <>
       {list.length > 0 ? (
-        list.map((story) => (
-          <div
-            key={story.id}
-            className="relative grid w-full grid-cols-1 place-items-center gap-5 border-b border-border py-6 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
-          >
-            <CoverCard
-              readingList={true}
-              removeFromList={removeFromList}
-              removing={isLoading}
-              details={story}
-              key={story.id}
-            />
+        <div className="border-b border-border py-6">
+          <div className="relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {list.map((story) => (
+              <CoverCard
+                readingList={true}
+                removeFromList={removeFromList}
+                removing={isLoading}
+                details={story}
+                key={story.id}
+              />
+            ))}
           </div>
-        ))
+        </div>
       ) : (
         <div className="w-full border-b border-border py-20 text-center text-xl text-foreground">
           No stories in this reading list

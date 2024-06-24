@@ -11,9 +11,14 @@ import { api } from "~/trpc/react";
 import { formatNumber } from "~/utils/helpers";
 
 const UserProfile = ({ params }: { params: { slug: string } }) => {
-  const { data: userDetails } = api.auth.userProfile.useQuery({
-    username: params.slug,
-  });
+  const { data: userDetails } = api.auth.userProfile.useQuery(
+    {
+      username: params.slug,
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   if (!userDetails) return null;
 
@@ -98,7 +103,7 @@ const UserProfile = ({ params }: { params: { slug: string } }) => {
             {userDetails.name!}&apos;s Works
           </h1>
 
-          <main className="relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          <main className="relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {userDetails.stories.length > 0 ? (
               userDetails.stories.map((story) => (
                 <CoverCard key={story.id} details={story} />

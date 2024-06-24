@@ -7,7 +7,7 @@ const Logo = ({ variant = "md" }: { variant?: "sm" | "md" }) => {
       className={cn(
         suezOne.className,
         `font-bold text-text-primary`,
-        variant === "sm" ? "text-lg" : "text-2xl",
+        variant === "sm" ? "text-base sm:text-lg" : "text-xl sm:text-2xl",
       )}
     >
       <span className="text-primary">Read</span>

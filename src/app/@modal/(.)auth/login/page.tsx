@@ -8,16 +8,18 @@ const LoginModal = () => {
   const router = useRouter();
 
   return (
-    <Dialog
-      defaultOpen
-      onOpenChange={(isOpen) => {
-        if (!isOpen) router.back();
-      }}
-    >
-      <DialogContent className="bg-white">
-        <Login />
-      </DialogContent>
-    </Dialog>
+    <div className="px-4">
+      <Dialog
+        defaultOpen
+        onOpenChange={(isOpen) => {
+          if (!isOpen) router.back();
+        }}
+      >
+        <DialogContent className="bg-white">
+          <Login />
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

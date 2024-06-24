@@ -1,14 +1,12 @@
-import { BookOpen, Eye, Hash, LayoutList, Notebook, Star } from "lucide-react";
+import { BookOpen, Eye, LayoutList, Notebook, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
 import { contentFont } from "~/config/font";
-import { cardHeight, cardWidth } from "~/server/constants";
 import { api } from "~/trpc/server";
-import { formatNumber, formatReadingTime } from "~/utils/helpers";
+import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
 const Story = async ({ params }: { params: { slug: string } }) => {
   const storyDetails = await api.story.getSingle.query({ slug: params.slug });
@@ -17,18 +15,14 @@ const Story = async ({ params }: { params: { slug: string } }) => {
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1340px] border-b border-border py-6">
         <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-12 md:p-6 lg:p-12">
-          <div className="relative flex w-fit flex-col items-center gap-8">
+          <div className="relative mx-auto flex w-full max-w-80 flex-col items-center gap-8">
             <Image
               alt="Story cover"
               loading="eager"
               width="440"
               src={storyDetails.thumbnail}
               height="860"
-              style={{
-                width: cardWidth * 2 + "px",
-                height: cardHeight * 2.1 + "px",
-              }}
-              className="w-full overflow-hidden rounded-lg object-fill shadow-2xl"
+              className="story-cover-thumbnail w-full overflow-hidden rounded-lg object-fill shadow-2xl"
             />
             <div className="flex w-full flex-col gap-4">
               <Button className="w-full" variant="default">
@@ -49,6 +43,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
           </div>
+
           <div className="w-full flex-1 space-y-8">
             <header className="space-y-2">
               <h1
@@ -75,9 +70,9 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </a>
               </div>
             </header>
-            <div className="mb-2 flex items-center gap-2">
-              <div className="px-2">
-                <div className="flex flex-col items-center">
+            <div className="mx-auto mb-2 flex flex-wrap sm:m-0">
+              <div className="flex-1">
+                <div className="flex flex-1 flex-col items-center border-r border-border p-2">
                   <div className="flex items-center gap-1">
                     <Eye size={16} />
                     <p>Reads</p>
@@ -87,9 +82,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   </p>
                 </div>
               </div>
-              <Separator orientation="vertical" className="h-8" />
-              <div className="px-2">
-                <div className="flex flex-col items-center">
+              <div className="flex-1">
+                <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r">
                   <div className="flex items-center gap-1">
                     <Star size={16} />
                     <p>Likes</p>
@@ -99,9 +93,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   </p>
                 </div>
               </div>
-              <Separator orientation="vertical" className="h-8" />
-              <div className="px-2">
-                <div className="flex flex-col items-center">
+              <div className="flex-1">
+                <div className="flex flex-1 flex-col items-center border-r border-border p-2 xxs:border-r">
                   <div className="flex items-center gap-1">
                     <LayoutList size={16} />
                     <p>Chapters</p>
@@ -109,9 +102,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   <p className="font-semibold">{12}</p>
                 </div>
               </div>
-              <Separator orientation="vertical" className="h-8" />
-              <div className="px-2">
-                <div className="flex flex-col items-center">
+              <div className="flex-1">
+                <div className="flex flex-1 flex-col items-center border-border p-2">
                   <div className="flex items-center gap-1">
                     <BookOpen size={16} />
                     <p>Time</p>
@@ -158,16 +150,15 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               {storyDetails.chapters.length > 0 ? (
                 storyDetails.chapters.map((ch, index) => (
                   <Link href={`/chapter/${ch.slug}`} key={ch.id}>
-                    <div className="flex cursor-pointer items-center justify-between border-b border-border p-4 last:border-0 hover:bg-slate-100">
-                      <p className="text-xl font-medium text-slate-700">
+                    <div className="flex cursor-pointer items-center justify-between border-b border-border px-4 py-2 last:border-0 hover:bg-slate-100">
+                      <p className="line-clamp-1 text-lg font-medium text-slate-700 xxs:text-xl">
                         <span className="inline-flex items-baseline gap-1 text-slate-600">
-                          <Hash size={16} />
                           {index + 1}.
                         </span>{" "}
                         {ch.title}
                       </p>
-                      <p className="text-md text-slate-500">
-                        {ch.createdAt.toDateString()}
+                      <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
+                        {formatDate(ch.createdAt)}
                       </p>
                     </div>
                   </Link>

@@ -138,3 +138,30 @@
     width: 80%;
   }
 }
+
+.story-cover-thumbnail {
+  width: var(--card-width) + "px";
+  height: var(--card-height) + "px";
+}
+
+@media screen and (min-width: 768px) {
+  .story-cover-thumbnail {
+    width: var(--card-width) * 2 + "px";
+    height: var(--card-height) * 2.1 + "px";
+  }
+}
+
+.loading-skeleton {
+  height: var(--card-height) + "px";
+}
+
+@media screen and (min-width: 430px) {
+  .loading-skeleton {
+    height: calc(var(--card-height) / 1.2);
+  }
+}
+@media screen and (min-width: 495px) {
+  .loading-skeleton {
+    height: calc(var(--card-height));
+  }
+}

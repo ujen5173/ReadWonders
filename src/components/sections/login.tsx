@@ -55,10 +55,10 @@ const Login = () => {
   return (
     <section className="w-full p-6">
       <h1 className="mb-4 text-2xl font-semibold">Sign up / Login</h1>
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex flex-col items-center gap-2 xs:flex-row">
         <Button
           variant="outline"
-          className="flex-1 gap-2"
+          className="w-full gap-2"
           onClick={() => {
             signInWithOauth("google");
           }}
@@ -68,7 +68,7 @@ const Login = () => {
         </Button>
         <Button
           variant="outline"
-          className="flex-1 gap-2"
+          className="w-full gap-2"
           onClick={() => {
             signInWithOauth("github");
           }}

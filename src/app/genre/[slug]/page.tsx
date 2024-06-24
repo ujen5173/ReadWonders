@@ -7,9 +7,14 @@ import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 
 const Genre = ({ params }: { params: { slug: string } }) => {
-  const { data, isLoading } = api.story.fromGenre.useQuery({
-    slug: params.slug,
-  });
+  const { data, isLoading } = api.story.fromGenre.useQuery(
+    {
+      slug: params.slug,
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   return (
     <section className="w-full">
@@ -27,7 +32,7 @@ const Genre = ({ params }: { params: { slug: string } }) => {
           <div className="mx-auto max-w-[1440px]">
             <div
               className={cn(
-                "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+                "xxxs:grid-cols-2 relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
               )}
             >
               {Array.from({ length: 6 }).map((_, i) => (
@@ -52,7 +57,7 @@ const Genre = ({ params }: { params: { slug: string } }) => {
             ) : (
               <main
                 className={cn(
-                  "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+                  "xxxs:grid-cols-2 relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
                 )}
               >
                 {data?.map((story) => (

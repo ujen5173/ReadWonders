@@ -151,9 +151,9 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const readingList = await ctx.db.readingList.findUnique({
+        const readingList = await ctx.db.readingList.findFirst({
           where: {
-            id: input.slug,
+            slug: input.slug,
           },
           select: {
             id: true,
@@ -617,6 +617,12 @@ export const storyRouter = createTRPCRouter({
                   id: input.storyId,
                 },
               },
+              slug: slugify(
+                (input.newListTitle ?? "New Reading lists") +
+                  "-" +
+                  input.readingListId,
+                slugy,
+              ),
               id: input.readingListId,
               authorId: ctx.user.id,
             },
@@ -649,14 +655,14 @@ export const storyRouter = createTRPCRouter({
     .input(
       z.object({
         storyId: z.string(),
-        readingListId: z.string(),
+        readingListSlug: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
         await ctx.db.readingList.update({
           where: {
-            id: input.readingListId,
+            slug: input.readingListSlug,
           },
           data: {
             stories: {

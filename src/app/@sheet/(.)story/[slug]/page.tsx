@@ -16,19 +16,25 @@ import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-} from "~/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "~/components/ui/sheet";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
 const Story = () => {
   const router = useRouter();
   const { activeBook } = useContext(Context);
+
+  const calcHeight = () => {
+    const parent = document.querySelector(".book-cover-detail");
+
+    if (!parent) return `calc(100% - 203px)`;
+
+    const parentHeight = parent.clientHeight;
+    const padding = "1.5rem";
+    const buttonHeight = 40;
+
+    return `calc(100% - ${parentHeight + 24 + buttonHeight}px + ${padding})`;
+  };
 
   return (
     <Sheet
@@ -39,7 +45,7 @@ const Story = () => {
     >
       <SheetContent>
         <div className="flex h-full flex-col">
-          <SheetHeader>
+          <SheetHeader className="book-cover-detail">
             <div className="flex justify-center gap-4 py-6">
               <div>
                 <Image
@@ -55,7 +61,7 @@ const Story = () => {
                 />
               </div>
               <div className="flex-1 text-left">
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1 className="text-2xl font-medium text-foreground">
                   {activeBook?.title}
                 </h1>
                 <p className="mb-2 text-base font-semibold text-slate-600">
@@ -69,61 +75,61 @@ const Story = () => {
           </SheetHeader>
 
           <div
-            className="relative"
+            className="relative flex flex-1 flex-col overflow-scroll"
             style={{
-              height: "calc(100% - 203px)",
+              height: calcHeight(),
             }}
           >
-            <ScrollArea type="always" className="h-full pr-3">
-              <div className="">
+            <ScrollArea
+              type="always"
+              style={{
+                height: "100%",
+              }}
+              className="pr-3"
+            >
+              <div className="h-full">
                 <div className="mb-8">
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     About
                   </h1>
-                  <SheetDescription className="text-base">
-                    {activeBook?.description}
-                  </SheetDescription>
+                  <p className="text-base">{activeBook?.description}</p>
                 </div>
 
                 <div className="mb-8">
-                  <div className="xs: mb-2 flex flex-wrap items-center justify-center gap-1">
-                    <div className="flex flex-col items-center px-2">
+                  <div className="mb-2 grid grid-cols-2 gap-1">
+                    <div className="flex flex-col items-center border-b border-border px-2">
                       <div className="flex gap-2">
                         <Eye size={16} className="mt-1" />
                         <p>Reads</p>
                       </div>
-                      <p className="font-bold">
+                      <p className="font-medium">
                         {formatNumber(activeBook!.reads)}
                       </p>
                     </div>
-
-                    <Separator orientation="vertical" className="h-8" />
-                    <div className="flex flex-col items-center px-2">
+                    <div className="flex flex-col items-center border-b border-l border-border px-2">
                       <div className="flex gap-2">
                         <Star size={16} className="mt-1" />
                         <p>Likes</p>
                       </div>
-                      <p className="font-bold">
+                      <p className="font-medium">
                         {formatNumber(activeBook!.reads / 4)}
                       </p>
                     </div>
 
-                    <Separator orientation="vertical" className="h-8" />
                     <div className="flex flex-col items-center px-2">
                       <div className="flex gap-2">
                         <LayoutList className="mt-1" size={16} />
                         <p>Chapters</p>
                       </div>
-                      <p className="font-bold">{12}</p>
+                      <p className="font-medium">{12}</p>
                     </div>
 
-                    <Separator orientation="vertical" className="h-8" />
-                    <div className="flex flex-col items-center px-2">
+                    <div className="flex flex-col items-center border-l border-border px-2">
                       <div className="flex gap-2">
                         <BookOpen className="mt-1" size={16} />
                         <p>Time</p>
                       </div>
-                      <p className="font-bold">
+                      <p className="font-medium">
                         {formatReadingTime(activeBook!.reads)}
                       </p>
                     </div>
@@ -148,7 +154,7 @@ const Story = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-center text-lg text-slate-600">
+                    <p className="text-center text-base text-slate-600 sm:text-lg">
                       This story has no tags.
                     </p>
                   )}
@@ -179,7 +185,7 @@ const Story = () => {
                       </Link>
                     ))
                   ) : (
-                    <p className="text-center text-lg text-slate-600">
+                    <p className="text-center text-base text-slate-600 sm:text-lg">
                       No chapters written yet. <br /> Follow the author to get
                       updates.
                     </p>
@@ -188,7 +194,7 @@ const Story = () => {
               </div>
             </ScrollArea>
 
-            <div className="absolute bottom-0 left-0 flex w-full flex-col items-center gap-2 bg-background pt-4 sm:flex-row">
+            <div className="mt-4 flex w-full flex-col items-center gap-2 bg-background xxs:flex-row">
               <Link
                 className="w-full flex-1"
                 href={`/story/${activeBook?.slug}`}

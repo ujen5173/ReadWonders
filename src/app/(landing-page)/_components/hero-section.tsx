@@ -20,7 +20,9 @@ import { cn } from "~/utils/cn";
 import { chunkIntoN } from "~/utils/helpers";
 
 const HeroSection = () => {
-  const { data, isLoading } = api.helpers.images.useQuery();
+  const { data, isLoading } = api.helpers.images.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
   const { mutate, isLoading: updating } = api.example.update.useMutation();
 

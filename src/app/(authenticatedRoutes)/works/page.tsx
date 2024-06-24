@@ -4,7 +4,9 @@ import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 
 const Works = () => {
-  const { data, isLoading } = api.story.work.useQuery();
+  const { data, isLoading } = api.story.work.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <section>

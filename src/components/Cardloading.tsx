@@ -1,22 +1,21 @@
-import { cardHeight, cardWidth } from "~/server/constants";
 import { cn } from "~/utils/cn";
 import { Skeleton } from "./ui/skeleton";
 
 const LoadingRow = () => {
   return (
-    <div className="mx-auto max-w-[1440px] border-b border-border px-2 py-8">
+    <div className="mx-auto max-w-[1440px] px-2">
       <Skeleton className="mb-4 h-8 w-56" />
       <div
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
         )}
       >
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton
             key={i}
+            className="loading-skeleton"
             style={{
-              width: cardWidth + "px",
-              height: cardHeight * 1.16 + "px",
+              width: "100%",
             }}
           />
         ))}
@@ -27,19 +26,19 @@ const LoadingRow = () => {
 
 const LoadingColumn = () => {
   return (
-    <div>
+    <div className="flex-1">
       <Skeleton className="mb-4 h-8 w-56" />
       <div
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3",
         )}
       >
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton
             key={i}
+            className="loading-skeleton"
             style={{
-              width: cardWidth + "px",
-              height: cardHeight * 1.16 + "px",
+              width: "100%",
             }}
           />
         ))}

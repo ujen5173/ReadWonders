@@ -2,8 +2,6 @@
 
 import { Menu, Plus } from "lucide-react";
 import Link from "next/link";
-import { suezOne } from "~/config/font";
-import { cn } from "~/utils/cn";
 import { Button, buttonVariants } from "../ui/button";
 
 import Image from "next/image";
@@ -222,18 +220,11 @@ const MobileMenu = ({
           <Menu size={18} />
         </div>
       </SheetTrigger>
-      <SheetContent className="flex flex-col">
+      <SheetContent side={"left"} className="flex flex-col">
         <SheetHeader>
-          <SheetTitle className="mb-4">
-            <Link className="mr-6" href={user ? "/dashboard" : "/"}>
-              <h1
-                className={cn(
-                  `${suezOne.className} text-2xl font-medium text-text-primary`,
-                )}
-              >
-                <span className="text-primary">Read</span>
-                <span>Wonders.</span>
-              </h1>
+          <SheetTitle>
+            <Link className="mr-6 text-left" href={user ? "/dashboard" : "/"}>
+              <Logo />
             </Link>
           </SheetTitle>
         </SheetHeader>
@@ -264,7 +255,7 @@ const MobileMenu = ({
 
         <div className="flex flex-col gap-2">
           <Link href="/">
-            <Button className="w-full gap-2" variant="ghost-link">
+            <Button className="w-full gap-2" variant="default">
               <Plus size={18} />
               <span>Write a story</span>
             </Button>

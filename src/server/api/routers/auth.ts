@@ -71,6 +71,7 @@ export const authRouter = createTRPCRouter({
           },
           include: {
             stories: {
+              take: 3,
               select: {
                 thumbnail: true,
               },

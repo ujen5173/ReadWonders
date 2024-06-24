@@ -29,9 +29,14 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const router = useRouter();
   const { replace } = router;
 
-  const { data: chapter } = api.chapter.getSingeChapterById.useQuery({
-    chapterId: chapterId,
-  });
+  const { data: chapter } = api.chapter.getSingeChapterById.useQuery(
+    {
+      chapterId: chapterId,
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const [preparingUpload, setPreparingUpload] = useState(false);
   const [imageLoad, setImageLoad] = useState(true);

@@ -10,9 +10,10 @@ export default {
     },
     extend: {
       screens: {
-        "2xl": "1536px",
         xs: "495px",
-        xxs: "435px",
+        xxs: "430px",
+        xxxs: "235px",
+        "2xl": "1536px",
       },
       colors: {
         border: "hsl(var(--border))",

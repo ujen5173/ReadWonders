@@ -9,7 +9,7 @@ const ReadingList = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <section className="w-full">
-      <div className="mx-auto w-full max-w-[1440px] px-2">
+      <div className="mx-auto w-full max-w-[1440px] px-4">
         <div className="border-b border-border pb-6 pt-10">
           <div className="mb-6 flex items-center gap-4 ">
             <Image
@@ -24,17 +24,19 @@ const ReadingList = async ({ params }: { params: { slug: string } }) => {
                 {data.title}{" "}
                 <span className="text-foreground">Reading List</span>
               </h1>
-              <p className="text-lg text-foreground">7 books</p>
+              <p className="text-lg text-foreground">
+                {data.stories.length} book{data.stories.length > 1 ? "s" : ""}
+              </p>
             </div>
           </div>
 
-          <Button className="gap-2" variant={"outline"}>
+          <Button className="gap-2" variant={"secondary"}>
             <Share size={16} />
             Share
           </Button>
         </div>
 
-        <ReadingLists data={data} listId={params.slug} />
+        <ReadingLists data={data} listSlug={params.slug} />
       </div>
     </section>
   );

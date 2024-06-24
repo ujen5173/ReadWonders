@@ -19,6 +19,7 @@ const ReadingListCard = ({
   } & {
     id: string;
     authorId: string;
+    slug: string;
     title: string;
     description: string | null;
     createdAt: Date;
@@ -30,7 +31,7 @@ const ReadingListCard = ({
       className="overflow-hidden rounded-2xl border border-border bg-white shadow-md"
     >
       <div className="flex items-center justify-between gap-4 p-4">
-        <Link href={`/reading-list/${readingList.id}`}>
+        <Link href={`/reading-list/${readingList.slug}`}>
           <h2 className="line-clamp-1 text-xl font-medium">
             {readingList.title}
           </h2>
@@ -39,11 +40,13 @@ const ReadingListCard = ({
           <EllipsisVertical size={24} />
         </Button>
       </div>
-      <Link href={`/reading-list/${readingList.id}`}>
+
+      <Link href={`/reading-list/${readingList.slug}`}>
         <div
           style={{
             height: cardHeight / 1.4 + 32 + 44 + "px",
             width: cardWidth * 2 + "px",
+            maxWidth: "100%",
           }}
           className="relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-b-2xl border-t-2 border-slate-200 bg-slate-100 p-4"
         >

@@ -54,7 +54,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {loading && <Spinner className="size-4 text-slate-100" />}
+        {loading && (
+          <Spinner
+            className={cn(
+              variant === "default" ? "text-slate-100" : "text-slate-600",
+              "size-4",
+            )}
+          />
+        )}
         {children}
       </button>
     );
