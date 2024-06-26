@@ -11,6 +11,9 @@ Welcome to ReadWonders, a robust community platform designed for creators to com
 >
 > Follow me on GitHub [@ujen5173](https://github.com/ujen5173) for updates.
 
+![image](https://github.com/ujen5173/ReadWonders/assets/115857092/0ac36a0c-0783-4bd5-899b-16b6b80acc3c)
+
+
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
