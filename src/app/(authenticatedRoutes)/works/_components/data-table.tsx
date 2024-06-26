@@ -46,6 +46,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
       <div className="capitalize">
         {(() => {
           const data = row.getValue("id") as string;
+
           return (
             "..." + data.split("-")[data.split("-").length - 1]?.slice(0, 7)
           );
@@ -98,6 +99,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
       <div className="lowercase">
         {(() => {
           const data = row.getValue("reads");
+
           return formatNumber(Number(data) ?? 0);
         })()}
       </div>
@@ -121,6 +123,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
       <div className="lowercase">
         {(() => {
           const data = row.getValue("views");
+
           return formatNumber(Number(data) ?? 0);
         })()}
       </div>
@@ -175,6 +178,7 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({

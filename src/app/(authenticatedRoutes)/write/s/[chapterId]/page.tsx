@@ -113,7 +113,6 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     }
 
     const draftData = await loadDraft(chapter.story_id, chapter.id);
-    console.log(draftData);
 
     if (!draftData?.content) {
       toast({ title: "Please write something before publishing." });

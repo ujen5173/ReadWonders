@@ -1,4 +1,5 @@
 import { ArrowDown } from "lucide-react";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
 import TopPicks from "~/app/(landing-page)/_components/top-picks";
@@ -9,6 +10,10 @@ import ReadingListSection from "../reading-list/_components/reading-list-section
 
 const Dashboard = async () => {
   const { user } = await getServerUser();
+
+  if (!user) {
+    redirect("/login");
+  }
 
   return (
     <>
@@ -40,7 +45,7 @@ const Dashboard = async () => {
                   </div>
                 </div>
 
-                <ReadingListSection perRow={2} userId={user?.id!} />
+                <ReadingListSection perRow={2} userId={user.id} />
               </div>
             </section>
           </Suspense>

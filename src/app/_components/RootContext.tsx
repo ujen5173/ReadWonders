@@ -13,7 +13,7 @@ export const Context = createContext<RootContextType>({
 
 const RootContext = ({ children }: { children: ReactNode }) => {
   const path = usePathname();
-  console.log({ path });
+
   const [activeBook, setActiveBook] = useState<TCard | null>(null);
 
   return (
