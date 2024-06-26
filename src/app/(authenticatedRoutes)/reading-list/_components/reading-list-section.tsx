@@ -2,7 +2,7 @@
 
 import ReadingListCard from "~/components/reading-list-card";
 import { Skeleton } from "~/components/ui/skeleton";
-import { cardHeight } from "~/server/constants";
+import { cardHeight, defaultReadingList } from "~/server/constants";
 import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 
@@ -44,15 +44,15 @@ const ReadingListSection = ({
         ))
       ) : (
         <>
-          {(readingLists ?? []).length > 0 ? (
-            readingLists?.map((readingList) => (
-              <ReadingListCard key={readingList.id} readingList={readingList} />
-            ))
-          ) : (
-            <div className="w-full text-center text-lg text-gray-500">
-              No stories found!
-            </div>
-          )}
+          {readingLists &&
+            (readingLists.length > 0 ? readingLists : defaultReadingList)?.map(
+              (readingList) => (
+                <ReadingListCard
+                  key={readingList.id}
+                  readingList={readingList}
+                />
+              ),
+            )}
         </>
       )}
     </div>

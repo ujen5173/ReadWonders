@@ -94,7 +94,7 @@ const Footer = () => {
                     />
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="gap-2">
                   <Button type="submit">Submit</Button>
                   <DialogClose asChild>
                     <Button type="button" variant={"secondary"}>

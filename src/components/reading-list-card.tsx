@@ -7,23 +7,13 @@ import {
   cardHeight,
   cardWidth,
 } from "~/server/constants";
+import { TReadingListCard } from "~/types";
 import { Button } from "./ui/button";
 
 const ReadingListCard = ({
   readingList,
 }: {
-  readingList: {
-    stories: {
-      thumbnail: string;
-    }[];
-  } & {
-    id: string;
-    authorId: string;
-    slug: string;
-    title: string;
-    description: string | null;
-    createdAt: Date;
-  };
+  readingList: TReadingListCard;
 }) => {
   return (
     <div
