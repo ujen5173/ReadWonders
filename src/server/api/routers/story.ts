@@ -396,6 +396,7 @@ export const storyRouter = createTRPCRouter({
       return stories.map((s) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { chapters, ...rest } = s;
+
         return {
           ...rest,
           views: s.reads,
