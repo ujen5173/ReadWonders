@@ -27,9 +27,9 @@ export type TCard = {
   title: string;
   thumbnail: string;
   tags: string[];
-  is_premium: boolean;
+  isPremium: boolean;
   category: string | null;
-  is_mature: boolean;
+  isMature: boolean;
   reads: number;
   chapters: {
     id: string;
@@ -39,6 +39,7 @@ export type TCard = {
   }[];
   author: {
     name: string | null;
+    username: string | null;
     profile: string | null;
   };
 };

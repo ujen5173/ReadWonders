@@ -1,24 +1,42 @@
-"use client";
-
 import { Dot, Mail, PlusSquare } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import CoverCard from "~/components/cover-card";
 import Footer from "~/components/sections/footer";
 import { Button } from "~/components/ui/button";
-import { api } from "~/trpc/react";
+import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
+import { api } from "~/trpc/server";
 import { formatNumber } from "~/utils/helpers";
 
-const UserProfile = ({ params }: { params: { slug: string } }) => {
-  const { data: userDetails } = api.auth.userProfile.useQuery(
-    {
-      username: params.slug,
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
+interface Props {
+  params: {
+    slug: string;
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata | undefined> {
+  const user = await api.auth.userProfile.query({ username: params.slug });
+
+  if (!user) {
+    return;
+  }
+
+  return constructMetadata({
+    title: `${user.name} - ${siteConfig.name}`,
+    image: user.profile ? user.profile : `${getBaseUrl()}/og-image.jpg`,
+    publishedTime: user.createdAt.toString(),
+    url: `${getBaseUrl()}/user/${params.slug}`,
+  });
+}
+
+const UserProfile = async ({ params }: { params: { slug: string } }) => {
+  const userDetails = await api.auth.userProfile.query({
+    username: params.slug,
+  });
 
   if (!userDetails) return null;
 
@@ -26,7 +44,7 @@ const UserProfile = ({ params }: { params: { slug: string } }) => {
     <>
       <div className="mx-auto min-h-96 w-full max-w-[1440px] px-4">
         <div className="border-b border-border py-8">
-          <div className="mb-6 flex gap-2">
+          <div className="mb-6 flex flex-wrap gap-2">
             <Image
               alt={userDetails.name!}
               src={userDetails.profile!}
@@ -36,7 +54,7 @@ const UserProfile = ({ params }: { params: { slug: string } }) => {
             />
 
             <div>
-              <div className="mb-1 flex items-baseline gap-1">
+              <div className="mb-1 flex flex-wrap items-baseline gap-2">
                 <h1 className="mb-2 text-4xl font-semibold text-primary">
                   {userDetails.name!}
                 </h1>
@@ -45,7 +63,7 @@ const UserProfile = ({ params }: { params: { slug: string } }) => {
                 </span>
               </div>
 
-              <div className="flex items-center text-base font-medium text-slate-700">
+              <div className="mt-6 flex flex-wrap items-center text-base font-medium text-slate-700 xxs:mt-0">
                 <div>
                   <span>{userDetails.stories?.length} works</span>
                 </div>
@@ -71,8 +89,8 @@ const UserProfile = ({ params }: { params: { slug: string } }) => {
             </blockquote>
           )}
 
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-8">
+            <div className="flex flex-wrap items-center gap-2">
               <Button className="gap-1" variant="secondary">
                 <Icons.wattpad className="size-4" />
                 <span>Wattpad</span>

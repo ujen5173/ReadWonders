@@ -1,7 +1,21 @@
 import { Filter } from "lucide-react";
+import { Metadata } from "next";
 import SearchArea from "~/components/sections/search-area";
 import { Button } from "~/components/ui/button";
+import { constructMetadata, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
+
+interface Props {
+  searchParams: { q: string };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: Props): Promise<Metadata | undefined> {
+  return constructMetadata({
+    title: `Search '${searchParams.q}' - ${siteConfig.name}`,
+  });
+}
 
 const SearchStories = async ({
   searchParams,

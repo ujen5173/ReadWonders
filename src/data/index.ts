@@ -64,12 +64,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://pbs.twimg.com/media/FEODNKJVcAAu4o-?format=jpg&name=large",
     tags: [],
-    is_premium: false,
-    is_mature: true,
+    isPremium: false,
+    isMature: true,
     category: "Drama",
     reads: 44600,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -93,12 +94,13 @@ export const allStories: TCard[] = [
       "tzuyu",
       "nayeon",
     ],
-    is_premium: false,
-    is_mature: true,
+    isPremium: false,
+    isMature: true,
     category: "Drama",
     reads: 44600,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -113,12 +115,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/140x140_RS/8e/b1/28/8eb1284c7152634a7629bf6e46280f12.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Science",
     reads: 1500,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -133,12 +136,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Programming",
     reads: 2300,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -153,12 +157,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/7a/2a/95/7a2a95721f9017947ec7915d04e12eab.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Health",
     reads: 900,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -172,12 +177,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/c0/dc/6e/c0dc6ecd09dbe3ec793fa1b57db14e5f.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Cooking",
     reads: 1850,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -191,12 +197,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Finance",
     reads: 1200,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -211,12 +218,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Art",
     reads: 600,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -231,12 +239,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Science",
     reads: 1750,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -250,12 +259,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/474x/5c/1a/bc/5c1abcdf90cea86d253b259d48aa645e.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Travel",
     reads: 3000,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -270,12 +280,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Wellness",
     reads: 800,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -290,12 +301,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Technology",
     reads: 1400,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -310,12 +322,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/7a/2a/95/7a2a95721f9017947ec7915d04e12eab.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "History",
     reads: 950,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -330,12 +343,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Science",
     reads: 1500,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -350,12 +364,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/c5/c8/52/c5c852ebefa733c2709d45b99c7b97a0.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Programming",
     reads: 2300,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -370,12 +385,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/474x/97/71/42/9771427a21f1ffa610169a725f861dcf.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Health",
     reads: 900,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -389,12 +405,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/236x/fb/6c/9f/fb6c9f8c5fb4cb48054a1d59fb570179.jpg",
     tags: [],
-    is_premium: true,
-    is_mature: false,
+    isPremium: true,
+    isMature: false,
     category: "Cooking",
     reads: 1850,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -408,12 +425,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/736x/fa/81/9f/fa819f34211a4abded4e16c5a9c38643.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Finance",
     reads: 1200,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -427,12 +445,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/564x/9a/dd/ba/9addba73b934854f9e03dc158399fd83.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "Hobbies",
     reads: 110000,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -447,12 +466,13 @@ export const allStories: TCard[] = [
     thumbnail:
       "https://i.pinimg.com/564x/7e/8c/59/7e8c59c2941b5030d081a6b713524c15.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: true,
+    isPremium: false,
+    isMature: true,
     category: "Programming",
     reads: 6516546,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -466,12 +486,13 @@ export const allStories: TCard[] = [
       'There are a total of six worlds, captain" \n\nThe captain of the strongest knight order has been resurrected into another world with no memories of the life she had lived before her death.\n\nWill she be able to survive when she is forced to go back to her original world?\n\n-\n\nGenre: Fanfiction and fantasy\n\nTwice X fem!Reader',
     thumbnail: "https://img.wattpad.com/cover/202484599-512-k683626.jpg",
     tags: [],
-    is_premium: false,
-    is_mature: false,
+    isPremium: false,
+    isMature: false,
     category: "History",
     reads: 6987621,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },
@@ -496,12 +517,13 @@ export const allStories: TCard[] = [
       "mina",
       "momo",
     ],
-    is_premium: false,
-    is_mature: true,
+    isPremium: false,
+    isMature: true,
     category: "Finance",
     reads: 5173,
     author: {
       name: "Ujen Basi",
+      username: "Ujen Basi",
       profile:
         "https://i.pinimg.com/140x140_RS/26/1c/fb/261cfb190ec4fa1650c21a0d41f5908e.jpg",
     },

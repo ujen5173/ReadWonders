@@ -41,6 +41,7 @@ export const storyRouter = createTRPCRouter({
               select: {
                 name: true,
                 profile: true,
+                username: true,
               },
             },
           },
@@ -87,6 +88,7 @@ export const storyRouter = createTRPCRouter({
               select: {
                 name: true,
                 profile: true,
+                username: true,
               },
             },
           },
@@ -173,9 +175,9 @@ export const storyRouter = createTRPCRouter({
                 title: true,
                 thumbnail: true,
                 tags: true,
-                is_premium: true,
+                isPremium: true,
                 category: true,
-                is_mature: true,
+                isMature: true,
                 reads: true,
                 chapters: {
                   select: {
@@ -189,6 +191,7 @@ export const storyRouter = createTRPCRouter({
                   select: {
                     name: true,
                     profile: true,
+                    username: true,
                   },
                 },
               },
@@ -258,8 +261,8 @@ export const storyRouter = createTRPCRouter({
               },
             },
             reads: true,
-            is_premium: true,
-            is_deleted: false,
+            isPremium: true,
+            isDeleted: false,
             author_id: false,
             description: true,
             slug: true,
@@ -267,7 +270,7 @@ export const storyRouter = createTRPCRouter({
             id: true,
             title: true,
             thumbnail: true,
-            is_mature: true,
+            isMature: true,
           },
 
           orderBy: {
@@ -299,7 +302,7 @@ export const storyRouter = createTRPCRouter({
           skip: input.skip,
           select: {
             reads: true,
-            is_premium: true,
+            isPremium: true,
             description: true,
             tags: true,
             slug: true,
@@ -307,7 +310,7 @@ export const storyRouter = createTRPCRouter({
             id: true,
             title: true,
             thumbnail: true,
-            is_mature: true,
+            isMature: true,
             chapters: {
               select: {
                 title: true,
@@ -320,11 +323,12 @@ export const storyRouter = createTRPCRouter({
               select: {
                 name: true,
                 profile: true,
+                username: true,
               },
             },
           },
           where: {
-            is_deleted: false,
+            isDeleted: false,
           },
           orderBy: {
             reads: "desc",
@@ -425,9 +429,9 @@ export const storyRouter = createTRPCRouter({
             story.title,
             story.thumbnail,
             story.tags,
-            story.is_premium,
+            story."isPremium",
             story.category,
-            story.is_mature,
+            story."isMature",
             story.reads,
             COALESCE(json_agg(
                 json_build_object(
@@ -576,7 +580,7 @@ export const storyRouter = createTRPCRouter({
             id: input.id,
           },
           data: {
-            is_deleted: true,
+            isDeleted: true,
           },
         });
 

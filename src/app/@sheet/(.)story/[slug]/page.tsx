@@ -16,7 +16,12 @@ import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader } from "~/components/ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+} from "~/components/ui/sheet";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
@@ -64,18 +69,30 @@ const Story = () => {
                 <h1 className="text-2xl font-medium text-foreground">
                   {activeBook?.title}
                 </h1>
-                <p className="mb-2 text-base font-semibold text-slate-600">
-                  By {activeBook?.author.name}
-                </p>
-                <Badge variant="secondary" className="border border-border/70">
-                  {activeBook?.category}
-                </Badge>
+                <Link href={`/user/${activeBook?.author.username}`}>
+                  <p className="mb-2 text-base font-semibold text-slate-600">
+                    By{" "}
+                    <span className="text-primary underline">
+                      {activeBook?.author.name}
+                    </span>
+                  </p>
+                </Link>
+                <Link href={`/genre/${activeBook?.category}`}>
+                  <SheetClose>
+                    <Badge
+                      variant="secondary"
+                      className="border border-border/70"
+                    >
+                      {activeBook?.category}
+                    </Badge>
+                  </SheetClose>
+                </Link>
               </div>
             </div>
           </SheetHeader>
 
           <div
-            className="relative flex flex-1 flex-col overflow-scroll"
+            className="relative flex flex-1 flex-col overflow-auto"
             style={{
               height: calcHeight(),
             }}
@@ -88,7 +105,7 @@ const Story = () => {
               className="pr-3"
             >
               <div className="h-full">
-                <div className="mb-8">
+                <div className="mb-6">
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     About
                   </h1>
@@ -96,41 +113,43 @@ const Story = () => {
                 </div>
 
                 <div className="mb-8">
-                  <div className="mb-2 grid grid-cols-2 gap-1">
-                    <div className="flex flex-col items-center border-b border-border px-2">
+                  <div className="mb-2 grid grid-cols-2">
+                    <div className="flex flex-col items-center border-b border-border px-2 py-4">
                       <div className="flex gap-2">
                         <Eye size={16} className="mt-1" />
                         <p>Reads</p>
                       </div>
                       <p className="font-medium">
-                        {formatNumber(activeBook!.reads)}
+                        {formatNumber(activeBook?.reads ?? 0)}
                       </p>
                     </div>
-                    <div className="flex flex-col items-center border-b border-l border-border px-2">
+                    <div className="flex flex-col items-center border-b border-l border-border px-2 py-4">
                       <div className="flex gap-2">
                         <Star size={16} className="mt-1" />
                         <p>Likes</p>
                       </div>
                       <p className="font-medium">
-                        {formatNumber(activeBook!.reads / 4)}
+                        {formatNumber((activeBook?.reads ?? 0) / 4)}
                       </p>
                     </div>
 
-                    <div className="flex flex-col items-center px-2">
+                    <div className="flex flex-col items-center px-2 py-4">
                       <div className="flex gap-2">
                         <LayoutList className="mt-1" size={16} />
                         <p>Chapters</p>
                       </div>
-                      <p className="font-medium">{12}</p>
+                      <p className="font-medium">
+                        {activeBook?.chapters.length}
+                      </p>
                     </div>
 
-                    <div className="flex flex-col items-center border-l border-border px-2">
+                    <div className="flex flex-col items-center border-l border-border px-2 py-4">
                       <div className="flex gap-2">
                         <BookOpen className="mt-1" size={16} />
                         <p>Time</p>
                       </div>
                       <p className="font-medium">
-                        {formatReadingTime(activeBook!.reads)}
+                        {formatReadingTime(activeBook?.reads ?? 0)}
                       </p>
                     </div>
                   </div>
@@ -171,14 +190,13 @@ const Story = () => {
                         key={chapter.id}
                         target="_blank"
                         href={`/chapter/${chapter.slug}`}
-                        className="mb-4 block border-b border-border py-2 last:border-0"
+                        className="w-full"
                       >
-                        <div className="flex cursor-pointer items-center justify-between">
-                          <h2 className="text-lg font-semibold">
+                        <div className="flex items-center justify-between rounded-md p-2 hover:bg-rose-400/40">
+                          <p className="line-clamp-1 text-base text-slate-700">
                             {chapter.title}
-                          </h2>
-
-                          <p className="text-base text-slate-600">
+                          </p>
+                          <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
                             {formatDate(chapter.createdAt)}
                           </p>
                         </div>
@@ -198,7 +216,6 @@ const Story = () => {
               <Link
                 className="w-full flex-1"
                 href={`/story/${activeBook?.slug}`}
-                target="_blank"
               >
                 <Button className="w-full gap-2">
                   <span>Start Reading</span>

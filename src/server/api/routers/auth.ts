@@ -50,6 +50,7 @@ export const authRouter = createTRPCRouter({
               author: {
                 select: {
                   name: true,
+                  username: true,
                   profile: true,
                 },
               },
@@ -62,10 +63,16 @@ export const authRouter = createTRPCRouter({
     }),
 
   readingLists: publicProcedure
-    .input(z.object({ authorId: z.string() }))
+    .input(
+      z.object({
+        limit: z.number().default(6),
+        authorId: z.string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
         const readingLists = await ctx.db.readingList.findMany({
+          take: input.limit,
           where: {
             authorId: input.authorId,
           },

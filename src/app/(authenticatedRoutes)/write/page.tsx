@@ -217,7 +217,10 @@ const WriteStory = () => {
                   name="tags"
                   render={({ field }) => (
                     <FormItem className="mb-6">
-                      <FormLabel>Tag(s)</FormLabel>
+                      <div className="flex items-center justify-between pr-2">
+                        <FormLabel>Tag(s)</FormLabel>
+                        <span className="text-xs font-semibold">Max: 17</span>
+                      </div>
                       <FormControl>
                         <InputTags {...field} />
                       </FormControl>

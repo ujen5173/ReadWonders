@@ -100,11 +100,13 @@ const CoverCard: FC<{
               <div className="flex gap-2">
                 <LayoutList className="mt-1" size={16} />
               </div>
-              <p className="text-sm font-semibold">{12}</p>
+              <p className="text-sm font-semibold">
+                {details?.chapters.length}
+              </p>
             </div>
           </div>
           <div className="space-y-2">
-            <Link href={`/story/${details.slug}`} target="_blank">
+            <Link target="_blank" href={`/story/${details.slug}`}>
               <Button className="w-full gap-2">
                 <SquareArrowOutUpRight size={16} />
                 <span>Start Reading</span>

@@ -4,11 +4,19 @@ import ReadingListCard from "~/components/reading-list-card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { cardHeight } from "~/server/constants";
 import { api } from "~/trpc/react";
+import { cn } from "~/utils/cn";
 
-const ReadingListSection = ({ userId }: { userId: string }) => {
+const ReadingListSection = ({
+  perRow = 2,
+  userId,
+}: {
+  perRow?: 2 | 6;
+  userId: string;
+}) => {
   const { data: readingLists, isLoading } = api.auth.readingLists.useQuery(
     {
       authorId: userId,
+      limit: perRow,
     },
     {
       refetchOnWindowFocus: false,
@@ -16,9 +24,15 @@ const ReadingListSection = ({ userId }: { userId: string }) => {
   );
 
   return (
-    <div className="grid grid-cols-1 gap-5 border-b border-border pb-8 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div
+      className={cn(
+        perRow === 2
+          ? "grid grid-cols-1 gap-5 xs:grid-cols-2"
+          : "grid grid-cols-1 gap-5 border-b border-border pb-8 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+      )}
+    >
       {isLoading ? (
-        Array.from({ length: 6 }).map((_, index) => (
+        Array.from({ length: perRow }).map((_, index) => (
           <Skeleton
             style={{
               height: cardHeight / 1.4 + 32 + 44 + 70 + "px",

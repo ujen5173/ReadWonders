@@ -1,12 +1,38 @@
 import { BookOpen, Eye, LayoutList, Notebook, Star } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { contentFont } from "~/config/font";
+import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+
+interface Props {
+  params: {
+    slug: string;
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata | undefined> {
+  const story = await api.story.getSingle.query({ slug: params.slug });
+
+  if (!story) {
+    return;
+  }
+
+  return constructMetadata({
+    title: `${story.title} - ${siteConfig.name}`,
+    description: story.description,
+    image: story.thumbnail ? story.thumbnail : `${getBaseUrl()}/og-image.jpg`,
+    publishedTime: story.createdAt.toString(),
+    url: `${getBaseUrl()}/story/${params.slug}`,
+  });
+}
 
 const Story = async ({ params }: { params: { slug: string } }) => {
   const storyDetails = await api.story.getSingle.query({ slug: params.slug });
@@ -70,9 +96,9 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </a>
               </div>
             </header>
-            <div className="mx-auto mb-2 flex flex-wrap sm:m-0">
+            <div className="mx-auto mb-2 flex max-w-[29rem] flex-wrap sm:m-0">
               <div className="flex-1">
-                <div className="flex flex-1 flex-col items-center border-r border-border p-2">
+                <div className="flex flex-1 flex-col items-center border-r border-border p-2 lg:py-0">
                   <div className="flex items-center gap-1">
                     <Eye size={16} />
                     <p>Reads</p>
@@ -83,7 +109,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </div>
               </div>
               <div className="flex-1">
-                <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r">
+                <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
                     <Star size={16} />
                     <p>Likes</p>
@@ -94,7 +120,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </div>
               </div>
               <div className="flex-1">
-                <div className="flex flex-1 flex-col items-center border-r border-border p-2 xxs:border-r">
+                <div className="flex flex-1 flex-col items-center border-r border-border p-2 xxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
                     <LayoutList size={16} />
                     <p>Chapters</p>
@@ -103,7 +129,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </div>
               </div>
               <div className="flex-1">
-                <div className="flex flex-1 flex-col items-center border-border p-2">
+                <div className="flex flex-1 flex-col items-center border-border p-2 lg:py-0">
                   <div className="flex items-center gap-1">
                     <BookOpen size={16} />
                     <p>Time</p>
@@ -120,20 +146,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <p className="mb-8 text-lg">{storyDetails.description}</p>
 
               <div className="flex flex-wrap gap-2">
-                {[
-                  "asylum",
-                  "dahyun",
-                  "gxg",
-                  "jihyo",
-                  "mentaldisorder",
-                  "mina",
-                  "nayeon",
-                  "sana",
-                  "twice",
-                  "twiceff",
-                  "uribanotwice",
-                  "wattys2022",
-                ].map((tag) => (
+                {storyDetails.tags.map((tag) => (
                   <Badge
                     className="border border-border bg-slate-100 text-sm font-normal text-slate-700 hover:bg-slate-200"
                     key={tag}
@@ -144,17 +157,19 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               </div>
             </article>
             <div>
-              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+              <h4 className="mb-4 scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
                 Chapters:
               </h4>
               {storyDetails.chapters.length > 0 ? (
-                storyDetails.chapters.map((ch, index) => (
-                  <Link href={`/chapter/${ch.slug}`} key={ch.id}>
-                    <div className="flex cursor-pointer items-center justify-between border-b border-border px-4 py-2 last:border-0 hover:bg-slate-100">
-                      <p className="line-clamp-1 text-lg font-medium text-slate-700 xxs:text-xl">
-                        <span className="inline-flex items-baseline gap-1 text-slate-600">
-                          {index + 1}.
-                        </span>{" "}
+                storyDetails.chapters.map((ch) => (
+                  <Link
+                    key={ch.id}
+                    target="_blank"
+                    href={`/chapter/${ch.slug}`}
+                    className="w-full"
+                  >
+                    <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-400/40">
+                      <p className="line-clamp-1 text-lg text-slate-700">
                         {ch.title}
                       </p>
                       <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">

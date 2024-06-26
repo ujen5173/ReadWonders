@@ -18,6 +18,7 @@ import {
   Star,
   Twitter,
 } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { type JSONContent } from "novel";
@@ -32,9 +33,36 @@ import {
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
 import { contentFont, merriweather } from "~/config/font";
+import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import SimilarStories from "./_components/similar-stories";
+
+interface Props {
+  params: {
+    slug: string;
+  };
+}
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata | undefined> {
+  const chapter = await api.chapter.getSingeChapter.query({
+    slug: params.slug,
+  });
+
+  if (!chapter) {
+    return;
+  }
+
+  return constructMetadata({
+    title: `${chapter.title} - ${siteConfig.name}`,
+    image: chapter.thumbnail
+      ? chapter.thumbnail
+      : `${getBaseUrl()}/og-image.jpg`,
+    publishedTime: chapter.createdAt.toString(),
+    url: `${getBaseUrl()}/chapter/${params.slug}`,
+  });
+}
 
 const Chapter = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
@@ -104,7 +132,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
             </Button>
           </div>
         </div>
-        <div className="border-b border-border pb-6 pt-12">
+        <div className="border-b border-border py-6">
           {chapterDetails.thumbnail && (
             <Image
               src={chapterDetails.thumbnail!}

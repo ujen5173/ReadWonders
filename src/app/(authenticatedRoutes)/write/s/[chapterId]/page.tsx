@@ -113,6 +113,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     }
 
     const draftData = await loadDraft(chapter.story_id, chapter.id);
+    console.log(draftData);
 
     if (!draftData?.content) {
       toast({ title: "Please write something before publishing." });
@@ -140,7 +141,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       }
     } else {
       toast({ title: "Chapter published successfully" });
-      replace(`/works/${publishedChapter.slug}`);
+      replace(`/works`);
     }
   };
 
@@ -222,7 +223,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
               <CustomEditor
                 details={{
                   chapterId,
-                  story_id: "chapter.story_id",
+                  story_id: chapter?.story_id ?? "",
                   title: form.getValues("title"),
                   cover_image: fileData || { url: "", name: "" },
                 }}

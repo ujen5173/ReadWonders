@@ -36,12 +36,17 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                addPendingDataPoint();
+                if (value.length < 17) {
+                  addPendingDataPoint();
+                }
               } else if (e.key === "," || e.key === " ") {
                 e.preventDefault();
-                addPendingDataPoint();
+                if (value.length < 17) {
+                  addPendingDataPoint();
+                }
               }
             }}
+            disabled={value.length >= 17}
             className="rounded-r-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...props}
             ref={ref}
@@ -55,7 +60,7 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
             Add
           </Button>
         </div>
-        <div className="flex min-h-[2.5rem] flex-wrap items-center gap-2 overflow-y-auto rounded-md border p-2">
+        <div className="flex min-h-[2.5rem] flex-wrap items-center gap-2 overflow-y-auto rounded-md border bg-white p-2">
           {value.length > 0 ? (
             value.map((item, idx) => (
               <Badge key={idx} variant="outline">

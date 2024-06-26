@@ -1,7 +1,9 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Logo from "../Logo";
 import { Button } from "../ui/button";
 
 const WritingHeader = ({
@@ -39,6 +41,12 @@ const WritingHeader = ({
                 : `${pathname.includes("/write/s") ? "Untitled Chapter" : "Untitled Story"}`}
             </p>
           </div>
+        </div>
+
+        <div>
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">

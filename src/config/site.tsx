@@ -1,4 +1,5 @@
 import { Github, Twitter } from "lucide-react";
+import { Metadata } from "next";
 import { Icons } from "~/components/Icons";
 import { env } from "~/env.mjs";
 
@@ -12,9 +13,21 @@ const links = {
   openGraphImage: env.NEXT_PUBLIC_APP_URL + "/og-image.png",
 };
 
+export function getBaseUrl() {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+
+  if (env.NEXT_PUBLIC_APP_URL) {
+    return env.NEXT_PUBLIC_APP_URL;
+  }
+  return `http://localhost:3000}`;
+}
+
 export const siteConfig = {
   name: "ReadWonders",
   namelower: "readwonders",
+  title: "ReadWonders - Online Reading Platform",
   description:
     "A dynamic community platform where creators can craft and share their stories, express their emotions, and connect with a supportive audience.",
   tagline: "Empowering Voices, Inspiring Readers, One Chapter at a Time",
@@ -115,3 +128,77 @@ export const siteConfig = {
     },
   ],
 };
+
+export function constructMetadata({
+  title = siteConfig.title,
+  description = siteConfig.description,
+  image = `${getBaseUrl()}/og-image.png`,
+  icons = [
+    {
+      rel: "apple-touch-icon",
+      sizes: "32x32",
+      url: "/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      url: "/favicon-32x32.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "16x16",
+      url: "/favicon-16x16.png",
+    },
+  ],
+  noIndex = false,
+  url = getBaseUrl(),
+  type = "website",
+  publishedTime,
+}: {
+  title?: string;
+  description?: string;
+  image?: string | null;
+  icons?: Metadata["icons"];
+  noIndex?: boolean;
+  url?: string;
+  type?: "website" | "article";
+  publishedTime?: string;
+} = {}): Metadata {
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type,
+      publishedTime,
+      ...(image && {
+        images: [
+          {
+            url: image,
+          },
+        ],
+      }),
+    },
+    twitter: {
+      title,
+      description,
+      ...(image && {
+        card: "summary_large_image",
+        images: [image],
+      }),
+      creator: "ujen_basi",
+    },
+    icons,
+    metadataBase: new URL(getBaseUrl()),
+    ...(noIndex && {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }),
+  };
+}

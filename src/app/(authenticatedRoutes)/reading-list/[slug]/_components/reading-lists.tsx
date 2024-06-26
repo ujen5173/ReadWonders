@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import CoverCard from "~/components/cover-card";
 import { api } from "~/trpc/react";
+import { TCard } from "~/types";
 
 const ReadingLists = ({
   data,
@@ -18,28 +19,7 @@ const ReadingLists = ({
       name: string | null;
       bio: string | null;
     };
-    stories: {
-      id: string;
-      description: string;
-      slug: string;
-      title: string;
-      thumbnail: string;
-      tags: string[];
-      is_premium: boolean;
-      category: string | null;
-      is_mature: boolean;
-      reads: number;
-      author: {
-        profile: string | null;
-        name: string | null;
-      };
-      chapters: {
-        id: string;
-        title: string | null;
-        slug: string | null;
-        createdAt: Date;
-      }[];
-    }[];
+    stories: TCard[];
   };
 }) => {
   const [list, setList] = useState(data.stories);

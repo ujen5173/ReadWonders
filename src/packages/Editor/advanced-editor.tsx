@@ -98,7 +98,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
     );
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full pt-10">
       <div className="absolute right-5 top-5 z-10 mb-5 flex gap-2">
         <div className="bg-accent rounded-lg px-2 py-1 text-sm text-muted-foreground">
           {saveStatus}

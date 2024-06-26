@@ -1,20 +1,26 @@
-"use client";
-
+import { Metadata } from "next";
 import CoverCard from "~/components/cover-card";
-import { Skeleton } from "~/components/ui/skeleton";
-import { cardHeight, cardWidth } from "~/server/constants";
-import { api } from "~/trpc/react";
+import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
+import { api } from "~/trpc/server";
 import { cn } from "~/utils/cn";
 
-const Genre = ({ params }: { params: { slug: string } }) => {
-  const { data, isLoading } = api.story.fromGenre.useQuery(
-    {
-      slug: params.slug,
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
+interface Props {
+  params: { slug: string };
+}
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata | undefined> {
+  return constructMetadata({
+    title: `${params.slug} - ${siteConfig.name}`,
+    url: `${getBaseUrl()}/genre/${params.slug}`,
+  });
+}
+
+const Genre = async ({ params }: { params: { slug: string } }) => {
+  const data = await api.story.fromGenre.query({
+    slug: params.slug,
+  });
 
   return (
     <section className="w-full">
@@ -28,44 +34,20 @@ const Genre = ({ params }: { params: { slug: string } }) => {
           Stories
         </h1>
 
-        {isLoading ? (
-          <div className="mx-auto max-w-[1440px]">
-            <div
-              className={cn(
-                "xxxs:grid-cols-2 relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
-              )}
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton
-                  key={i}
-                  style={{
-                    width: cardWidth + "px",
-                    height: cardHeight * 1.16 + "px",
-                  }}
-                />
-              ))}
-            </div>
+        {(data ?? []).length === 0 ? (
+          <div className="w-full py-12 text-center">
+            <h2 className="text-xl font-medium">
+              No stories found in this genre.
+            </h2>
           </div>
         ) : (
-          <>
-            {(data ?? []).length === 0 ? (
-              <div className="w-full py-12 text-center">
-                <h2 className="text-xl font-medium">
-                  No stories found in this genre.
-                </h2>
-              </div>
-            ) : (
-              <main
-                className={cn(
-                  "xxxs:grid-cols-2 relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
-                )}
-              >
-                {data?.map((story) => (
-                  <CoverCard key={story.id} details={story} />
-                ))}
-              </main>
+          <main
+            className={cn(
+              "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
             )}
-          </>
+          >
+            {data?.map((story) => <CoverCard key={story.id} details={story} />)}
+          </main>
         )}
       </div>
     </section>

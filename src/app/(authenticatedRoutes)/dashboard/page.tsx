@@ -1,3 +1,4 @@
+import { ArrowDown } from "lucide-react";
 import { Suspense } from "react";
 import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
 import TopPicks from "~/app/(landing-page)/_components/top-picks";
@@ -5,6 +6,7 @@ import { LoadingColumn, LoadingRow } from "~/components/Cardloading";
 import Footer from "~/components/sections/footer";
 import StoriesArea from "~/components/sections/stories-area";
 import { getServerUser } from "~/utils/auth";
+import ReadingListSection from "../reading-list/_components/reading-list-section";
 
 const Dashboard = async () => {
   const { user } = await getServerUser();
@@ -28,12 +30,20 @@ const Dashboard = async () => {
           </Suspense>
 
           <Suspense fallback={<LoadingColumn />}>
-            <StoriesArea
-              title="Reading List"
-              perRow={3}
-              skipRow={4}
-              inRow={true}
-            />
+            <section className="flex-1">
+              <div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="mb-4 flex items-center gap-2">
+                    <h1 className="text-xl font-semibold text-primary sm:text-2xl">
+                      Reading List
+                    </h1>
+                    <ArrowDown size={18} className="text-primary" />
+                  </div>
+                </div>
+
+                <ReadingListSection perRow={2} userId={user?.id!} />
+              </div>
+            </section>
           </Suspense>
         </div>
       </section>

@@ -365,9 +365,9 @@ model Story {
   description String
   thumbnail   String
   tags        String[]
-  is_premium  Boolean  @default(false)
-  is_deleted  Boolean  @default(false)
-  is_mature   Boolean  @default(false)
+  isPremium   Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+  isMature    Boolean  @default(false)
   category    String?
   reads       Int      @default(0)
   createdAt   DateTime @default(now())
