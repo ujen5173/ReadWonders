@@ -44,6 +44,16 @@ export type TCard = {
   };
 };
 
+export type WorkDetails = {
+  id: string;
+  thumbnail: string;
+  title: string;
+  slug: string;
+  reads: number;
+  views: number;
+  total_chapters: number;
+};
+
 export type RootContextType = {
   activeBook: TCard | null;
   setActiveBook: React.Dispatch<React.SetStateAction<TCard | null>>;

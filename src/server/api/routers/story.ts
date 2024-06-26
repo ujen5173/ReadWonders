@@ -375,11 +375,33 @@ export const storyRouter = createTRPCRouter({
         where: {
           author_id: ctx.user.id,
         },
+        select: {
+          id: true,
+          thumbnail: true,
+          title: true,
+          slug: true,
+          reads: true,
+          chapters: {
+            select: {
+              id: true,
+            },
+          },
+        },
         take: limit,
         skip,
       });
 
-      return stories;
+      if (!stories) return [];
+
+      return stories.map((s) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { chapters, ...rest } = s;
+        return {
+          ...rest,
+          views: s.reads,
+          total_chapters: s.chapters.length,
+        };
+      });
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

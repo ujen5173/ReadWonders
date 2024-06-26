@@ -28,7 +28,7 @@ const Works = () => {
         {isLoading ? (
           <div className="py-12 text-center">Loading...</div>
         ) : (
-          <DataTable />
+          <DataTable data={data ?? []} />
         )}
       </div>
     </section>

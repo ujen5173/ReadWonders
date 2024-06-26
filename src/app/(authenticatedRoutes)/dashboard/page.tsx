@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
 import TopPicks from "~/app/(landing-page)/_components/top-picks";
 import { LoadingColumn, LoadingRow } from "~/components/Cardloading";
-import Footer from "~/components/sections/footer";
 import StoriesArea from "~/components/sections/stories-area";
 import { getServerUser } from "~/utils/auth";
 import ReadingListSection from "../reading-list/_components/reading-list-section";
@@ -55,7 +54,6 @@ const Dashboard = async () => {
       <Suspense fallback={<LoadingRow />}>
         <FeaturedAndLatest />
       </Suspense>
-      <Footer />
     </>
   );
 };

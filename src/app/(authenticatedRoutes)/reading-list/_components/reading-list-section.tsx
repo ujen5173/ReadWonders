@@ -7,7 +7,7 @@ import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 
 const ReadingListSection = ({
-  perRow = 2,
+  perRow = 6,
   userId,
 }: {
   perRow?: 2 | 6;

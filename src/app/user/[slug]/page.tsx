@@ -4,7 +4,6 @@ import Image from "next/image";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import CoverCard from "~/components/cover-card";
-import Footer from "~/components/sections/footer";
 import { Button } from "~/components/ui/button";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
@@ -143,8 +142,6 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
           <ReadingListSection userId={userDetails.id} />
         </div>
-
-        <Footer />
       </div>
     </>
   );
