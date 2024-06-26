@@ -54,6 +54,16 @@ export type WorkDetails = {
   total_chapters: number;
 };
 
+export type TReadingListCard = {
+  stories: {
+    thumbnail: string;
+  }[];
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+};
+
 export type RootContextType = {
   activeBook: TCard | null;
   setActiveBook: React.Dispatch<React.SetStateAction<TCard | null>>;

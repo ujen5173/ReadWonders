@@ -76,9 +76,15 @@ export const authRouter = createTRPCRouter({
           where: {
             authorId: input.authorId,
           },
-          include: {
+          select: {
+            id: true,
+            authorId: false,
+            title: true,
+            slug: true,
+            description: true,
+            private: false,
+            createdAt: false,
             stories: {
-              take: 3,
               select: {
                 thumbnail: true,
               },

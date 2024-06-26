@@ -1,5 +1,6 @@
 "use client";
 
+import Script from "next/script";
 import { env } from "~/env.mjs";
 
 // if (typeof window !== "undefined") {
@@ -13,12 +14,11 @@ import { env } from "~/env.mjs";
 // }
 
 export const UmamiAnalyticsProvider = () => {
-  return env.NEXT_PUBLIC_UMAMI_WEBSITE_ID
-    ? null
-    : // <Script
-      //   src="https://analytics.umami.is/script.js"
-      //   data-website-id={env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-      //   strategy="lazyOnload"
-      // />
-      null;
+  return env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? null : (
+    <Script
+      src="https://analytics.umami.is/script.js"
+      data-website-id={env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+      strategy="lazyOnload"
+    />
+  );
 };
