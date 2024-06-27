@@ -385,6 +385,7 @@ model Story {
   @@index([author_id])
   @@index([slug])
   @@index([title])
+  @@index([thumbnail])
   @@index([tags])
   @@map("story")
   @@schema("public")

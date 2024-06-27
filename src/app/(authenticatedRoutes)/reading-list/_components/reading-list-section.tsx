@@ -35,7 +35,7 @@ const ReadingListSection = ({
         Array.from({ length: perRow }).map((_, index) => (
           <Skeleton
             style={{
-              height: cardHeight / 1.4 + 32 + 44 + 70 + "px",
+              height: cardHeight / 1.4 + 32 + 44 + "px",
               width: "100%",
             }}
             className="rounded-2xl"

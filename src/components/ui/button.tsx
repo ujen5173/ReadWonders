@@ -13,7 +13,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-white text-text-primary hover:bg-background transition hover:shadow-md hover:text-accent-foreground",
+          "border border-input bg-white text-text-primary hover:bg-slate-50 transition hover:shadow-md hover:text-accent-foreground",
         secondary:
           "bg-secondary hover:bg-gray-100 border border-border text-secondary-foreground transition hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -57,7 +57,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading && (
           <Spinner
             className={cn(
-              variant === "default" ? "text-slate-100" : "text-slate-600",
+              variant === "default" || variant === undefined
+                ? "text-slate-100"
+                : "text-slate-600",
               "size-4",
             )}
           />

@@ -113,6 +113,7 @@ const HeroSection = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Link
+                              target="_blank"
                               href={image.slug ? `/story/${image.slug}` : "#"}
                             >
                               <Image

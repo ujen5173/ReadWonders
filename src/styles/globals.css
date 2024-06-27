@@ -140,19 +140,18 @@
 }
 
 .story-cover-thumbnail {
-  width: var(--card-width) + "px";
-  height: var(--card-height) + "px";
+  width: 90%;
 }
 
 @media screen and (min-width: 768px) {
   .story-cover-thumbnail {
-    width: var(--card-width) * 2 + "px";
-    height: var(--card-height) * 2.1 + "px";
+    width: calc(var(--card-width) * 1.4);
+    height: calc(var(--card-height) * 1.4);
   }
 }
 
 .loading-skeleton {
-  height: var(--card-height) + "px";
+  height: calc(var(--card-height) / 1.4);
 }
 
 @media screen and (min-width: 430px) {
@@ -162,6 +161,6 @@
 }
 @media screen and (min-width: 495px) {
   .loading-skeleton {
-    height: calc(var(--card-height));
+    height: calc(var(--card-height) / 1.3);
   }
 }

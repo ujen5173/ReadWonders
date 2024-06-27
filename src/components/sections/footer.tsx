@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { siteConfig } from "~/config/site";
+import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 import Logo from "../Logo";
 import { Button } from "../ui/button";
@@ -20,6 +21,15 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import {
   Tooltip,
@@ -27,11 +37,35 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { toast } from "../ui/use-toast";
 
 const Footer = () => {
-  const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+  const [selectedEmoji, setSelectedEmoji] = useState<
+    "bad" | "good" | "amazing" | "okay" | "terrible"
+  >("okay");
 
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const { mutateAsync, isLoading } = api.feedback.send.useMutation();
+  const [from, setFrom] = useState<
+    "github" | "twitter" | "none" | "google" | "friends" | undefined
+  >();
+
+  const onSubmit = async () => {
+    const response = inputRef.current?.value;
+    if (!response || !selectedEmoji) return;
+
+    const res = await mutateAsync({
+      rating: selectedEmoji,
+      feedback: response,
+      from,
+    });
+    if (res) {
+      toast({ title: "Feedback submitted successfully!" });
+    } else {
+      toast({ title: "An error occurred. Please try again later." });
+    }
+  };
 
   return (
     <footer className="w-full">
@@ -58,15 +92,55 @@ const Footer = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
+                  <Select
+                    defaultValue="none"
+                    onValueChange={(value) =>
+                      setFrom(
+                        value as
+                          | "github"
+                          | "twitter"
+                          | "none"
+                          | "google"
+                          | "friends"
+                          | undefined,
+                      )
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Where did you hear us?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectGroup>
+                        <SelectLabel>Where did you hear us?</SelectLabel>
+                        {["github", "twitter", "none", "google", "friends"].map(
+                          (from) => (
+                            <SelectItem key={from} value={from}>
+                              {from.charAt(0).toUpperCase() + from.slice(1)}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
                   <div className="flex items-center gap-2">
                     {["Terrible", "Bad", "Okay", "Good", "Amazing"].map(
                       (rating) => (
                         <button
-                          onClick={() => setSelectedEmoji(rating)}
+                          onClick={() =>
+                            setSelectedEmoji(
+                              rating.toLowerCase() as
+                                | "bad"
+                                | "good"
+                                | "amazing"
+                                | "okay"
+                                | "terrible",
+                            )
+                          }
                           key={rating}
                           className={cn(
                             "rounded-md border bg-white p-4 transition hover:bg-zinc-100",
-                            selectedEmoji === rating
+                            selectedEmoji === rating.toLowerCase()
                               ? "border-primary/60 bg-primary/10"
                               : "border-border",
                           )}
@@ -95,9 +169,19 @@ const Footer = () => {
                   </div>
                 </div>
                 <DialogFooter className="gap-2">
-                  <Button type="submit">Submit</Button>
+                  <Button
+                    disabled={isLoading}
+                    loading={isLoading}
+                    onClick={onSubmit}
+                  >
+                    Submit
+                  </Button>
                   <DialogClose asChild>
-                    <Button type="button" variant={"secondary"}>
+                    <Button
+                      disabled={isLoading}
+                      type="button"
+                      variant={"secondary"}
+                    >
                       Cancel
                     </Button>
                   </DialogClose>

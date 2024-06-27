@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import { env } from "~/env.mjs";
+// import { posthog } from "posthog-js";
 
 // if (typeof window !== "undefined") {
 //   posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
