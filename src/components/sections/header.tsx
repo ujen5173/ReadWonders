@@ -6,11 +6,12 @@ import { Button, buttonVariants } from "../ui/button";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { toast } from "sonner";
 import useKeyPress from "~/hooks/use-key-press";
 import { supabase } from "~/server/supabase/supabaseClient";
 import { api } from "~/trpc/react";
+import { cn } from "~/utils/cn";
 import Logo from "../Logo";
 import {
   Dialog,
@@ -31,6 +32,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -41,15 +43,20 @@ const Header = () => {
   const { data } = api.auth.getProfile.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
+  const [open, setOpen] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement>,
+    value: string | undefined,
+  ) => {
     e.preventDefault();
-    const searchQuery = inputRef.current?.value;
+    const searchQuery = value;
 
     if (!searchQuery?.trim()) return;
+    setOpen(false);
 
     router.push(`/search?q=${searchQuery}`);
   };
@@ -65,7 +72,12 @@ const Header = () => {
       <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="block md:hidden">
-            <MobileMenu user={data} />
+            <MobileMenu
+              open={open}
+              setOpen={setOpen}
+              handleSubmit={handleSubmit}
+              user={data}
+            />
           </div>
           <Link
             className="mr-6 flex items-end gap-1"
@@ -73,7 +85,7 @@ const Header = () => {
           >
             <Logo />
           </Link>
-          <Link href="/" className="hidden md:inline">
+          <Link href="/genre" className="hidden md:inline">
             <Button className="gap-2" variant="link">
               <span>Explore</span>
             </Button>
@@ -120,7 +132,7 @@ const Header = () => {
         <div className="flex flex-1 items-center justify-end gap-4">
           <form
             className="relative hidden w-6/12 md:block"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSubmit(e, inputRef.current?.value)}
           >
             <Input ref={inputRef} placeholder="Search anything..." />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-white">
@@ -202,6 +214,9 @@ export default Header;
 
 const MobileMenu = ({
   user,
+  handleSubmit,
+  open,
+  setOpen,
 }: {
   user:
     | {
@@ -212,9 +227,17 @@ const MobileMenu = ({
         email: string | null;
       }
     | undefined;
+  handleSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    value: string | undefined,
+  ) => void;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={(opn) => setOpen(opn)}>
       <SheetTrigger>
         <div className={buttonVariants({ size: "icon", variant: "outline" })}>
           <Menu size={18} />
@@ -229,36 +252,87 @@ const MobileMenu = ({
           </SheetTitle>
         </SheetHeader>
 
-        <ul className="flex-1">
+        <ul className="flex flex-1 flex-col gap-2">
           <li>
             <Link href="/">
-              <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
-                Home
-              </span>
+              <SheetClose className="w-full">
+                <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
+                  Home
+                </span>
+              </SheetClose>
             </Link>
           </li>
           <li>
-            <Link href="/">
-              <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
-                Explore
-              </span>
+            <Link href="/genre">
+              <SheetClose className="w-full">
+                <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
+                  Explore
+                </span>
+              </SheetClose>
             </Link>
           </li>
           <li>
-            <Link href="/">
-              <span className="block rounded-md px-4 py-2 text-left hover:bg-primary/10">
-                Newsletter
-              </span>
-            </Link>
+            <Dialog>
+              <DialogTrigger className="" asChild>
+                <Button
+                  // onClick={() => setOpen(false)}
+                  className="w-full justify-start"
+                  variant="outline"
+                >
+                  Newsletter
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">
+                    Subscribe to Newsletter
+                  </DialogTitle>
+                  <DialogDescription className="text-sm">
+                    Never miss an update. Stay up to date with the latest
+                    stories.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-2 py-2">
+                  <Label htmlFor="username" className="text-left">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="newsletter@readwonders.com"
+                    className=""
+                  />
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Subscribe</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </li>
         </ul>
 
         <div className="flex flex-col gap-2">
-          <Link href="/">
-            <Button className="w-full gap-2" variant="default">
+          <form
+            className="relative block md:hidden"
+            onSubmit={(e) => handleSubmit(e, inputRef.current?.value)}
+          >
+            <Input ref={inputRef} placeholder="Search anything..." />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-white">
+              <kbd className="pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </div>
+          </form>
+          <Link href="/write">
+            <SheetClose
+              className={cn(
+                buttonVariants({ variant: "default" }),
+                "w-full gap-2",
+              )}
+            >
               <Plus size={18} />
               <span>Write a story</span>
-            </Button>
+            </SheetClose>
           </Link>
         </div>
       </SheetContent>

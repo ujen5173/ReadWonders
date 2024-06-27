@@ -53,7 +53,7 @@ const SearchArea = ({
     <div className="space-y-2">
       <main
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
         )}
       >
         {stories.map((story) => (

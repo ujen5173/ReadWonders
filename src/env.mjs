@@ -21,6 +21,9 @@ export const env = createEnv({
     DIRECT_URL: z.string().min(1),
     UPLOADTHING_SECRET: z.string().min(1),
     UPLOADTHING_APP_ID: z.string().min(1),
+    TO: z.string().min(1),
+    USER: z.string().min(1),
+    PASS: z.string().min(1),
   },
 
   /**
@@ -54,6 +57,10 @@ export const env = createEnv({
     UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+
+    TO: process.env.TO,
+    USER: process.env.USER,
+    PASS: process.env.PASS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

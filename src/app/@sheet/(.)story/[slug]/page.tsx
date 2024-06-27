@@ -14,7 +14,7 @@ import { useContext } from "react";
 import { Context } from "~/app/_components/RootContext";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Sheet,
@@ -23,6 +23,7 @@ import {
   SheetHeader,
 } from "~/components/ui/sheet";
 import { cardHeight, cardWidth } from "~/server/constants";
+import { cn } from "~/utils/cn";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
 const Story = () => {
@@ -40,6 +41,8 @@ const Story = () => {
 
     return `calc(100% - ${parentHeight + 24 + buttonHeight}px + ${padding})`;
   };
+
+  // console.log({ res: (activeBook?.chapters ?? []).length === 0 });
 
   return (
     <Sheet
@@ -102,7 +105,7 @@ const Story = () => {
               style={{
                 height: "100%",
               }}
-              className="pr-3"
+              className="pb-6 pr-3"
             >
               <div className="h-full">
                 <div className="mb-6">
@@ -212,17 +215,24 @@ const Story = () => {
               </div>
             </ScrollArea>
 
-            <div className="mt-4 flex w-full flex-col items-center gap-2 bg-background xxs:flex-row">
-              <Link
-                className="w-full flex-1"
-                href={`/story/${activeBook?.slug}`}
+            <div className="mt-4 flex w-full flex-col items-center gap-2 bg-background px-2 pb-2 xxs:flex-row">
+              <SheetClose
+                disabled
+                onClick={() => {
+                  if (
+                    activeBook &&
+                    activeBook.chapters &&
+                    activeBook.chapters.length > 0
+                  ) {
+                    router.push(`/chapter/${activeBook.chapters[0]?.slug}`);
+                  }
+                }}
+                className={cn(buttonVariants({ variant: "default" }), "flex-1")}
               >
-                <Button className="w-full gap-2">
-                  <span>Start Reading</span>
-                  <SquareArrowOutUpRight size={16} />
-                </Button>
-              </Link>
-              <div className="w-full flex-1">
+                <span>Start Reading</span>
+                <SquareArrowOutUpRight size={16} />
+              </SheetClose>
+              <div className="flex-1">
                 <ReadingListModel bookId={activeBook?.id as string} />
               </div>
             </div>

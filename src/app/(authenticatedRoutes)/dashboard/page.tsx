@@ -12,7 +12,7 @@ const Dashboard = async () => {
   const { user } = await getServerUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   return (
@@ -33,29 +33,26 @@ const Dashboard = async () => {
             <StoriesArea title="Current Reads" perRow={3} inRow={true} />
           </Suspense>
 
-          <Suspense fallback={<LoadingColumn />}>
-            <section className="flex-1">
-              <div>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="mb-4 flex items-center gap-2">
-                    <h1 className="text-xl font-semibold text-primary sm:text-2xl">
-                      Reading List
-                    </h1>
-                    <ArrowDown size={18} className="text-primary" />
-                  </div>
+          <section className="flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-primary sm:text-2xl">
+                    Reading List
+                  </h1>
+                  <ArrowDown size={18} className="text-primary" />
                 </div>
-
-                <ReadingListSection perRow={2} userId={user.id} />
               </div>
-            </section>
-          </Suspense>
+
+              <ReadingListSection perRow={2} userId={user.id} />
+            </div>
+          </section>
         </div>
       </section>
 
       <Suspense fallback={<LoadingRow />}>
         <TopPicks />
       </Suspense>
-
       <Suspense fallback={<LoadingRow />}>
         <FeaturedAndLatest />
       </Suspense>

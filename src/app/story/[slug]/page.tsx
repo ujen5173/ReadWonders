@@ -46,8 +46,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               alt="Story cover"
               loading="eager"
               width="440"
-              src={storyDetails.thumbnail}
               height="860"
+              src={storyDetails.thumbnail}
               className="story-cover-thumbnail w-full overflow-hidden rounded-lg object-fill shadow-2xl"
             />
             <div className="flex w-full flex-col gap-4">

@@ -42,12 +42,10 @@ const StoriesArea: FC<Props> = async ({
           </p>
         )}
       </div>
-
       <main
         className={cn(
-          inRow
-            ? "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3"
-            : "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+          inRow ? "xl:grid-cols-3" : "xl:grid-cols-6",
         )}
       >
         {(data ?? []).map((story) => (
@@ -59,6 +57,13 @@ const StoriesArea: FC<Props> = async ({
           .map((_, i) => (
             <div className="mx-auto block flex-1" key={i} />
           ))}
+
+        {perRow === 3 && Math.abs(perRow - (data ?? []).length) === 0 && (
+          <>
+            <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
+            <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
+          </>
+        )}
       </main>
     </section>
   );
