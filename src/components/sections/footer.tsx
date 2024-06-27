@@ -115,9 +115,9 @@ const Footer = () => {
                       <SelectGroup>
                         <SelectLabel>Where did you hear us?</SelectLabel>
                         {["github", "twitter", "none", "google", "friends"].map(
-                          (from) => (
-                            <SelectItem key={from} value={from}>
-                              {from.charAt(0).toUpperCase() + from.slice(1)}
+                          (f) => (
+                            <SelectItem key={f} value={f}>
+                              {f.charAt(0).toUpperCase() + f.slice(1)}
                             </SelectItem>
                           ),
                         )}
