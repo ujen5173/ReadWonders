@@ -53,6 +53,7 @@ const Footer = () => {
 
   const onSubmit = async () => {
     const response = inputRef.current?.value;
+
     if (!response || !selectedEmoji) return;
 
     const res = await mutateAsync({
@@ -60,6 +61,7 @@ const Footer = () => {
       feedback: response,
       from,
     });
+
     if (res) {
       toast({ title: "Feedback submitted successfully!" });
     } else {
