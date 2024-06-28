@@ -36,7 +36,7 @@ const feedbackRouter = createTRPCRouter({
                   }</span>
                 </div>
                 <div>
-                  <span style="font-size: 1.5rem;font-weight: 600">Rating: ${
+                  <span style="font-size: 1.5rem;font-weight: 600">Heard from: ${
                     input.from.charAt(0).toUpperCase() + input.from.slice(1)
                   }</span>
                 </div>

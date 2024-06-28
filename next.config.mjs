@@ -24,6 +24,12 @@ const config = {
         hostname: "bookcoverzone.com",
       },
       {
+        hostname: "images.unsplash.com",
+      },
+      {
+        hostname: "images.pexels.com",
+      },
+      {
         hostname: "www.kpop.ae",
       },
       {

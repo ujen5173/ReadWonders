@@ -22,7 +22,10 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { type JSONContent } from "novel";
+import { Suspense } from "react";
 import ReadingListModel from "~/app/_components/reading-list-modal";
+import { LoadingRow } from "~/components/Cardloading";
+import StoriesArea from "~/components/sections/stories-area";
 import { Button } from "~/components/ui/button";
 import {
   Select,
@@ -36,7 +39,6 @@ import { contentFont, merriweather } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
-import SimilarStories from "./_components/similar-stories";
 
 interface Props {
   params: {
@@ -74,9 +76,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
   return (
     <section className="w-full">
       <div className="mx-auto max-w-screen-xl px-4">
-        <div className="flex items-center justify-between border-b border-border py-2">
+        <div className="flex flex-col items-center justify-between gap-6 border-b border-border py-2 pb-6 sm:flex-row sm:pb-2">
           <Select>
-            <SelectTrigger className="h-auto w-[450px] bg-white focus:outline-none focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="h-auto max-w-[450px] bg-white px-2 py-1 focus:outline-none focus:ring-0 focus:ring-offset-0">
               <div className="flex items-center gap-2">
                 <Image
                   src={chapterDetails.story.thumbnail}
@@ -237,7 +239,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
             </div>
           )}
 
-          <div className="flex w-full items-center justify-between pb-6">
+          <div className="flex w-full flex-wrap items-center justify-center gap-6 pb-6 sm:justify-between">
             <div className="flex items-center">
               <Button variant="ghost-link">
                 <Plus size={16} />
@@ -265,8 +267,13 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
           </div>
         </div>
       </div>
+      <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-6">
+        <Suspense fallback={<LoadingRow />}>
+          <StoriesArea title="You'll also like" perRow={6} inRow={false} />
+        </Suspense>
+      </div>
 
-      <SimilarStories />
+      {/* <SimilarStories /> */}
     </section>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Prisma } from "@prisma/client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -34,13 +35,47 @@ import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
 
-const WriteStory = () => {
+const EditBody = ({
+  details,
+}: {
+  details: {
+    id: string;
+    title: string;
+    description: string;
+    category: string | null;
+    isMature: boolean;
+    isPremium: boolean;
+    tags: string[];
+    thumbnail: string;
+    chapters: {
+      id: string;
+      title: string | null;
+      slug: string | null;
+      createdAt: Date;
+    }[];
+    author: {
+      author: {
+        rawUserMetaData: Prisma.JsonValue;
+      };
+    } & {
+      id: string;
+      username: string | null;
+      name: string | null;
+      profile: string | null;
+      bio: string | null;
+      tagline: string | null;
+      email: string | null;
+      createdAt: Date;
+    };
+  };
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
     useUploadFile("imageUploader");
+
   const { mutateAsync, isLoading, isError, error } =
     api.story.new.useMutation();
 
@@ -56,31 +91,38 @@ const WriteStory = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      category: "",
-      isMature: false,
-      isPremium: false,
-      tags: [],
+      title: details.title,
+      description: details.description,
+      category: details.category ?? "",
+      isMature: details.isMature,
+      isPremium: details.isPremium,
+      tags: details.tags,
       thumbnail: null,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { thumbnail: _, ...rest } = values;
+    try {
+      const { thumbnail: _, ...rest } = values;
 
-    if (uploadedFile) {
+      if (!details.id) return;
+
       const res = await mutateAsync({
         ...rest,
-        thumbnail: uploadedFile.url,
+        thumbnail: uploadedFile?.url ?? details.thumbnail,
+        edit: details.id,
       });
 
-      if (res.chapterId) {
-        replace(`/write/s/${res.chapterId}`);
+      if (res.newSlug) {
+        window.location.href = `/story/${res.newSlug}`;
+      } else {
         toast({
-          title: "Story created. Redirecting...",
+          type: "background",
+          title: "Something went wrong",
         });
       }
+    } catch (error) {
+      console.error({ error });
     }
   }
 
@@ -95,7 +137,7 @@ const WriteStory = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full space-y-8"
           >
-            <h1 className="text-4xl font-bold">Write a new story</h1>
+            <h1 className="text-4xl font-bold">Edit Story</h1>
 
             <div className="flex w-full flex-col gap-8 md:flex-row lg:gap-16">
               <div className="flex justify-center rounded-lg">
@@ -112,7 +154,13 @@ const WriteStory = () => {
                             onValueChange={field.onChange}
                             maxSize={4 * 1024 * 1024}
                             progresses={progresses}
-                            uploadedFile={uploadedFile}
+                            uploadedFile={
+                              uploadedFile ?? {
+                                url: details.thumbnail,
+                                name: "thumbnail",
+                              } ??
+                              undefined
+                            }
                             preparingUpload={preparingUpload}
                             setPreparingUpload={setPreparingUpload}
                             imageLoad={imageLoad}
@@ -144,6 +192,7 @@ const WriteStory = () => {
                         <Input
                           placeholder="Untitled Story"
                           {...field}
+                          value={form.getValues("title")}
                           onChange={(event) => {
                             field.onChange(event);
                             const params = new URLSearchParams(searchParams);
@@ -172,7 +221,11 @@ const WriteStory = () => {
                     <FormItem className="mb-6">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea className="min-h-48" {...field} />
+                        <Textarea
+                          className="min-h-48"
+                          {...field}
+                          value={form.getValues("description")}
+                        />
                       </FormControl>
                       <FormDescription>
                         Write a short description that will excite your readers
@@ -192,6 +245,7 @@ const WriteStory = () => {
                           {...field}
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          value={form.getValues("category") ?? undefined}
                         >
                           <SelectTrigger className="w-full bg-white xs:w-4/12">
                             <SelectValue placeholder="Genre" />
@@ -222,7 +276,7 @@ const WriteStory = () => {
                         <span className="text-xs font-semibold">Max: 17</span>
                       </div>
                       <FormControl>
-                        <InputTags {...field} />
+                        <InputTags defaultValue={details.tags} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,6 +291,7 @@ const WriteStory = () => {
                       <br />
                       <FormControl>
                         <Switch
+                          defaultChecked={form.getValues("isMature")}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -253,6 +308,7 @@ const WriteStory = () => {
                       <br />
                       <FormControl>
                         <Switch
+                          defaultChecked={form.getValues("isPremium")}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -262,11 +318,11 @@ const WriteStory = () => {
                 />
                 <div className="flex items-center gap-2">
                   <Button
-                    disabled={isUploading}
+                    disabled={isUploading || isLoading}
                     loading={isLoading}
                     type="submit"
                   >
-                    Next
+                    Update
                   </Button>
                 </div>
               </main>
@@ -278,4 +334,4 @@ const WriteStory = () => {
   );
 };
 
-export default WriteStory;
+export default EditBody;

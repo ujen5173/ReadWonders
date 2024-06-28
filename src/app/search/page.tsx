@@ -30,8 +30,8 @@ const SearchStories = async ({
   return (
     <section className="w-full">
       <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-12">
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="space-x-1 text-2xl font-bold">
+        <div className="mb-8 flex flex-col items-start justify-between space-y-2 sm:flex-row sm:items-center">
+          <h1 className="space-x-1 text-xl font-bold md:text-2xl">
             <span>Search results for</span>
             <span className="text-primary">&quot;{searchParams.q}&quot;</span>
           </h1>

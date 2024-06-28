@@ -4,7 +4,7 @@ import { cn } from "~/utils/cn";
 import { Spinner } from "../Loading";
 
 const buttonVariants = cva(
-  "ring-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+  "ring-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none ring-offset-background",
   {
     variants: {
       variant: {
@@ -13,9 +13,9 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-white text-text-primary hover:bg-slate-50 transition hover:shadow-md hover:text-accent-foreground",
+          "border border-input bg-white outline-primary text-text-primary hover:bg-slate-50 transition hover:shadow-md hover:text-accent-foreground",
         secondary:
-          "bg-secondary hover:bg-gray-100 border border-border text-secondary-foreground transition hover:shadow-md",
+          "bg-white hover:bg-gray-100 border border-border text-secondary-foreground transition hover:shadow-md",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         "ghost-link":
           "text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20",

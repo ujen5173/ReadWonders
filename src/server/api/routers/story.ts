@@ -3,13 +3,8 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
-import { TCard } from "~/types";
-import {
-  authorProcedure,
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from "../trpc";
+import { SearchByTitle, TCard } from "~/types";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 
 export const storyRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -116,7 +111,64 @@ export const storyRouter = createTRPCRouter({
             slug: input.slug,
           },
           include: {
-            chapters: true,
+            chapters: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                createdAt: true,
+              },
+            },
+            author: {
+              include: {
+                author: {
+                  select: {
+                    rawUserMetaData: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (!story) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Story not found",
+          });
+        }
+
+        return story;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch story",
+        });
+      }
+    }),
+
+  getStoryForUpdate: privateProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const story = await ctx.db.story.findUnique({
+          where: {
+            slug: input.slug,
+            author_id: ctx.user.id,
+          },
+          include: {
+            chapters: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                createdAt: true,
+              },
+            },
             author: {
               include: {
                 author: {
@@ -414,7 +466,7 @@ export const storyRouter = createTRPCRouter({
   search: publicProcedure
     .input(
       z.object({
-        query: z.string(),
+        query: z.string().optional(),
         limit: z.number().optional().default(limit),
         cursor: z.string().optional(),
       }),
@@ -422,6 +474,10 @@ export const storyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const { query, cursor } = input;
+
+        if (!query) {
+          return { stories: [], hasNextPage: false, nextCursor: undefined };
+        }
 
         const searchTerms = query.toLowerCase().split(/\s+/);
 
@@ -494,8 +550,54 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
+  searchByTitle: publicProcedure
+    .input(
+      z.object({
+        query: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { query } = input;
+
+        if (!query) {
+          return [];
+        }
+
+        const searchTerms = query.toLowerCase().split(/\s+/);
+
+        const searchConditions = searchTerms.map(
+          (term) => Prisma.sql`
+            (
+              LOWER(story.title) LIKE ${`%${term}%`} OR
+              LOWER(story.slug) LIKE ${`%${term}%`} OR
+              LOWER(story.description) LIKE ${`%${term}%`} OR
+              LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`}
+            )
+          `,
+        );
+
+        const stories = await ctx.db.$queryRaw<SearchByTitle[]>`
+          SELECT
+            story.id,
+            story.slug,
+            story.title
+          FROM story
+          WHERE ${Prisma.join(searchConditions, " AND ")}
+          ORDER BY story.id
+        `;
+
+        return stories;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to search stories",
+        });
+      }
+    }),
+
   // ----- Mutations -----
-  new: authorProcedure
+  new: privateProcedure
     .input(
       z.object({
         title: z.string().min(2, {
@@ -511,23 +613,46 @@ export const storyRouter = createTRPCRouter({
         thumbnail: z.string().min(1).url({
           message: "Thumbnail must be a valid URL",
         }),
+        edit: z.string().optional(),
       }),
-      // formSchema.omit({ thumbnail: true }).extend({
-      //   thumbnail: z.string().min(1).url({
-      //     message: "Thumbnail must be a valid URL",
-      //   }),
-      // }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const { edit, ...rest } = input;
+
         const slug = slugify(
-          input.title + "-" + Math.random().toString(36).substring(7),
+          rest.title + "-" + Math.random().toString(36).substring(7),
           slugy,
         );
 
+        if (edit) {
+          const story = await ctx.db.story.update({
+            where: {
+              id: edit,
+            },
+            data: {
+              ...rest,
+              slug,
+              author_id: ctx.user.id,
+            },
+            select: {
+              slug: true,
+            },
+          });
+
+          if (story)
+            return {
+              newSlug: story.slug,
+            };
+
+          return {
+            newSlug: null,
+          };
+        }
+
         const story = await ctx.db.story.create({
           data: {
-            ...input,
+            ...rest,
             slug,
             author_id: ctx.user.id,
           },
@@ -557,7 +682,7 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
-  update: authorProcedure
+  update: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -577,6 +702,7 @@ export const storyRouter = createTRPCRouter({
         const story = await ctx.db.story.update({
           where: {
             id: id,
+            author_id: ctx.user.id,
           },
           data: rest,
         });
@@ -590,7 +716,7 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
-  delete: authorProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -601,6 +727,7 @@ export const storyRouter = createTRPCRouter({
         await ctx.db.story.update({
           where: {
             id: input.id,
+            author_id: ctx.user.id,
           },
           data: {
             isDeleted: true,
@@ -690,6 +817,7 @@ export const storyRouter = createTRPCRouter({
         await ctx.db.readingList.update({
           where: {
             slug: input.readingListSlug,
+            authorId: ctx.user.id,
           },
           data: {
             stories: {

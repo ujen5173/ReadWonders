@@ -70,3 +70,17 @@ export type RootContextType = {
 };
 
 export interface UploadedFile<T = unknown> extends ClientUploadedFileData<T> {}
+
+export type User = {
+  id: string;
+  name: string | null;
+  username: string | null;
+  profile: string | null;
+  email: string | null;
+};
+
+export type SearchByTitle = {
+  id: string;
+  title: string;
+  slug: string;
+};

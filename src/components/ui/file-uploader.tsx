@@ -7,8 +7,7 @@ import Dropzone, {
   type FileRejection,
 } from "react-dropzone";
 
-import { UploadIcon, X } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { UploadIcon } from "lucide-react";
 import { Progress } from "~/components/ui/progress";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { type UploadedFile } from "~/types";
@@ -147,78 +146,23 @@ export function FileUploader({
           >
             <input {...getInputProps()} />
 
-            {!!uploadedFile && !!uploadedFile.url ? (
-              <>
-                <div
-                  className={cn(
-                    imageLoad ? "block" : "hidden",
-                    "absolute left-0 top-0 h-full w-full",
-                  )}
-                >
-                  <Skeleton className="h-full min-h-[383px] w-full rounded-xl" />
-                </div>
-                <Image
-                  onLoadingComplete={() => setImageLoad((prev) => !prev)}
-                  src={uploadedFile.url}
-                  alt={uploadedFile.name}
-                  width={840}
-                  height={472}
-                  className={`${imageLoad ? "opacity-0" : "opacity-1"} absolute h-full w-full object-cover`}
-                />
-              </>
+            {isDragActive ? (
+              <DragSection />
+            ) : preparingUpload ||
+              (progresses > -1 && progresses <= 100) ||
+              (uploadedFile && progresses > -1 && progresses <= 100) ? (
+              <Uploading
+                preparingUpload={preparingUpload}
+                progresses={progresses}
+              />
+            ) : uploadedFile && uploadedFile.url ? (
+              <FileUploaded
+                imageLoad={imageLoad}
+                setImageLoad={setImageLoad}
+                uploadedFile={uploadedFile}
+              />
             ) : (
-              <div className="px-5 py-2.5">
-                {isDragActive ? (
-                  <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
-                    <div className="rounded-full border border-dashed border-muted-foreground p-3">
-                      <UploadIcon
-                        className="size-7 text-muted-foreground"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <p className="font-medium text-muted-foreground">
-                      Drop the files here
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    {progresses === -1 && !preparingUpload ? (
-                      <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
-                        <div className="rounded-full border border-dashed border-muted-foreground p-3">
-                          <UploadIcon
-                            className="size-7 text-muted-foreground"
-                            aria-hidden="true"
-                          />
-                        </div>
-                        <div className="space-y-px">
-                          <p className="font-medium text-muted-foreground">
-                            Drag & drop file here, or click to select file
-                          </p>
-                          <p className="text-sm text-muted-foreground/70">
-                            You can upload files (up to {formatBytes(maxSize)})
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex w-full flex-col items-center justify-center gap-4 sm:px-5">
-                        <div className="rounded-full border border-dashed border-muted-foreground p-3">
-                          <Icons.uploadingFile
-                            className="size-11 text-muted-foreground"
-                            aria-hidden="true"
-                          />
-                        </div>
-                        <div className="w-full space-y-px">
-                          <p className="mb-2 font-medium text-muted-foreground">
-                            {preparingUpload ? "Preparing upload" : "Uploading"}
-                            ...
-                          </p>
-                          <Progress value={progresses} />
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+              <NoFileUploaded maxSize={maxSize} />
             )}
           </div>
         )}
@@ -227,53 +171,97 @@ export function FileUploader({
   );
 }
 
-interface FileCardProps {
-  file: File;
-  onRemove: () => void;
-  progress?: number;
-}
-
-function FileCard({ file, progress, onRemove }: FileCardProps) {
+const NoFileUploaded = ({ maxSize }: { maxSize: number }) => {
   return (
-    <div className="relative flex items-center space-x-4">
-      <div className="flex flex-1 space-x-4">
-        {isFileWithPreview(file) ? (
-          <Image
-            src={file.preview}
-            alt={file.name}
-            width={48}
-            height={48}
-            loading="lazy"
-            className="aspect-square shrink-0 rounded-md object-cover"
-          />
-        ) : null}
-        <div className="flex w-full flex-col gap-2">
-          <div className="space-y-px">
-            <p className="line-clamp-1 text-sm font-medium text-foreground/80">
-              {file.name}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {formatBytes(file.size)}
-            </p>
-          </div>
-          {progress ? <Progress value={progress} /> : null}
-        </div>
+    <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
+      <div className="rounded-full border border-dashed border-muted-foreground p-3">
+        <UploadIcon
+          className="size-7 text-muted-foreground"
+          aria-hidden="true"
+        />
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="size-7"
-          onClick={onRemove}
-        >
-          <X className="size-4 " aria-hidden="true" />
-          <span className="sr-only">Remove file</span>
-        </Button>
+      <div className="space-y-px">
+        <p className="font-medium text-muted-foreground">
+          Drag & drop file here, or click to select file
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          You can upload files (up to {formatBytes(maxSize)})
+        </p>
       </div>
     </div>
   );
-}
+};
+
+const Uploading = ({
+  preparingUpload,
+  progresses,
+}: {
+  preparingUpload: boolean;
+  progresses: number | -1;
+}) => {
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-4 sm:px-5">
+      <div className="rounded-full border border-dashed border-muted-foreground p-3">
+        <Icons.uploadingFile
+          className="size-11 text-muted-foreground"
+          aria-hidden="true"
+        />
+      </div>
+      <div className="w-full space-y-px">
+        <p className="mb-2 font-medium text-muted-foreground">
+          {preparingUpload ? "Preparing upload" : "Uploading"}
+          ...
+        </p>
+        <Progress value={progresses} />
+      </div>
+    </div>
+  );
+};
+
+const FileUploaded = ({
+  imageLoad,
+  setImageLoad,
+  uploadedFile,
+}: {
+  imageLoad: boolean;
+  setImageLoad: React.Dispatch<React.SetStateAction<boolean>>;
+  uploadedFile: UploadedFile<unknown> | { url: string; name: string };
+}) => {
+  return (
+    <>
+      <div
+        className={cn(
+          imageLoad ? "block" : "hidden",
+          "absolute left-0 top-0 h-full w-full",
+        )}
+      >
+        <Skeleton className="h-full min-h-[383px] w-full rounded-xl" />
+      </div>
+      <Image
+        onLoadingComplete={() => setImageLoad((prev) => !prev)}
+        src={uploadedFile.url}
+        alt={uploadedFile.name}
+        width={840}
+        height={472}
+        className={`${imageLoad ? "opacity-0" : "opacity-1"} absolute h-full w-full object-cover`}
+      />
+    </>
+  );
+};
+
+const DragSection = () => {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
+      <div className="rounded-full border border-dashed border-muted-foreground p-3">
+        <UploadIcon
+          className="size-7 text-muted-foreground"
+          aria-hidden="true"
+        />
+      </div>
+      <p className="font-medium text-muted-foreground">Drop the files here</p>
+    </div>
+  );
+};
 
 function isFileWithPreview(file: File): file is File & { preview: string } {
   return "preview" in file && typeof file.preview === "string";

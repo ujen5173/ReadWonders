@@ -15,7 +15,7 @@ import slugify from "slugify";
 import { z } from "zod";
 import { limit, slugy } from "~/server/constants";
 import { mainSchema } from "~/types/zod";
-import { authorProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 
 export const chapterRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -156,7 +156,7 @@ export const chapterRouter = createTRPCRouter({
 
   // ----- Mutation -----
 
-  new: authorProcedure
+  new: privateProcedure
     .input(
       z.object({
         story_id: z.string(),
@@ -182,7 +182,7 @@ export const chapterRouter = createTRPCRouter({
       }
     }),
 
-  update: authorProcedure
+  update: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -231,7 +231,7 @@ export const chapterRouter = createTRPCRouter({
       }
     }),
 
-  delete: authorProcedure
+  delete: privateProcedure
     .input(
       z.object({
         id: z.string(),

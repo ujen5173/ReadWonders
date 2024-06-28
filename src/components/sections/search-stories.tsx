@@ -8,8 +8,6 @@ const SearchStories = ({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  console.log({ params, searchParams });
-
   return (
     <section className="w-full">
       <div className="mx-auto max-w-[1440px] px-4 py-12">
