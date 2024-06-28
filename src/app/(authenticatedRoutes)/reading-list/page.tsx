@@ -1,6 +1,7 @@
-import { ArrowDown, PlusSquare } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { ArrowDown } from "lucide-react";
+
 import { getServerUser } from "~/utils/auth";
+import NewReadingModel from "./_components/new-reading-model";
 import ReadingListSection from "./_components/reading-list-section";
 
 const ReadingLists = async () => {
@@ -18,10 +19,7 @@ const ReadingLists = async () => {
               <ArrowDown size={30} className="text-primary" />
             </div>
 
-            <Button size={"lg"}>
-              <PlusSquare size={24} />
-              <span>Create Reading List</span>
-            </Button>
+            <NewReadingModel />
           </div>
 
           <ReadingListSection userId={user.user!.id} />

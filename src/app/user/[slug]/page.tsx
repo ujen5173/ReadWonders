@@ -135,7 +135,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
           </main>
         </div>
 
-        <div className="border-b border-border py-6">
+        <div className="py-6">
           <h1 className="mb-4 text-2xl font-medium">
             {userDetails.name!}&apos;s Reading List
           </h1>

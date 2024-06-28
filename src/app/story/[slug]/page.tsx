@@ -1,4 +1,4 @@
-import { BookOpen, Eye, LayoutList, Notebook, Star } from "lucide-react";
+import { BookOpen, Edit, Eye, LayoutList, Notebook, Star } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import StartReading from "./_components/start-reading";
 
 interface Props {
   params: {
@@ -37,6 +38,8 @@ export async function generateMetadata({
 const Story = async ({ params }: { params: { slug: string } }) => {
   const storyDetails = await api.story.getSingle.query({ slug: params.slug });
 
+  const user = await api.auth.getProfile.query();
+
   return (
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1340px] border-b border-border py-6">
@@ -50,19 +53,41 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               src={storyDetails.thumbnail}
               className="story-cover-thumbnail w-full overflow-hidden rounded-lg object-fill shadow-2xl"
             />
+
             <div className="flex w-full flex-col gap-4">
-              <Button className="w-full" variant="default">
-                Start Reading
-              </Button>
-              <Button className="w-full gap-2" variant="secondary">
-                <Star className="size-4" />
-                <Star className="size-4" />
-                <Star className="size-4" />
-                <Star className="size-4" />
-                <Star className="size-4" />
+              {user?.id === storyDetails.author.id && (
+                <Link href={`/edit/${storyDetails.slug}`}>
+                  <Button className="w-full" variant="default">
+                    <Edit className="size-4" />
+                    Edit Story
+                  </Button>
+                </Link>
+              )}
+
+              <StartReading
+                hasChapter={
+                  storyDetails &&
+                  storyDetails.chapters &&
+                  storyDetails.chapters.length > 0
+                    ? `/chapter/${storyDetails.chapters[0]?.slug}`
+                    : null
+                }
+              />
+
+              <Button
+                className="flex w-full items-center gap-1"
+                variant="secondary"
+              >
+                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
                 <span>4.5</span>
               </Button>
+
               <ReadingListModel bookId={storyDetails.id} />
+
               <Button className="w-full" variant="secondary">
                 <Notebook className="size-4" />
                 Add notes
@@ -77,6 +102,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               >
                 {storyDetails.title}
               </h1>
+
               <div className="flex items-center space-x-1 text-lg text-foreground">
                 <p className="">By</p>
                 <Link
@@ -86,6 +112,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   <h2>{storyDetails.author.name}</h2>
                 </Link>
               </div>
+
               <div>
                 <a href="/categories/education">
                   <div className="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs text-primary-foreground transition-colors hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
@@ -96,6 +123,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </a>
               </div>
             </header>
+
             <div className="mx-auto mb-2 flex max-w-[29rem] flex-wrap sm:m-0">
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-r border-border p-2 lg:py-0">
@@ -103,43 +131,51 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <Eye size={16} />
                     <p>Reads</p>
                   </div>
+
                   <p className="font-semibold">
                     {formatNumber(storyDetails.reads)}
                   </p>
                 </div>
               </div>
+
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
                     <Star size={16} />
                     <p>Likes</p>
                   </div>
+
                   <p className="font-semibold">
                     {formatNumber(Math.floor(storyDetails.reads / 4))}
                   </p>
                 </div>
               </div>
+
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-r border-border p-2 xxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
                     <LayoutList size={16} />
                     <p>Chapters</p>
                   </div>
+
                   <p className="font-semibold">{12}</p>
                 </div>
               </div>
+
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-border p-2 lg:py-0">
                   <div className="flex items-center gap-1">
                     <BookOpen size={16} />
                     <p>Time</p>
                   </div>
+
                   <p className="font-semibold">
                     {formatReadingTime(Math.floor(storyDetails.reads / 66))}
                   </p>
                 </div>
               </div>
             </div>
+
             <article
               className={`max-w-none whitespace-pre-line ${contentFont.className}`}
             >
@@ -156,10 +192,12 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 ))}
               </div>
             </article>
+
             <div>
               <h4 className="mb-4 scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
                 Chapters:
               </h4>
+
               {storyDetails.chapters.length > 0 ? (
                 storyDetails.chapters.map((ch) => (
                   <Link
@@ -190,6 +228,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 </div>
               )}
             </div>
+
             <div>
               <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
                 Disscussions:

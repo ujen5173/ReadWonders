@@ -13,7 +13,11 @@ import { Skeleton } from "../ui/skeleton";
 const SearchArea = ({
   defaultResults,
 }: {
-  defaultResults: { stories: TCard[]; hasNextPage: boolean };
+  defaultResults: {
+    nextCursor: string | undefined;
+    stories: TCard[];
+    hasNextPage: boolean;
+  };
 }) => {
   const query = useSearchParams();
   const { data, isFetching, hasNextPage, fetchNextPage } =
@@ -26,7 +30,10 @@ const SearchArea = ({
         initialCursor:
           defaultResults.stories[defaultResults.stories.length - 1]?.id,
         refetchOnWindowFocus: false,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        getNextPageParam: (lastPage) => lastPage?.nextCursor,
+        enabled: (() => {
+          return query.get("q") !== null;
+        })(),
         retry: 0,
       },
     );
@@ -34,7 +41,7 @@ const SearchArea = ({
   const stories = useMemo(
     () => [
       ...defaultResults.stories,
-      ...(data?.pages.flatMap((page) => page.stories) ?? []),
+      ...(data?.pages.flatMap((page) => page?.stories ?? []) ?? []),
     ],
     [data],
   );
@@ -61,7 +68,7 @@ const SearchArea = ({
         ))}
 
         {(hasNextPage === undefined || hasNextPage) && isFetching
-          ? Array(15)
+          ? Array(6)
               .fill(null)
               .map((_, i) => (
                 <div key={i} className="relative h-full w-full space-y-2">
@@ -85,12 +92,6 @@ const SearchArea = ({
           }}
         />
       </main>
-
-      {!(hasNextPage === undefined || hasNextPage) && (
-        <div className="w-full pb-4 pt-8 text-center">
-          <p className="text-xl text-gray-500">You have reached the end.</p>
-        </div>
-      )}
     </div>
   );
 };

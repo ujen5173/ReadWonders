@@ -141,7 +141,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
       <DialogTrigger asChild>
         <Button variant="secondary" className="w-full gap-2">
           <PlusSquare size={16} />
-          <span>Reading List</span>
+          <span className="whitespace-nowrap">Reading List</span>
         </Button>
       </DialogTrigger>
 

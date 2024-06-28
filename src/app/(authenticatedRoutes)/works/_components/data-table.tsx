@@ -12,8 +12,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import * as React from "react";
 
 import { Button } from "~/components/ui/button";
@@ -21,9 +22,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
@@ -59,13 +57,15 @@ export const columns: ColumnDef<WorkDetails>[] = [
     header: "Thumbnail",
     cell: ({ row }) => (
       <div className="">
-        <Image
-          src={row.getValue("thumbnail")}
-          width={120}
-          height={60}
-          className="h-24 w-16 rounded-md object-fill"
-          alt=""
-        />
+        <Link href={`/${row.getValue("slug")}`}>
+          <Image
+            src={row.getValue("thumbnail")}
+            width={120}
+            height={60}
+            className="h-24 w-16 rounded-md object-fill"
+            alt=""
+          />
+        </Link>
       </div>
     ),
   },
@@ -73,13 +73,19 @@ export const columns: ColumnDef<WorkDetails>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
+      <Link href={`/${row.getValue("slug")}`}>
+        <div className="capitalize">{row.getValue("title")}</div>
+      </Link>
     ),
   },
   {
     accessorKey: "slug",
     header: "Slug",
-    cell: ({ row }) => <div className="">{row.getValue("slug")}</div>,
+    cell: ({ row }) => (
+      <Link href={`/${row.getValue("slug")}`}>
+        <div className="">{row.getValue("slug")}</div>
+      </Link>
+    ),
   },
   {
     accessorKey: "reads",
@@ -134,38 +140,9 @@ export const columns: ColumnDef<WorkDetails>[] = [
     header: () => <div className="text-right">Total Chapters</div>,
     cell: ({ row }) => {
       return (
-        <div className="text-right font-medium">
+        <div className="text-center font-medium">
           {row.getValue("total_chapters")}
         </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white" align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy Story URL
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View Story</DropdownMenuItem>
-            <DropdownMenuItem>View User Details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       );
     },
   },
