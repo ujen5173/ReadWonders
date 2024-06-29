@@ -12,6 +12,7 @@ const StartReading = ({ hasChapter }: { hasChapter: string | null }) => {
         if (hasChapter) {
           return false;
         }
+
         return true;
       })()}
       onClick={() => {

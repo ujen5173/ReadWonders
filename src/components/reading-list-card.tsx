@@ -1,4 +1,3 @@
-import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,7 +7,6 @@ import {
   cardWidth,
 } from "~/server/constants";
 import { TReadingListCard } from "~/types";
-import { Button } from "./ui/button";
 
 const ReadingListCard = ({
   readingList,
@@ -30,9 +28,6 @@ const ReadingListCard = ({
             {readingList.title}
           </h2>
         </Link>
-        <Button size={"icon"} variant={"secondary"}>
-          <EllipsisVertical size={20} />
-        </Button>
       </div>
 
       <Link href={`/reading-list/${readingList.slug}`}>
@@ -40,7 +35,7 @@ const ReadingListCard = ({
           style={{
             maxHeight: cardHeight / 1.4 + 32 + 44 + "px",
             height: "20vh",
-            minHeight: "250px",
+            minHeight: "260px",
             width: cardWidth * 2 + "px",
             maxWidth: "100%",
           }}
@@ -85,9 +80,9 @@ const ReadingListCard = ({
                     style={{
                       zIndex: -index,
                       maxWidth: bookWidth + "px",
-                      width: "33%",
+                      width: "100%",
                       maxHeight: bookHeight + "px",
-                      height: "45%",
+                      height: "100%",
                     }}
                   ></div>
                 </div>

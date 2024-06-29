@@ -26,9 +26,10 @@ const ReadingListSection = ({
   return (
     <div
       className={cn(
+        "grid grid-cols-1 gap-5 xs:grid-cols-2 lg:grid-cols-3",
         perRow === 2
-          ? "grid grid-cols-1 gap-5 xs:grid-cols-2"
-          : "grid grid-cols-1 gap-5 border-b border-border pb-8 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+          ? "xl:grid-cols-2"
+          : "border-b border-border pb-8 xl:grid-cols-4",
       )}
     >
       {isLoading ? (
@@ -53,6 +54,18 @@ const ReadingListSection = ({
                 />
               ),
             )}
+        </>
+      )}
+      {Array(Math.abs(perRow - (readingLists ?? []).length))
+        .fill(0)
+        .map((_, i) => (
+          <div className="mx-auto block flex-1" key={i} />
+        ))}
+
+      {perRow === 2 && Math.abs(perRow - (readingLists ?? []).length) === 0 && (
+        <>
+          <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
+          <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
         </>
       )}
     </div>

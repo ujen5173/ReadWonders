@@ -1,25 +1,17 @@
-"use client";
+import React from "react";
 
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-import { LoadingScreen } from "~/components/Loading";
-import { useUser } from "./AuthProvider";
+import { redirect } from "next/navigation";
+import { getServerUser } from "~/utils/auth";
 
 export const withPublicRoute = <T extends object>(
   WrappedComponent: React.FunctionComponent<T>,
 ) => {
   const ComponentwithPublicRoute = async (props: T) => {
-    const router = useRouter();
-    const { user, isLoading } = useUser();
-    const isUserDataLoaded = !isLoading;
+    const { user } = await getServerUser();
 
-    useEffect(() => {
-      if (user && isUserDataLoaded) {
-        router.push("/dashboard");
-      }
-    }, [user, isUserDataLoaded, router]);
-
-    if (user ?? !isUserDataLoaded) return <LoadingScreen />;
+    if (user) {
+      redirect("/dashboard");
+    }
 
     return <WrappedComponent {...props} />;
   };

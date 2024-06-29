@@ -122,7 +122,10 @@ const EditBody = ({
         });
       }
     } catch (error) {
-      console.error({ error });
+      toast({
+        type: "background",
+        title: "Something went wrong",
+      });
     }
   }
 
