@@ -3,7 +3,7 @@
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Filter } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import {
@@ -34,16 +34,6 @@ const SearchHeader = () => {
     mature: searchParams.get("mature") === "true",
   });
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams],
-  );
-
   const onApply = () => {
     const params = new URLSearchParams();
 
@@ -59,6 +49,7 @@ const SearchHeader = () => {
       return;
     });
   };
+
   const onReset = () => {
     router.push(pathname + "?" + "q=" + searchParams.get("q"));
   };
