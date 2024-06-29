@@ -469,6 +469,14 @@ export const storyRouter = createTRPCRouter({
         query: z.string().optional(),
         limit: z.number().optional().default(limit),
         cursor: z.string().optional(),
+        filter: z
+          .object({
+            len: z.string().optional(),
+            mature: z.string().optional(),
+            updated: z.string().optional(),
+            premium: z.string().optional(),
+          })
+          .optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -483,55 +491,107 @@ export const storyRouter = createTRPCRouter({
 
         const searchConditions = searchTerms.map(
           (term) => Prisma.sql`
-            (
-              LOWER(story.title) LIKE ${`%${term}%`} OR
-              LOWER(story.slug) LIKE ${`%${term}%`} OR
-              LOWER(story.description) LIKE ${`%${term}%`} OR
-              LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
-              EXISTS (
-                SELECT 1 FROM chapter
-                WHERE chapter.story_id = story.id AND LOWER(chapter.title) LIKE ${`%${term}%`}
-              )
-            )
-          `,
+    (
+      LOWER(story.title) LIKE ${`%${term}%`} OR
+      LOWER(story.slug) LIKE ${`%${term}%`} OR
+      LOWER(story.description) LIKE ${`%${term}%`} OR
+      LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
+      EXISTS (
+        SELECT 1 FROM chapter
+        WHERE chapter.story_id = story.id AND LOWER(chapter.title) LIKE ${`%${term}%`}
+      )
+    )
+  `,
         );
+
+        const lengthCondition = input.filter?.len
+          ? Prisma.sql`
+  AND (
+    SELECT COUNT(*) FROM chapter WHERE chapter.story_id = story.id
+  ) BETWEEN ${parseInt(input.filter.len.split("-")[0] ?? "0")} AND ${input.filter.len.split("-")[1] === "50+" ? "50" : parseInt(input.filter.len.split("-")[1] ?? "100")}
+`
+          : Prisma.empty;
+
+        const matureCondition = input.filter?.mature
+          ? Prisma.sql`
+  AND story."isMature" = ${input.filter.mature === "true"}
+`
+          : Prisma.empty;
+
+        const premiumCondition = input.filter?.premium
+          ? Prisma.sql`
+  AND story."isPremium" = ${input.filter.premium === "true"}
+`
+          : Prisma.empty;
+
+        const updatedCondition = (() => {
+          if (!input.filter?.updated) return Prisma.empty;
+          const now = new Date();
+          let fromDate;
+          switch (input.filter.updated) {
+            case "today":
+              fromDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+              );
+              break;
+            case "this week":
+              fromDate = new Date(now.setDate(now.getDate() - now.getDay()));
+              break;
+            case "this month":
+              fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+              break;
+            case "this year":
+              fromDate = new Date(now.getFullYear(), 0, 1);
+              break;
+            default:
+              return Prisma.empty;
+          }
+          return Prisma.sql`AND story."updatedAt" >= ${fromDate.toISOString()}::timestamp`;
+        })();
 
         const cursorCondition = cursor
           ? Prisma.sql`AND story.id::text > ${cursor}`
           : Prisma.empty;
 
         const stories = await ctx.db.$queryRaw<TCard[]>`
-          SELECT
-            story.id,
-            story.description,
-            story.slug,
-            story.title,
-            story.thumbnail,
-            story.tags,
-            story."isPremium",
-            story.category,
-            story."isMature",
-            story.reads,
-            COALESCE(json_agg(
-                json_build_object(
-                  'id', chapter.id,
-                  'title', chapter.title,
-                  'slug', chapter.slug,
-                  'createdAt', chapter."createdAt"
-                )
-              ) FILTER (WHERE chapter.id IS NOT NULL), '[]') AS chapters,
-            json_build_object(
-              'name', author.name,
-              'profile', author.profile
-            ) AS author
-          FROM story
-          LEFT JOIN chapter ON chapter.story_id = story.id
-          LEFT JOIN profiles AS author ON author.id = story.author_id
-          WHERE ${Prisma.join(searchConditions, " AND ")} ${cursorCondition}
-          GROUP BY story.id, author.name, author.profile
-          ORDER BY story.id
-          LIMIT ${input.limit + 1}
-        `;
+  SELECT
+    story.id,
+    story.description,
+    story.slug,
+    story.title,
+    story.thumbnail,
+    story.tags,
+    story."isPremium",
+    story.category,
+    story."isMature",
+    story.reads,
+    COALESCE(json_agg(
+        json_build_object(
+          'id', chapter.id,
+          'title', chapter.title,
+          'slug', chapter.slug,
+          'createdAt', chapter."createdAt"
+        )
+      ) FILTER (WHERE chapter.id IS NOT NULL), '[]') AS chapters,
+    json_build_object(
+      'name', author.name,
+      'profile', author.profile
+    ) AS author
+  FROM story
+  LEFT JOIN chapter ON chapter.story_id = story.id
+  LEFT JOIN profiles AS author ON author.id = story.author_id
+  WHERE ${Prisma.join(searchConditions, " AND ")}
+  ${lengthCondition}
+  ${matureCondition}
+  ${premiumCondition}
+  ${updatedCondition}
+  ${cursorCondition}
+  GROUP BY story.id, author.name, author.profile
+  ORDER BY story.id
+  LIMIT ${input.limit + 1}
+`;
 
         const hasNextPage = stories.length > input.limit;
 
@@ -543,6 +603,7 @@ export const storyRouter = createTRPCRouter({
 
         return { stories, hasNextPage, nextCursor };
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to search stories",

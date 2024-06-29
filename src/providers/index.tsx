@@ -7,7 +7,6 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <>
       {children}
-      {/* <CSPostHogProvider></CSPostHogProvider> */}
       <UmamiAnalyticsProvider />
     </>
   );

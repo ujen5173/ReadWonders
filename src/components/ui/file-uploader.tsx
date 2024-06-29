@@ -148,21 +148,29 @@ export function FileUploader({
 
             {isDragActive ? (
               <DragSection />
-            ) : preparingUpload ||
-              (progresses > -1 && progresses <= 100) ||
-              (uploadedFile && progresses > -1 && progresses <= 100) ? (
-              <Uploading
-                preparingUpload={preparingUpload}
-                progresses={progresses}
-              />
-            ) : uploadedFile && uploadedFile.url ? (
-              <FileUploaded
-                imageLoad={imageLoad}
-                setImageLoad={setImageLoad}
-                uploadedFile={uploadedFile}
-              />
             ) : (
-              <NoFileUploaded maxSize={maxSize} />
+              <>
+                {preparingUpload ||
+                (progresses > -1 && progresses <= 100) ||
+                (uploadedFile && progresses > -1 && progresses <= 100) ? (
+                  <Uploading
+                    preparingUpload={preparingUpload}
+                    progresses={progresses}
+                  />
+                ) : (
+                  <>
+                    {uploadedFile && uploadedFile.url ? (
+                      <FileUploaded
+                        imageLoad={imageLoad}
+                        setImageLoad={setImageLoad}
+                        uploadedFile={uploadedFile}
+                      />
+                    ) : (
+                      <NoFileUploaded maxSize={maxSize} />
+                    )}
+                  </>
+                )}
+              </>
             )}
           </div>
         )}
