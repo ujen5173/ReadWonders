@@ -121,7 +121,7 @@ const EditBody = ({
           title: "Something went wrong",
         });
       }
-    } catch (error) {
+    } catch (err) {
       toast({
         type: "background",
         title: "Something went wrong",
