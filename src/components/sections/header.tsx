@@ -40,9 +40,8 @@ import {
 } from "../ui/sheet";
 
 const Header = () => {
-  const { data } = api.auth.getProfile.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data } = api.auth.getProfile.useQuery(undefined);
+
   const [open, setOpen] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -188,6 +187,7 @@ const Header = () => {
                   onClick={async () => {
                     try {
                       await supabase().auth.signOut();
+                      window.location.href = "/";
                     } catch (err) {
                       toast("Error logging out");
                     }

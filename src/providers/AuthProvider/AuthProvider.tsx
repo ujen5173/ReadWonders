@@ -24,7 +24,7 @@ export const AuthContext = createContext<{
 
 const setCookies = (session: Session | null) => {
   if (session) {
-    const maxAge = 100 * 365 * 24 * 60 * 60; // 100 years, never expires
+    const maxAge = 604800; // 7 days in seconds
 
     document.cookie = `access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`;
     document.cookie = `refresh-token=${session.refresh_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`;

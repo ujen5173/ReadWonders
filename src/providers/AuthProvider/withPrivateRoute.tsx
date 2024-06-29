@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "~/providers/AuthProvider/AuthProvider";
+import { api } from "~/trpc/react";
 
 export const withPrivateRoute = <T extends object>(
   WrappedComponent: React.FunctionComponent<T>,
@@ -10,7 +10,8 @@ export const withPrivateRoute = <T extends object>(
   const ComponentWithPrivateRoute = (props: T) => {
     const router = useRouter();
 
-    const { user, isLoading } = useUser();
+    // const { user, isLoading } = useUser();
+    const { data: user, isLoading } = api.auth.getProfile.useQuery();
 
     useEffect(() => {
       if (!user && !isLoading) {
