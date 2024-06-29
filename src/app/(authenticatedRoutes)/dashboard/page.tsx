@@ -27,20 +27,6 @@ const Dashboard = async () => {
         </div>
       </section>
 
-      {/* A way to indicate the image is loading: */}
-      {/* <div className="animate-pulse-bg rounded-md bg-muted">
-        <Image
-          src={
-            "https://images.pexels.com/photos/464321/pexels-photo-464321.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-          }
-          alt="Profile Image"
-          width={1440}
-          height={400}
-          layout="responsive"
-          objectFit="cover"
-        />
-      </div> */}
-
       <section className="w-full">
         <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 border-b border-border px-4 py-8 xl:flex-row">
           <Suspense fallback={<LoadingColumn />}>
