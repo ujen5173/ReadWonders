@@ -2,23 +2,24 @@
 
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Logo from "../Logo";
 import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const WritingHeader = ({
   onSubmit,
-  uploadingChapter,
-  nextChapterLoading,
+  loading,
 }: {
   onSubmit: (value: "PUBLISH" | "NEXT") => void;
-  uploadingChapter: boolean;
-  nextChapterLoading: boolean;
+  loading: "PUBLISH" | "NEXT" | null;
 }) => {
   const router = useRouter();
-  const pathname = usePathname();
-
-  const searchParams = useSearchParams().get("title")?.trim() ?? "";
 
   return (
     <header className="w-full">
@@ -35,11 +36,7 @@ const WritingHeader = ({
             <ChevronLeft size={24} />
           </Button>
           <div>
-            <p className="text-xl font-bold text-text-secondary">
-              {searchParams.length > 0
-                ? searchParams
-                : `${pathname.includes("/write/s") ? "Untitled Chapter" : "Untitled Story"}`}
-            </p>
+            <p className="text-xl font-bold text-text-secondary">New Chapter</p>
           </div>
         </div>
 
@@ -50,20 +47,28 @@ const WritingHeader = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline">
-            Preview
-          </Button>
+          <TooltipProvider>
+            <Tooltip delayDuration={20}>
+              <TooltipTrigger asChild>
+                <Button
+                  loading={loading === "NEXT"}
+                  disabled={!!loading}
+                  onClick={() => onSubmit("NEXT")}
+                  size="sm"
+                  variant={"secondary"}
+                >
+                  Next
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save as draft and proceed to next chapter</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <Button
-            loading={uploadingChapter}
-            disabled={uploadingChapter || nextChapterLoading}
-            onClick={() => onSubmit("NEXT")}
-            size="sm"
-          >
-            Next
-          </Button>
-          <Button
-            loading={nextChapterLoading}
-            disabled={uploadingChapter || nextChapterLoading}
+            loading={loading === "PUBLISH"}
+            disabled={!!loading}
             onClick={() => onSubmit("PUBLISH")}
             size="sm"
           >

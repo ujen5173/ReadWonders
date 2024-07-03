@@ -359,19 +359,21 @@ model ReadingList {
 }
 
 model Story {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String
-  slug        String   @unique
-  description String
-  thumbnail   String
-  tags        String[]
-  isPremium   Boolean  @default(false)
-  isDeleted   Boolean  @default(false)
-  isMature    Boolean  @default(false)
-  category    String?
-  reads       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String   @unique
+  description   String
+  thumbnail     String
+  tags          String[]
+  isPremium     Boolean  @default(false)
+  isDeleted     Boolean  @default(false)
+  isMature      Boolean  @default(false)
+  category      Genre?   @relation(fields: [category_name], references: [name])
+  category_name String?
+  reads         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  published     Boolean  @default(false)
 
   author_id String   @db.Uuid
   author    Profiles @relation(fields: [author_id], references: [id])
@@ -402,11 +404,24 @@ model Chapter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
+  published Boolean  @default(false)
   story_id  String   @db.Uuid
   story     Story    @relation(fields: [story_id], references: [id])
 
   @@index([story_id, slug])
   @@map("chapter")
+  @@schema("public")
+}
+
+model Genre {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  Story       Story[]
+
+  @@map("genre")
   @@schema("public")
 }
 

@@ -189,6 +189,7 @@ export const chapterRouter = createTRPCRouter({
         title: z.string(),
         content: mainSchema,
         thumbnail: z.string().nullable(),
+        published: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

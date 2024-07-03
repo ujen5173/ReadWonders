@@ -65,7 +65,7 @@ export const storyRouter = createTRPCRouter({
           take: input.limit,
           skip: input.skip,
           where: {
-            category: {
+            category_name: {
               equals: input.slug,
               mode: "insensitive",
             },
@@ -340,6 +340,30 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
+  latest: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().optional().default(limit),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const stories = await ctx.db.story.findMany({
+          take: input.limit,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        return stories;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch latest stories",
+        });
+      }
+    }),
+
   featuredStories: publicProcedure
     .input(
       z.object({
@@ -349,47 +373,68 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const stories = await ctx.db.story.findMany({
-          take: input.limit,
-          skip: input.skip,
-          select: {
-            reads: true,
-            isPremium: true,
-            description: true,
-            tags: true,
-            slug: true,
-            category: true,
-            id: true,
-            title: true,
-            thumbnail: true,
-            isMature: true,
-            chapters: {
-              select: {
-                title: true,
-                id: true,
-                createdAt: true,
-                slug: true,
-              },
-            },
-            author: {
-              select: {
-                name: true,
-                profile: true,
-                username: true,
-              },
-            },
-          },
-          where: {
-            isDeleted: false,
-          },
-          orderBy: {
-            reads: "desc",
-          },
-        });
+        const featuredStories = (await ctx.db.$queryRaw`
+          WITH RankedStories AS (
+            SELECT 
+              s.id,
+              s.title,
+              s.slug,
+              s.description,
+              s.thumbnail,
+              s.tags,
+              s."isPremium",
+              s."isMature",
+              s.category_name,
+              s.reads,
+              s.author_id
+            FROM 
+              story s
+            WHERE 
+              s.published = true
+              AND s."isDeleted" = false
+              AND s."createdAt" >= CURRENT_DATE - INTERVAL '30 days'
+          )
+          SELECT 
+            rs.id,
+            rs.title,
+            rs.slug,
+            rs.description,
+            rs.thumbnail,
+            rs.tags,
+            rs."isPremium",
+            rs."isMature",
+            rs.category_name,
+            rs.reads,
+            (
+              SELECT json_agg(json_build_object(
+                'id', c.id,
+                'title', c.title,
+                'createdAt', c."createdAt",
+                'slug', c.slug
+              ))
+              FROM chapter c
+              WHERE c.story_id = rs.id
+            ) AS chapters,
+            json_build_object(
+              'name', p.name,
+              'profile', p.profile,
+              'username', p.username
+            ) AS author,
+            json_build_object(
+              'name', g.name,
+              'slug', g.slug
+            ) AS category
+          FROM 
+            RankedStories rs
+            JOIN profiles p ON rs.author_id = p.id
+            LEFT JOIN genre g ON rs.category_name = g.name
+          ORDER BY 
+            rs.reads DESC
+          LIMIT ${input.limit} OFFSET ${input.skip};
+        `) as TCard[];
 
-        return stories;
+        return featuredStories;
       } catch (err) {
-        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch featured stories",
@@ -682,7 +727,7 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { edit, ...rest } = input;
+        const { edit, category, ...rest } = input;
 
         const slug = slugify(
           rest.title + "-" + Math.random().toString(36).substring(7),
@@ -697,6 +742,7 @@ export const storyRouter = createTRPCRouter({
             data: {
               ...rest,
               slug,
+              category_name: category,
               author_id: ctx.user.id,
             },
             select: {
@@ -762,13 +808,16 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { id, ...rest } = input;
+        const { id, category, ...rest } = input;
         const story = await ctx.db.story.update({
           where: {
             id: id,
             author_id: ctx.user.id,
           },
-          data: rest,
+          data: {
+            ...rest,
+            category_name: category,
+          },
         });
 
         return story;

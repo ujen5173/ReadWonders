@@ -7,7 +7,7 @@ const f = createUploadthing();
 async function auth(req: Request) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 
-  return { id: "fakeId" };
+  return { id: "123" };
 }
 
 // FileRouter for your app, can contain multiple FileRoutes

@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { withPublicRoute } from "~/providers/AuthProvider/withPublicRoute";
 

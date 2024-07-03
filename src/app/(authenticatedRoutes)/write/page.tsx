@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
@@ -33,10 +33,9 @@ import { genres } from "~/data";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
+import { cn } from "~/utils/cn";
 
 const WriteStory = () => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const { replace } = useRouter();
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
@@ -47,7 +46,6 @@ const WriteStory = () => {
   useEffect(() => {
     if (isError && error) {
       toast({
-        type: "background",
         title: error.message,
       });
     }
@@ -144,18 +142,7 @@ const WriteStory = () => {
                         <Input
                           placeholder="Untitled Story"
                           {...field}
-                          onChange={(event) => {
-                            field.onChange(event);
-                            const params = new URLSearchParams(searchParams);
-
-                            if (event.target.value) {
-                              params.set("title", event.target.value.trim());
-                            } else {
-                              params.delete("title");
-                            }
-
-                            replace(`${pathname}?${params.toString()}`);
-                          }}
+                          className="text-base"
                         />
                       </FormControl>
                       <FormDescription>
@@ -172,7 +159,7 @@ const WriteStory = () => {
                     <FormItem className="mb-6">
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea className="min-h-48" {...field} />
+                        <Textarea className="min-h-48 text-base" {...field} />
                       </FormControl>
                       <FormDescription>
                         Write a short description that will excite your readers
@@ -219,7 +206,18 @@ const WriteStory = () => {
                     <FormItem className="mb-6">
                       <div className="flex items-center justify-between pr-2">
                         <FormLabel>Tag(s)</FormLabel>
-                        <span className="text-xs font-semibold">Max: 17</span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              (form.getValues("tags") ?? []).length < 17
+                                ? "text-slate-800"
+                                : "text-red-600",
+                              "text-xs font-semibold",
+                            )}
+                          >
+                            Max: 17
+                          </span>
+                        </div>
                       </div>
                       <FormControl>
                         <InputTags {...field} />

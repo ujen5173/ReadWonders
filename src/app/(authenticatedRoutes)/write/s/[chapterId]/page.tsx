@@ -22,6 +22,7 @@ import CustomEditor from "~/packages/Editor/advanced-editor";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
 import { defaultEditorContent } from "~/utils/default-content";
+import { getErrorMessage } from "~/utils/handle-errors";
 import { autosaveContent, loadDraft } from "./utils/database";
 
 const NewStory = ({ params }: { params: { chapterId: string } }) => {
@@ -100,47 +101,58 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     handleImageLoad();
   }, [handleImageLoad]);
 
-  const { mutateAsync, isLoading: uploadingChapter } =
-    api.chapter.update.useMutation();
-  const { mutateAsync: newChapterMutation, isLoading: nextChapterLoading } =
-    api.chapter.new.useMutation();
+  const [loading, setLoading] = useState<"PUBLISH" | "NEXT" | null>(null);
+
+  const { mutateAsync } = api.chapter.update.useMutation();
+  const { mutateAsync: newChapterMutation } = api.chapter.new.useMutation();
 
   const onSubmit = async (type: "PUBLISH" | "NEXT" = "PUBLISH") => {
-    if (!chapter) {
-      toast({ title: "Chapter not found." });
+    try {
+      setLoading(type);
+      if (!chapter) {
+        toast({ title: "Chapter not found." });
 
-      return;
-    }
+        return;
+      }
 
-    const draftData = await loadDraft(chapter.story_id, chapter.id);
+      const draftData = await loadDraft(chapter.story_id, chapter.id);
 
-    if (!draftData?.content) {
-      toast({ title: "Please write something before publishing." });
+      if (!draftData?.content) {
+        toast({ title: "Please write something before publishing." });
 
-      return;
-    }
+        return;
+      }
 
-    const publishedChapter = await mutateAsync({
-      title: form.getValues("title"),
-      content: JSON.parse(draftData.content),
-      thumbnail: uploadedFile?.url ?? null,
-      id: chapter.id,
-    });
-
-    if (type === "NEXT") {
-      const newChapterId = await newChapterMutation({
-        story_id: chapter.story_id,
+      await mutateAsync({
+        title: form.getValues("title"),
+        content: JSON.parse(draftData.content),
+        thumbnail: uploadedFile?.url ?? null,
+        id: chapter.id,
+        published: type === "PUBLISH",
       });
 
-      if (newChapterId) {
-        replace(`/write/s/${newChapterId}`);
-        toast({
-          title: "Chapter published successfully. Redirecting to next chapter",
+      if (type === "NEXT") {
+        const newChapterId = await newChapterMutation({
+          story_id: chapter.story_id,
         });
+
+        if (newChapterId) {
+          replace(`/write/s/${newChapterId}`);
+          toast({
+            title:
+              "Chapter published successfully. Redirecting to next chapter",
+          });
+        }
+      } else {
+        toast({ title: "Chapter published successfully" });
+        replace(`/works`);
       }
-    } else {
-      toast({ title: "Chapter published successfully" });
-      replace(`/works`);
+    } catch (err) {
+      toast({
+        title: getErrorMessage(err),
+      });
+    } finally {
+      setLoading(null);
     }
   };
 
@@ -155,17 +167,9 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     }
   }, 1500);
 
-  // if (!chapter) {
-  //   return null;
-  // }
-
   return (
     <>
-      <WritingHeader
-        uploadingChapter={uploadingChapter}
-        nextChapterLoading={nextChapterLoading}
-        onSubmit={onSubmit}
-      />
+      <WritingHeader loading={loading} onSubmit={onSubmit} />
 
       <section className="w-full">
         <div className="mx-auto max-w-[1140px] px-4 py-8">

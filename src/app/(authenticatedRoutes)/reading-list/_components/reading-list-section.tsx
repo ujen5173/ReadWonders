@@ -2,18 +2,25 @@
 
 import ReadingListCard from "~/components/reading-list-card";
 import { Skeleton } from "~/components/ui/skeleton";
+import { toast } from "~/components/ui/use-toast";
 import { cardHeight, defaultReadingList } from "~/server/constants";
 import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 
 const ReadingListSection = ({
-  perRow = 6,
+  perRow = 4,
   userId,
+  showActions = false,
 }: {
-  perRow?: 2 | 6;
+  perRow?: 2 | 4;
   userId: string;
+  showActions?: boolean;
 }) => {
-  const { data: readingLists, isLoading } = api.auth.readingLists.useQuery(
+  const {
+    data: readingLists,
+    isLoading,
+    refetch,
+  } = api.auth.readingLists.useQuery(
     {
       authorId: userId,
       limit: perRow,
@@ -22,6 +29,37 @@ const ReadingListSection = ({
       refetchOnWindowFocus: false,
     },
   );
+
+  const { mutateAsync } = api.auth.deleteReadingList.useMutation();
+  const { mutateAsync: editMutate } = api.auth.editReadingList.useMutation();
+
+  const onDeleteConfirm = async (id: string) => {
+    const res = await mutateAsync({ readingListId: id });
+
+    if (res) refetch();
+
+    toast({
+      title: "Reading list deleted successfully",
+    });
+  };
+
+  const onEditConfirm = async (
+    id: string,
+    title: string,
+    description: string | null,
+  ) => {
+    const res = await editMutate({
+      readingListId: id,
+      title: title,
+      description: description,
+    });
+
+    if (res) refetch();
+
+    toast({
+      title: "Reading list updated successfully",
+    });
+  };
 
   return (
     <div
@@ -50,7 +88,10 @@ const ReadingListSection = ({
               (readingList) => (
                 <ReadingListCard
                   key={readingList.id}
+                  showActions={showActions}
                   readingList={readingList}
+                  onEditConfirm={onEditConfirm}
+                  onDeleteConfirm={onDeleteConfirm}
                 />
               ),
             )}

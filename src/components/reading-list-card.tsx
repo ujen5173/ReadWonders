@@ -1,5 +1,13 @@
+import { EllipsisVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import DeleteDialog from "~/app/_components/delete-dialog";
+import { Button } from "~/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import {
   bookHeight,
   bookWidth,
@@ -7,11 +15,23 @@ import {
   cardWidth,
 } from "~/server/constants";
 import { TReadingListCard } from "~/types";
+import EditReadingList from "./edit-reading-list";
+import { Separator } from "./ui/separator";
 
 const ReadingListCard = ({
+  showActions,
   readingList,
+  onEditConfirm,
+  onDeleteConfirm,
 }: {
+  showActions: boolean;
   readingList: TReadingListCard;
+  onEditConfirm: (
+    id: string,
+    title: string,
+    description: string | null,
+  ) => Promise<void>;
+  onDeleteConfirm: (id: string) => Promise<void>;
 }) => {
   return (
     <div
@@ -28,6 +48,38 @@ const ReadingListCard = ({
             {readingList.title}
           </h2>
         </Link>
+        {showActions && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon">
+                <EllipsisVertical size={18} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-40 overflow-hidden bg-white p-0">
+              <EditReadingList
+                title={readingList.title}
+                details={{
+                  title: readingList.title,
+                  description: readingList.description,
+                }}
+                onConfirm={(title: string, description: string | null) =>
+                  onEditConfirm(readingList.id, title, description)
+                }
+              />
+              <Separator />
+              <DeleteDialog
+                title={`Delete '${readingList.title}' reading list`}
+                description={
+                  "This action cannot be undone. This will permanently delete the reading list."
+                }
+                onConfirm={() => onDeleteConfirm(readingList.id)}
+                trigger={"Delete"}
+                variant={"ghost"}
+                style="w-full outline-none focus-visible:ring-0 focus-visible:ring-offset-0 justify-start rounded-none transition hover:bg-primary hover:text-white"
+              />
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
 
       <Link href={`/reading-list/${readingList.slug}`}>

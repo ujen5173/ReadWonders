@@ -49,7 +49,7 @@ const CoverCard: FC<{
           <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
             {details.title}
           </h1>
-          {readingList && (
+          {!readingList && (
             <p className="line-clamp-1 text-base text-gray-600">
               {details.author.name}
             </p>
@@ -62,7 +62,7 @@ const CoverCard: FC<{
           <div className="flex items-center justify-between">
             <div className="mb-2 w-full">
               <Badge className="border border-border" variant="secondary">
-                {details.category}
+                {details.category_name}
               </Badge>
             </div>
           </div>
@@ -101,7 +101,7 @@ const CoverCard: FC<{
                 <LayoutList className="mt-1" size={16} />
               </div>
               <p className="text-sm font-semibold">
-                {details?.chapters.length}
+                {(details?.chapters ?? []).length}
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ const CoverCard: FC<{
           <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
             {details.title}
           </h1>
-          {readingList && (
+          {!readingList && (
             <p className="line-clamp-1 text-base text-gray-600">
               {details.author.name}
             </p>

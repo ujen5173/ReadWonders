@@ -1,23 +1,19 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { api } from "~/trpc/react";
+import { api } from "~/trpc/server";
 
 export const withPrivateRoute = <T extends object>(
   WrappedComponent: React.FunctionComponent<T>,
 ) => {
-  const ComponentWithPrivateRoute = (props: T) => {
-    const router = useRouter();
+  const ComponentWithPrivateRoute = async (props: T) => {
+    // const router = useRouter();
 
     // const { user, isLoading } = useUser();
-    const { data: user, isLoading } = api.auth.getProfile.useQuery();
+    const user = await api.auth.authInfo.query();
 
-    useEffect(() => {
-      if (!user && !isLoading) {
-        router.push("/auth/login");
-      }
-    }, [user, router, isLoading]);
+    // useEffect(() => {
+    //   if (!user && !isLoading) {
+    //     router.push("/auth/login");
+    //   }
+    // }, [user, router, isLoading]);
 
     if (!user) return null;
 

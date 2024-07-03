@@ -58,6 +58,8 @@ export function useUploadFile(
       setImageUpload(true);
       setUploadedFile(res[0]);
     } catch (err) {
+      setPreparingUpload(false);
+
       toast({
         title: getErrorMessage(err),
       });

@@ -7,7 +7,6 @@ import { Button, buttonVariants } from "../ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { toast } from "sonner";
 import useKeyPress from "~/hooks/use-key-press";
 import { supabase } from "~/server/supabase/supabaseClient";
 import { api } from "~/trpc/react";
@@ -38,6 +37,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import { toast } from "../ui/use-toast";
 
 const Header = () => {
   const { data } = api.auth.getProfile.useQuery(undefined);
@@ -157,19 +157,24 @@ const Header = () => {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-[250px] bg-white" align="end">
-                <DropdownMenuItem className="pointer-events-none cursor-default rounded-none border-b border-border">
-                  <div className="py-[0.2rem]">
-                    <p className="text-sm font-semibold">{data.name!}</p>
-                    <p className="text-sm">{data.email!}</p>
-                  </div>
+                <DropdownMenuItem className="rounded-none border-b border-border p-0">
+                  <Link
+                    href={`/user/${data.username!}`}
+                    className="mb-1 block w-full rounded-sm p-2 hover:bg-foreground/10"
+                  >
+                    <div className="py-[0.2rem]">
+                      <p className="text-sm font-semibold">{data.name!}</p>
+                      <p className="text-sm">{data.email!}</p>
+                    </div>
+                  </Link>
                 </DropdownMenuItem>
 
                 <Link
                   className="block rounded-none border-b border-border px-[2px] py-[3px]"
-                  href={`/user/${data.username!}`}
+                  href={`/works`}
                 >
                   <DropdownMenuItem className="block w-full rounded-sm p-2 transition hover:bg-foreground/10">
-                    <span>My Profile</span>
+                    <span>Works</span>
                   </DropdownMenuItem>
                 </Link>
 
@@ -187,9 +192,12 @@ const Header = () => {
                   onClick={async () => {
                     try {
                       await supabase().auth.signOut();
+
                       window.location.href = "/";
                     } catch (err) {
-                      toast("Error logging out");
+                      toast({
+                        title: "Error logging out",
+                      });
                     }
                   }}
                 >

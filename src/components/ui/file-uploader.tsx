@@ -2,10 +2,7 @@
 
 import Image from "next/image";
 import * as React from "react";
-import Dropzone, {
-  type DropzoneProps,
-  type FileRejection,
-} from "react-dropzone";
+import Dropzone, { type DropzoneProps } from "react-dropzone";
 
 import { UploadIcon } from "lucide-react";
 import { Progress } from "~/components/ui/progress";
@@ -65,40 +62,17 @@ export function FileUploader({
   });
 
   const onDrop = React.useCallback(
-    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      setFiles(undefined);
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      setFiles(file);
 
-      if (!multiple && acceptedFiles.length > 1) {
-        toast({
-          title: "Cannot upload more than 1 file at a time",
-        });
-
-        return;
-      }
-
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        }),
-      );
-
-      setFiles(newFiles[0]);
-
-      if (rejectedFiles.length > 0) {
-        rejectedFiles.forEach(({ file }) => {
-          toast({
-            title: `File ${file.name} was rejected`,
-          });
-        });
-      }
-
-      if (onUpload && newFiles[0]) {
+      if (onUpload && file) {
         setPreparingUpload(true);
         toast({
           title: "Preparing upload...",
         });
 
-        onUpload(newFiles[0]);
+        onUpload(file);
       }
     },
 
@@ -132,11 +106,11 @@ export function FileUploader({
           <div
             {...getRootProps()}
             className={cn(
-              "overflow-hidden",
+              "overflow-hidden bg-white",
               !(!!uploadedFile && !!uploadedFile.url) &&
                 "border-2 border-dashed border-slate-600 py-6",
               "group relative grid h-full w-full cursor-pointer place-items-center rounded-lg",
-              "text-center transition hover:bg-primary/5",
+              "text-center transition hover:bg-secondary/5",
               "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               isDragActive && "border-muted-foreground/50 bg-primary/5",
               isDisabled && "pointer-events-none opacity-60",

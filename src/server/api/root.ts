@@ -3,6 +3,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { authRouter } from "./routers/auth";
 import { chapterRouter } from "./routers/chapter";
 import { feedbackRouter } from "./routers/feedback";
+import { genreRouter } from "./routers/genre";
 import { helpersRouter } from "./routers/helpers";
 import { storyRouter } from "./routers/story";
 
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   helpers: helpersRouter,
   auth: authRouter,
   feedback: feedbackRouter,
+  genre: genreRouter,
 });
 
 export type AppRouter = typeof appRouter;

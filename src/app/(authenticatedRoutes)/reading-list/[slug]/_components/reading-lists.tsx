@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import CoverCard from "~/components/cover-card";
+import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { TCard } from "~/types";
 
@@ -37,7 +37,9 @@ const ReadingLists = ({
 
       setList(updatedList);
 
-      toast.success("Story removed from reading list");
+      toast({
+        title: "Story removed from reading list",
+      });
     }
   };
 

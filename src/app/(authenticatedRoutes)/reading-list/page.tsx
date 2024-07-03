@@ -22,7 +22,7 @@ const ReadingLists = async () => {
             <NewReadingModel />
           </div>
 
-          <ReadingListSection userId={user.user!.id} />
+          <ReadingListSection showActions userId={user.user!.id} />
         </div>
       </section>
     </>

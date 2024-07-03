@@ -8,9 +8,9 @@ import {
   EditorCommandList,
   EditorContent,
   EditorRoot,
+  JSONContent,
   useEditor,
   type EditorInstance,
-  type JSONContent,
 } from "novel";
 import { ImageResizer, handleCommandNavigation } from "novel/extensions";
 import { useEffect, useState } from "react";
@@ -26,7 +26,6 @@ import {
   type Draft,
 } from "~/app/(authenticatedRoutes)/write/s/[chapterId]/utils/database";
 import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
 import "~/styles/prosemirror.css";
 import { defaultEditorContent } from "~/utils/default-content";
 import { uploadFn } from "./image-upload";
@@ -42,9 +41,29 @@ const CustomEditor = ({ details }: { details: Details }) => {
 
   const [open, setOpen] = useState(false);
 
-  const [initialContent, setInitialContent] = useState<null | JSONContent>(
-    null,
-  );
+  const [content, setContent] = useState<JSONContent | null>(null);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const draftContent = await loadDraft(
+          details.story_id,
+          details.chapterId,
+        );
+
+        if (draftContent && draftContent.content) {
+          setContent(JSON.parse(draftContent.content));
+        } else {
+          setContent(defaultEditorContent);
+        }
+      } catch (err) {
+        console.error(err);
+        setContent(defaultEditorContent);
+      }
+    };
+
+    fetchContent();
+  }, [details.story_id, details.chapterId]);
 
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [charsCount, setCharsCount] = useState();
@@ -66,36 +85,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
     setSaveStatus("Saved");
   }, 1500);
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        const draftContent = await loadDraft(
-          details.story_id,
-          details.chapterId,
-        );
-
-        if (!draftContent) {
-          setInitialContent(defaultEditorContent);
-
-          return;
-        }
-
-        const { content } = draftContent;
-
-        if (content) setInitialContent(JSON.parse(content));
-        else setInitialContent(defaultEditorContent);
-      } catch (err) {
-        setInitialContent(defaultEditorContent);
-      }
-    })();
-  }, [editor]);
-
-  if (!initialContent)
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
+  if (!content) return null;
 
   return (
     <div className="relative w-full pt-10">
@@ -115,9 +105,9 @@ const CustomEditor = ({ details }: { details: Details }) => {
       </div>
       <EditorRoot>
         <EditorContent
-          initialContent={initialContent}
           extensions={extensions}
-          className="relative min-h-[500px] w-full sm:rounded-lg"
+          initialContent={content}
+          className="relative min-h-[500px] w-full text-lg sm:rounded-lg"
           editorProps={{
             handleDOMEvents: {
               keydown: (_view, event) => handleCommandNavigation(event),
@@ -179,7 +169,7 @@ const CustomEditor = ({ details }: { details: Details }) => {
                 <Separator orientation="vertical" />
                 <LinkSelector open={openLink} onOpenChange={setOpenLink} />
                 <Separator orientation="vertical" />
-                <TextButtons />{" "}
+                <TextButtons />
               </>
             )}
           </EditorBubble>

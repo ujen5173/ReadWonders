@@ -36,7 +36,7 @@ const NewReadingModel = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="name" className="text-left">
-              Description
+              Description <span className="text-xs">(Optional)</span>
             </Label>
             <Textarea
               placeholder="A short description of your reading list"

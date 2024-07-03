@@ -1,13 +1,20 @@
+import slugify from "slugify";
 import { z } from "zod";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { limit } from "~/server/constants";
+import { limit, slugy } from "~/server/constants";
 
 export const authRouter = createTRPCRouter({
-  getProfile: privateProcedure.query(async ({ ctx }) => {
+  authInfo: publicProcedure.query(async ({ ctx }) => {
+    return ctx.user;
+  }),
+
+  getProfile: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) return null;
+
     const user = await ctx.db.profiles.findFirstOrThrow({
       where: {
         id: ctx.user.id,
@@ -85,6 +92,7 @@ export const authRouter = createTRPCRouter({
             private: false,
             createdAt: false,
             stories: {
+              take: 3,
               select: {
                 thumbnail: true,
               },
@@ -95,6 +103,55 @@ export const authRouter = createTRPCRouter({
         return readingLists;
       } catch (err) {
         throw new Error("Error fetching reading lists");
+      }
+    }),
+
+  deleteReadingList: privateProcedure
+    .input(
+      z.object({
+        readingListId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.readingList.delete({
+          where: {
+            id: input.readingListId,
+          },
+        });
+
+        return true;
+      } catch (err) {
+        throw new Error("Error deleting reading list");
+      }
+    }),
+
+  editReadingList: privateProcedure
+    .input(
+      z.object({
+        readingListId: z.string(),
+        title: z.string(),
+        description: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const newSlug = slugify(input.title, slugy);
+
+        await ctx.db.readingList.update({
+          where: {
+            id: input.readingListId,
+          },
+          data: {
+            title: input.title,
+            slug: newSlug,
+            description: input.description,
+          },
+        });
+
+        return true;
+      } catch (err) {
+        throw new Error("Error deleting reading list");
       }
     }),
 });
