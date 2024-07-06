@@ -1,5 +1,5 @@
 import { Share } from "lucide-react";
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";

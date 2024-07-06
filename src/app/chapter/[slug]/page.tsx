@@ -18,13 +18,14 @@ import {
   Star,
   Twitter,
 } from "lucide-react";
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { type JSONContent } from "novel";
 import { Suspense } from "react";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { LoadingRow } from "~/components/Cardloading";
+import FollowButton from "~/components/follow-button";
 import StoriesArea from "~/components/sections/stories-area";
 import { Button } from "~/components/ui/button";
 import {
@@ -128,10 +129,10 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
           <div className="flex items-center gap-2">
             <ReadingListModel bookId={chapterDetails.story!.id} />
-            <Button>
-              <Plus size={16} />
-              <span>Follow</span>
-            </Button>
+            <FollowButton
+              id={chapterDetails.story.author.id}
+              username={chapterDetails.story.author.username ?? ""}
+            />
           </div>
         </div>
         <div className="border-b border-border py-6">
@@ -159,7 +160,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <p>Reads</p>
                 </div>
                 <p className="font-bold">
-                  {formatNumber(chapterDetails.reads)}
+                  {formatNumber(chapterDetails.story.reads)}
                 </p>
               </div>
             </div>
@@ -171,7 +172,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <p>Likes</p>
                 </div>
                 <p className="font-bold">
-                  {formatNumber(chapterDetails.reads / 4)}
+                  {formatNumber(chapterDetails.story.love)}
                 </p>
               </div>
             </div>
@@ -182,7 +183,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <LayoutList size={16} />
                   <p>Chapters</p>
                 </div>
-                <p className="font-bold">{12}</p>
+                <p className="font-bold">
+                  {chapterDetails.story.chapters.length}
+                </p>
               </div>
             </div>
             <Separator orientation="vertical" className="h-8" />

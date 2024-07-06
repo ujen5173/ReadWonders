@@ -7,7 +7,7 @@ export const formSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters.",
   }),
-  category: z.string().optional(),
+  categoryName: z.string().optional(),
   isMature: z.boolean().default(false),
   isPremium: z.boolean().default(false),
   tags: z.array(z.string()).optional(),

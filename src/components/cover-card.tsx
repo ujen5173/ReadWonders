@@ -62,7 +62,7 @@ const CoverCard: FC<{
           <div className="flex items-center justify-between">
             <div className="mb-2 w-full">
               <Badge className="border border-border" variant="secondary">
-                {details.category_name}
+                {details.categoryName}
               </Badge>
             </div>
           </div>

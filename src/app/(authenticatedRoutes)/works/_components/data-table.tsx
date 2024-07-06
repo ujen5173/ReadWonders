@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { WorkDetails } from "~/types";
+import { type WorkDetails } from "~/types";
 import { formatNumber } from "~/utils/helpers";
 
 export const columns: ColumnDef<WorkDetails>[] = [

@@ -14,7 +14,7 @@ import {
   cardHeight,
   cardWidth,
 } from "~/server/constants";
-import { TReadingListCard } from "~/types";
+import { type TReadingListCard } from "~/types";
 import EditReadingList from "./edit-reading-list";
 import { Separator } from "./ui/separator";
 

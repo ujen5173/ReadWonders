@@ -1,9 +1,10 @@
-import { Dot, Mail, PlusSquare } from "lucide-react";
-import { Metadata } from "next";
+import { Dot, Mail } from "lucide-react";
+import { type Metadata } from "next";
 import Image from "next/image";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import CoverCard from "~/components/cover-card";
+import FollowButton from "~/components/follow-button";
 import { Button } from "~/components/ui/button";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
@@ -64,7 +65,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
               <div className="mt-6 flex flex-wrap items-center text-base font-medium text-slate-700 xxs:mt-0">
                 <div>
-                  <span>{userDetails.stories?.length} works</span>
+                  <span>{userDetails.story?.length} works</span>
                 </div>
                 <Dot size={20} />
                 <div>
@@ -108,10 +109,10 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
 
-            <Button className="gap-1">
-              <PlusSquare className="size-4" />
-              <span>Follow {userDetails.username}</span>
-            </Button>
+            <FollowButton
+              id={userDetails.id}
+              username={userDetails.username ?? ""}
+            />
           </div>
         </div>
 
@@ -121,8 +122,8 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
           </h1>
 
           <main className="relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {userDetails.stories.length > 0 ? (
-              userDetails.stories.map((story) => (
+            {userDetails.story.length > 0 ? (
+              userDetails.story.map((story) => (
                 <CoverCard key={story.id} details={story} />
               ))
             ) : (

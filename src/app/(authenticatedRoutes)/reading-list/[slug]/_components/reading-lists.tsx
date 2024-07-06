@@ -4,7 +4,7 @@ import { useState } from "react";
 import CoverCard from "~/components/cover-card";
 import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
-import { TCard } from "~/types";
+import { type TCard } from "~/types";
 
 const ReadingLists = ({
   data,

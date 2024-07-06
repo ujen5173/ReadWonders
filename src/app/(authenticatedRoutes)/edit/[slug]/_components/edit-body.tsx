@@ -42,7 +42,7 @@ const EditBody = ({
     id: string;
     title: string;
     description: string;
-    category: string | null;
+    categoryName: string | null;
     isMature: boolean;
     isPremium: boolean;
     tags: string[];
@@ -93,7 +93,7 @@ const EditBody = ({
     defaultValues: {
       title: details.title,
       description: details.description,
-      category: details.category ?? "",
+      categoryName: details.categoryName ?? "",
       isMature: details.isMature,
       isPremium: details.isPremium,
       tags: details.tags,
@@ -239,16 +239,16 @@ const EditBody = ({
                 />
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="categoryName"
                   render={({ field }) => (
                     <FormItem className="mb-6">
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>CategoryName</FormLabel>
                       <FormControl>
                         <Select
                           {...field}
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          value={form.getValues("category") ?? undefined}
+                          value={form.getValues("categoryName") ?? undefined}
                         >
                           <SelectTrigger className="w-full bg-white xs:w-4/12">
                             <SelectValue placeholder="Genre" />

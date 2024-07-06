@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import SearchArea from "~/components/sections/search-area";
 
 import { constructMetadata, siteConfig } from "~/config/site";

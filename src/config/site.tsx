@@ -1,5 +1,5 @@
 import { Github, Twitter } from "lucide-react";
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { Icons } from "~/components/Icons";
 import { env } from "~/env.mjs";
 

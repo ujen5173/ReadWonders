@@ -64,6 +64,7 @@ export function FileUploader({
   const onDrop = React.useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
+
       setFiles(file);
 
       if (onUpload && file) {

@@ -3,8 +3,15 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
-import { SearchByTitle, TCard } from "~/types";
+import {
+  featuredStoriesSQL,
+  mostLovedSQL,
+  searchSystemSQL,
+  topPicksSQL,
+} from "~/server/constants/sql";
+import type { SearchByTitle, TCard } from "~/types";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
+import { TCardSelect } from "./../../constants/db";
 
 export const storyRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -51,6 +58,140 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
+  recommendations: privateProcedure
+    .input(
+      z.object({
+        limit: z.number().default(limit),
+        skip: z.number().default(skip),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const userId = ctx.user.id;
+
+        const stories = (await ctx.db.$queryRaw`
+          WITH UserPreferences AS (
+            SELECT 
+              ${userId}::uuid AS user_id,
+              ARRAY_REMOVE(ARRAY_AGG(DISTINCT b."storyId"), NULL) AS bookmarked_stories,
+              ARRAY_REMOVE(ARRAY_AGG(DISTINCT cr."storyId"), NULL) AS current_reads,
+              ARRAY_REMOVE(ARRAY_AGG(DISTINCT f."followingId"), NULL) AS followed_authors
+            FROM 
+              profiles p
+              LEFT JOIN bookmark b ON p.id = b."userId"
+              LEFT JOIN current_reads cr ON p.id = cr."userId"
+              LEFT JOIN follows f ON p.id = f."followerId"
+            WHERE 
+              p.id = ${userId}::uuid
+            GROUP BY 
+              p.id
+          ),
+
+          StoryMetrics AS (
+            SELECT 
+              s.id AS story_id,
+              s."authorId",
+              s.title,
+              s.description,
+              s.thumbnail,
+              s."categoryName",
+              s."createdAt",
+              s.reads,
+              s.love,
+              COUNT(DISTINCT c.id) AS chapter_count,
+              COALESCE(SUM(c.time), 0) AS total_read_time,
+              COUNT(DISTINCT b.id) AS bookmark_count,
+              COUNT(DISTINCT cr.id) AS current_read_count,
+              COUNT(DISTINCT r.id) AS recommendation_count
+            FROM 
+              story s
+              LEFT JOIN chapter c ON s.id = c."storyId"
+              LEFT JOIN bookmark b ON s.id = b."storyId"
+              LEFT JOIN current_reads cr ON s.id = cr."storyId"
+              LEFT JOIN recommended r ON s.id = r."storyId"
+            WHERE 
+              s.published = true 
+              AND s."isDeleted" = false
+            GROUP BY 
+              s.id, s."authorId", s.title, s.description, s.thumbnail, s."categoryName", s."createdAt", s.reads, s.love
+          ),
+
+          RecommendationScores AS (
+            SELECT 
+              sm.*,
+              CASE 
+                WHEN sm.chapter_count BETWEEN 3 AND 10 THEN 1.2
+                ELSE 1.0
+              END * CASE 
+                WHEN sm.total_read_time BETWEEN 7200 AND 10800 THEN 1.2
+                ELSE 1.0
+              END * CASE 
+                WHEN ARRAY_LENGTH(up.followed_authors, 1) > 0 AND sm."authorId" = ANY(up.followed_authors) THEN 1.3
+                ELSE 1.0
+              END * (
+                0.3 * ln(sm.reads + 1) +
+                0.2 * ln(sm.love + 1) +
+                0.2 * ln(sm.bookmark_count + 1) +
+                0.1 * ln(sm.current_read_count + 1) +
+                0.2 * ln(sm.recommendation_count + 1)
+              ) * (1.0 / (EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - sm."createdAt")) / 86400 + 1)) AS recommendation_score
+            FROM 
+              StoryMetrics sm
+              CROSS JOIN UserPreferences up
+            WHERE 
+              sm.story_id != ALL(COALESCE(up.current_reads, ARRAY[]::uuid[]))
+              AND sm.story_id != ALL(COALESCE(up.bookmarked_stories, ARRAY[]::uuid[]))
+          ),
+
+          RankedRecommendations AS (
+            SELECT 
+              rs.*,
+              ROW_NUMBER() OVER (ORDER BY rs.recommendation_score DESC) AS rank
+            FROM 
+              RecommendationScores rs
+          )
+
+          SELECT 
+            rr.story_id,
+            rr.title,
+            rr.description,
+            rr.thumbnail,
+            rr."categoryName",
+            rr.chapter_count,
+            rr.total_read_time,
+            rr.reads,
+            rr.love,
+            rr.bookmark_count,
+            rr.current_read_count,
+            rr.recommendation_count,
+            rr.recommendation_score,
+            json_build_object(
+              'id', p.id,
+              'name', p.name,
+              'username', p.username,
+              'profile', p.profile
+            ) AS author
+          FROM 
+            RankedRecommendations rr
+            JOIN profiles p ON rr."authorId" = p.id
+          WHERE 
+            rr.rank <= 50
+          ORDER BY 
+            rr.recommendation_score DESC
+            LIMIT ${input.limit} OFFSET ${input.skip};
+        `) as TCard[];
+
+        return stories;
+      } catch (err) {
+        console.log({ err });
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch stories",
+        });
+      }
+    }),
+
   fromGenre: publicProcedure
     .input(
       z.object({
@@ -65,7 +206,7 @@ export const storyRouter = createTRPCRouter({
           take: input.limit,
           skip: input.skip,
           where: {
-            category_name: {
+            categoryName: {
               equals: input.slug,
               mode: "insensitive",
             },
@@ -96,6 +237,22 @@ export const storyRouter = createTRPCRouter({
           message: "Failed to fetch stories",
         });
       }
+    }),
+
+  mostLoved: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().default(limit),
+        skip: z.number().default(0),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const mostLoved = (await ctx.db.$queryRaw`
+        ${Prisma.raw(mostLovedSQL)}
+        LIMIT ${input.limit} OFFSET ${input.skip};
+      `) as TCard[];
+
+      return mostLoved;
     }),
 
   getSingle: publicProcedure
@@ -158,7 +315,7 @@ export const storyRouter = createTRPCRouter({
         const story = await ctx.db.story.findUnique({
           where: {
             slug: input.slug,
-            author_id: ctx.user.id,
+            authorId: ctx.user.id,
           },
           include: {
             chapters: {
@@ -220,33 +377,7 @@ export const storyRouter = createTRPCRouter({
               },
             },
             stories: {
-              select: {
-                id: true,
-                description: true,
-                slug: true,
-                title: true,
-                thumbnail: true,
-                tags: true,
-                isPremium: true,
-                category: true,
-                isMature: true,
-                reads: true,
-                chapters: {
-                  select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                    createdAt: true,
-                  },
-                },
-                author: {
-                  select: {
-                    name: true,
-                    profile: true,
-                    username: true,
-                  },
-                },
-              },
+              select: TCardSelect,
             },
           },
         });
@@ -301,65 +432,17 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const stories = await ctx.db.story.findMany({
-          take: input.limit,
-          select: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                profile: true,
-              },
-            },
-            reads: true,
-            isPremium: true,
-            isDeleted: false,
-            author_id: false,
-            description: true,
-            slug: true,
-            category: true,
-            id: true,
-            title: true,
-            thumbnail: true,
-            isMature: true,
-          },
+        const topStoriesMultipleGenres = (await ctx.db.$queryRaw`
+          ${Prisma.raw(topPicksSQL)}
+            LIMIT ${input.limit};
+        `) as TCard[];
 
-          orderBy: {
-            createdAt: "asc",
-            reads: "desc",
-          },
-        });
-
-        return stories;
+        return topStoriesMultipleGenres;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch top picks",
-        });
-      }
-    }),
-
-  latest: publicProcedure
-    .input(
-      z.object({
-        limit: z.number().optional().default(limit),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      try {
-        const stories = await ctx.db.story.findMany({
-          take: input.limit,
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-
-        return stories;
-      } catch (err) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch latest stories",
         });
       }
     }),
@@ -374,62 +457,7 @@ export const storyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const featuredStories = (await ctx.db.$queryRaw`
-          WITH RankedStories AS (
-            SELECT 
-              s.id,
-              s.title,
-              s.slug,
-              s.description,
-              s.thumbnail,
-              s.tags,
-              s."isPremium",
-              s."isMature",
-              s.category_name,
-              s.reads,
-              s.author_id
-            FROM 
-              story s
-            WHERE 
-              s.published = true
-              AND s."isDeleted" = false
-              AND s."createdAt" >= CURRENT_DATE - INTERVAL '30 days'
-          )
-          SELECT 
-            rs.id,
-            rs.title,
-            rs.slug,
-            rs.description,
-            rs.thumbnail,
-            rs.tags,
-            rs."isPremium",
-            rs."isMature",
-            rs.category_name,
-            rs.reads,
-            (
-              SELECT json_agg(json_build_object(
-                'id', c.id,
-                'title', c.title,
-                'createdAt', c."createdAt",
-                'slug', c.slug
-              ))
-              FROM chapter c
-              WHERE c.story_id = rs.id
-            ) AS chapters,
-            json_build_object(
-              'name', p.name,
-              'profile', p.profile,
-              'username', p.username
-            ) AS author,
-            json_build_object(
-              'name', g.name,
-              'slug', g.slug
-            ) AS category
-          FROM 
-            RankedStories rs
-            JOIN profiles p ON rs.author_id = p.id
-            LEFT JOIN genre g ON rs.category_name = g.name
-          ORDER BY 
-            rs.reads DESC
+          ${Prisma.raw(featuredStoriesSQL)}
           LIMIT ${input.limit} OFFSET ${input.skip};
         `) as TCard[];
 
@@ -452,6 +480,7 @@ export const storyRouter = createTRPCRouter({
       try {
         const stories = await ctx.db.story.findMany({
           take: input.limit,
+          select: TCardSelect,
           orderBy: {
             createdAt: "desc",
           },
@@ -459,6 +488,7 @@ export const storyRouter = createTRPCRouter({
 
         return stories;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch latest stories",
@@ -470,7 +500,7 @@ export const storyRouter = createTRPCRouter({
     try {
       const stories = await ctx.db.story.findMany({
         where: {
-          author_id: ctx.user.id,
+          authorId: ctx.user.id,
         },
         select: {
           id: true,
@@ -534,112 +564,7 @@ export const storyRouter = createTRPCRouter({
 
         const searchTerms = query.toLowerCase().split(/\s+/);
 
-        const searchConditions = searchTerms.map(
-          (term) => Prisma.sql`
-            (
-              LOWER(story.title) LIKE ${`%${term}%`} OR
-              LOWER(story.slug) LIKE ${`%${term}%`} OR
-              LOWER(story.description) LIKE ${`%${term}%`} OR
-              LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
-              EXISTS (
-                SELECT 1 FROM chapter
-                WHERE chapter.story_id = story.id AND LOWER(chapter.title) LIKE ${`%${term}%`}
-              )
-            )
-          `,
-        );
-
-        const lengthCondition = input.filter?.len
-          ? Prisma.sql`
-            AND (
-              SELECT COUNT(*) FROM chapter WHERE chapter.story_id = story.id
-            ) BETWEEN ${parseInt(input.filter.len.split("-")[0] ?? "0")} AND ${input.filter.len.split("-")[1] === "50+" ? "50" : parseInt(input.filter.len.split("-")[1] ?? "100")}
-          `
-          : Prisma.empty;
-
-        const matureCondition = input.filter?.mature
-          ? Prisma.sql`
-            AND story."isMature" = ${input.filter.mature === "true"}
-          `
-          : Prisma.empty;
-
-        const premiumCondition = input.filter?.premium
-          ? Prisma.sql`
-            AND story."isPremium" = ${input.filter.premium === "true"}
-          `
-          : Prisma.empty;
-
-        const updatedCondition = (() => {
-          if (!input.filter?.updated) return Prisma.empty;
-          const now = new Date();
-
-          let fromDate;
-
-          switch (input.filter.updated) {
-            case "today":
-              fromDate = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-              );
-              break;
-            case "this week":
-              fromDate = new Date(now.setDate(now.getDate() - now.getDay()));
-              break;
-            case "this month":
-              fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
-              break;
-            case "this year":
-              fromDate = new Date(now.getFullYear(), 0, 1);
-              break;
-            default:
-              return Prisma.empty;
-          }
-
-          return Prisma.sql`AND story."updatedAt" >= ${fromDate.toISOString()}::timestamp`;
-        })();
-
-        const cursorCondition = cursor
-          ? Prisma.sql`AND story.id::text > ${cursor}`
-          : Prisma.empty;
-
-        const stories = await ctx.db.$queryRaw<TCard[]>`
-          SELECT
-            story.id,
-            story.description,
-            story.slug,
-            story.title,
-            story.thumbnail,
-            story.tags,
-            story."isPremium",
-            story.category,
-            story."isMature",
-            story.reads,
-            COALESCE(json_agg(
-                json_build_object(
-                  'id', chapter.id,
-                  'title', chapter.title,
-                  'slug', chapter.slug,
-                  'createdAt', chapter."createdAt"
-                )
-              ) FILTER (WHERE chapter.id IS NOT NULL), '[]') AS chapters,
-            json_build_object(
-              'name', author.name,
-              'profile', author.profile
-            ) AS author
-          FROM story
-          LEFT JOIN chapter ON chapter.story_id = story.id
-          LEFT JOIN profiles AS author ON author.id = story.author_id
-          WHERE ${Prisma.join(searchConditions, " AND ")}
-          ${lengthCondition}
-          ${matureCondition}
-          ${premiumCondition}
-          ${updatedCondition}
-          ${cursorCondition}
-          GROUP BY story.id, author.name, author.profile
-          ORDER BY story.id
-          LIMIT ${input.limit + 1}
-        `;
+        const stories = await searchSystemSQL(searchTerms, input, cursor, ctx);
 
         const hasNextPage = stories.length > input.limit;
 
@@ -742,8 +667,8 @@ export const storyRouter = createTRPCRouter({
             data: {
               ...rest,
               slug,
-              category_name: category,
-              author_id: ctx.user.id,
+              categoryName: category,
+              authorId: ctx.user.id,
             },
             select: {
               slug: true,
@@ -764,7 +689,7 @@ export const storyRouter = createTRPCRouter({
           data: {
             ...rest,
             slug,
-            author_id: ctx.user.id,
+            authorId: ctx.user.id,
           },
           select: {
             id: true,
@@ -773,7 +698,7 @@ export const storyRouter = createTRPCRouter({
 
         const chapterId = await ctx.db.chapter.create({
           data: {
-            story_id: story.id,
+            storyId: story.id,
           },
           select: {
             id: true,
@@ -812,11 +737,11 @@ export const storyRouter = createTRPCRouter({
         const story = await ctx.db.story.update({
           where: {
             id: id,
-            author_id: ctx.user.id,
+            authorId: ctx.user.id,
           },
           data: {
             ...rest,
-            category_name: category,
+            categoryName: category,
           },
         });
 
@@ -840,7 +765,7 @@ export const storyRouter = createTRPCRouter({
         await ctx.db.story.update({
           where: {
             id: input.id,
-            author_id: ctx.user.id,
+            authorId: ctx.user.id,
           },
           data: {
             isDeleted: true,

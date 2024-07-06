@@ -56,7 +56,7 @@ const WriteStory = () => {
     defaultValues: {
       title: "",
       description: "",
-      category: "",
+      categoryName: "",
       isMature: false,
       isPremium: false,
       tags: [],
@@ -170,10 +170,10 @@ const WriteStory = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="categoryName"
                   render={({ field }) => (
                     <FormItem className="mb-6">
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>CategoryName</FormLabel>
                       <FormControl>
                         <Select
                           {...field}

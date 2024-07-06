@@ -32,7 +32,7 @@ export const chapterRouter = createTRPCRouter({
       try {
         const chapters = await ctx.db.chapter.findMany({
           where: {
-            story_id: input.storyId,
+            storyId: input.storyId,
           },
           take: limit,
           select: {
@@ -95,8 +95,11 @@ export const chapterRouter = createTRPCRouter({
                 thumbnail: true,
                 title: true,
                 slug: true,
+                love: true,
+                reads: true,
                 author: {
                   select: {
+                    id: true,
                     username: true,
                   },
                 },
@@ -168,7 +171,7 @@ export const chapterRouter = createTRPCRouter({
         const chapter = await ctx.db.chapter.create({
           data: {
             ...rest,
-            story_id: story_id,
+            storyId: story_id,
           },
         });
 

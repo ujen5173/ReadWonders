@@ -1,6 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import { type FC } from "react";
-import { api } from "~/trpc/server";
+import { type TCard } from "~/types";
 import { cn } from "~/utils/cn";
 import CoverCard from "../cover-card";
 
@@ -9,7 +9,7 @@ type Props = {
   description?: string;
   perRow?: 3 | 6;
   inRow?: boolean;
-  skipRow?: number;
+  stories?: TCard[];
 };
 
 const StoriesArea: FC<Props> = async ({
@@ -17,13 +17,8 @@ const StoriesArea: FC<Props> = async ({
   description,
   inRow = false,
   perRow = 3,
-  skipRow = 12,
+  stories = [],
 }) => {
-  const data = await api.story.featuredStories.query({
-    limit: perRow,
-    skip: skipRow,
-  });
-
   return (
     <section className="flex-1">
       <div>
@@ -48,17 +43,17 @@ const StoriesArea: FC<Props> = async ({
           inRow ? "xl:grid-cols-3" : "xl:grid-cols-6",
         )}
       >
-        {(data ?? []).map((story) => (
+        {stories.map((story) => (
           <CoverCard key={story.id} details={story} />
         ))}
 
-        {Array(Math.abs(perRow - (data ?? []).length))
+        {Array(Math.abs(perRow - stories.length))
           .fill(0)
           .map((_, i) => (
             <div className="mx-auto block flex-1" key={i} />
           ))}
 
-        {perRow === 3 && Math.abs(perRow - (data ?? []).length) === 0 && (
+        {perRow === 3 && Math.abs(perRow - stories.length) === 0 && (
           <>
             <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
             <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>

@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { ReactNode } from "react";
 import { PrivateRoute } from "~/components/PrivateRoute/PrivateRoute";
 import { constructMetadata } from "~/config/site";

@@ -3,11 +3,11 @@ import { Skeleton } from "./ui/skeleton";
 
 const LoadingRow = () => {
   return (
-    <div className="mx-auto max-w-[1440px] px-2">
+    <div className="mx-auto max-w-[1440px]">
       <Skeleton className="mb-4 h-8 w-56" />
       <div
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
         )}
       >
         {Array.from({ length: 6 }).map((_, i) => (
@@ -30,7 +30,7 @@ const LoadingColumn = () => {
       <Skeleton className="mb-4 h-8 w-56" />
       <div
         className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3",
+          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-3",
         )}
       >
         {Array.from({ length: 3 }).map((_, i) => (

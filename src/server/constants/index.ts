@@ -1,4 +1,4 @@
-import { TReadingListCard } from "~/types";
+import { type TReadingListCard } from "~/types";
 
 export const limit = 10;
 

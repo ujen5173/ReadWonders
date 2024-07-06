@@ -1,5 +1,5 @@
 import { BookOpen, Edit, Eye, LayoutList, Notebook, Star } from "lucide-react";
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
@@ -158,7 +158,9 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Chapters</p>
                   </div>
 
-                  <p className="font-semibold">{12}</p>
+                  <p className="font-semibold">
+                    {storyDetails.chapters.length}
+                  </p>
                 </div>
               </div>
 

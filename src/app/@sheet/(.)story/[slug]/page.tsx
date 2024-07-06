@@ -84,13 +84,13 @@ const Story = () => {
                   </p>
                 </Link>
 
-                <Link href={`/genre/${activeBook?.category}`}>
+                <Link href={`/genre/${activeBook?.categoryName}`}>
                   <SheetClose>
                     <Badge
                       variant="secondary"
                       className="border border-border/70"
                     >
-                      {activeBook?.category}
+                      {activeBook?.categoryName}
                     </Badge>
                   </SheetClose>
                 </Link>

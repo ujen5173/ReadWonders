@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TCardSelect } from "~/server/constants/db";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const genreRouter = createTRPCRouter({
@@ -15,7 +16,7 @@ export const genreRouter = createTRPCRouter({
         description: true,
         _count: {
           select: {
-            Story: true,
+            story: true,
           },
         },
       },
@@ -23,9 +24,10 @@ export const genreRouter = createTRPCRouter({
 
     return genres.map((genre) => {
       const { _count, ...rest } = genre;
+
       return {
         ...rest,
-        stories: _count.Story,
+        stories: _count.story,
       };
     });
   }),
@@ -46,39 +48,13 @@ export const genreRouter = createTRPCRouter({
           name: true,
           slug: true,
           description: true,
-          Story: {
+          story: {
             take: 10,
-            select: {
-              id: true,
-              description: true,
-              slug: true,
-              title: true,
-              thumbnail: true,
-              tags: true,
-              isPremium: true,
-              category_name: true,
-              isMature: true,
-              reads: true,
-              chapters: {
-                select: {
-                  id: true,
-                  title: true,
-                  slug: true,
-                  createdAt: true,
-                },
-              },
-              author: {
-                select: {
-                  name: true,
-                  username: true,
-                  profile: true,
-                },
-              },
-            },
+            select: TCardSelect,
           },
           _count: {
             select: {
-              Story: true,
+              story: true,
             },
           },
         },
@@ -89,9 +65,10 @@ export const genreRouter = createTRPCRouter({
       }
 
       const { _count, ...rest } = genre;
+
       return {
         ...rest,
-        stories: _count.Story,
+        stories: _count.story,
       };
     }),
 });

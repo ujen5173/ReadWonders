@@ -26,9 +26,10 @@ export type TCard = {
   slug: string;
   title: string;
   thumbnail: string;
+  love: number;
   tags: string[];
   isPremium: boolean;
-  category_name: string | null;
+  categoryName: string | null;
   isMature: boolean;
   reads: number;
   chapters: {

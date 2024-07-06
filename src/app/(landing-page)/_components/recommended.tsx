@@ -3,8 +3,8 @@ import { LoadingRow } from "~/components/Cardloading";
 import StoriesArea from "~/components/sections/stories-area";
 import { api } from "~/trpc/server";
 
-const TopPicks = async () => {
-  const stories = await api.story.topPicks.query({
+const Recommended = async () => {
+  const recommendations = await api.story.recommendations.query({
     limit: 6,
   });
 
@@ -13,9 +13,9 @@ const TopPicks = async () => {
       <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">
         <Suspense fallback={<LoadingRow />}>
           <StoriesArea
-            title="Top Picks on different genres"
+            title="Recommended Stories"
             perRow={6}
-            stories={stories}
+            stories={recommendations}
           />
         </Suspense>
       </div>
@@ -23,4 +23,4 @@ const TopPicks = async () => {
   );
 };
 
-export default TopPicks;
+export default Recommended;

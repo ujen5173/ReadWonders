@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import CoverCard from "~/components/cover-card";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
@@ -47,7 +47,7 @@ const Genre = async ({ params }: { params: { slug: string } }) => {
               "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
             )}
           >
-            {data.Story.map((story) => (
+            {data.story.map((story) => (
               <CoverCard key={story.id} details={story} />
             ))}
           </main>

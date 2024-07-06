@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import {
@@ -6,6 +7,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { limit, slugy } from "~/server/constants";
+import { TCardSelect } from "~/server/constants/db";
 
 export const authRouter = createTRPCRouter({
   authInfo: publicProcedure.query(async ({ ctx }) => {
@@ -43,7 +45,7 @@ export const authRouter = createTRPCRouter({
           username: input.username,
         },
         include: {
-          stories: {
+          story: {
             take: limit,
             include: {
               chapters: {
@@ -67,6 +69,111 @@ export const authRouter = createTRPCRouter({
       });
 
       return userDetails;
+    }),
+
+  follow: privateProcedure
+    .input(
+      z.object({
+        authorId: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { authorId } = input;
+      const followerId = ctx.user.id;
+
+      // Check if user is trying to follow themselves
+      if (followerId === authorId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You cannot follow or unfollow yourself",
+        });
+      }
+
+      // Check if the follow relationship already exists
+      const existingFollow = await ctx.db.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId,
+            followingId: authorId,
+          },
+        },
+      });
+
+      if (existingFollow) {
+        // Unfollow logic
+        const [deletedFollow, updatedFollower, updatedFollowing] =
+          await ctx.db.$transaction([
+            ctx.db.follow.delete({
+              where: {
+                id: existingFollow.id,
+              },
+            }),
+            ctx.db.profiles.update({
+              where: { id: followerId },
+              data: { followingCount: { decrement: 1 } },
+            }),
+            ctx.db.profiles.update({
+              where: { id: authorId },
+              data: { followersCount: { decrement: 1 } },
+            }),
+          ]);
+
+        return {
+          action: "unfollowed",
+          deletedFollow,
+          updatedFollower,
+          updatedFollowing,
+        };
+      } else {
+        // Follow logic
+        const [newFollow, updatedFollower, updatedFollowing] =
+          await ctx.db.$transaction([
+            ctx.db.follow.create({
+              data: {
+                followerId,
+                followingId: authorId,
+              },
+            }),
+            ctx.db.profiles.update({
+              where: { id: followerId },
+              data: { followingCount: { increment: 1 } },
+            }),
+            ctx.db.profiles.update({
+              where: { id: authorId },
+              data: { followersCount: { increment: 1 } },
+            }),
+          ]);
+
+        return {
+          action: "followed",
+          newFollow,
+          updatedFollower,
+          updatedFollowing,
+        };
+      }
+    }),
+
+  currentReads: privateProcedure
+    .input(
+      z.object({
+        limit: z.number().default(limit),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const currentReads = await ctx.db.currentReads.findFirst({
+        take: input.limit,
+        where: {
+          userId: ctx.user.id,
+        },
+        select: {
+          id: true,
+          stories: {
+            select: TCardSelect,
+          },
+        },
+      });
+
+      return currentReads?.stories ?? [];
     }),
 
   readingLists: publicProcedure

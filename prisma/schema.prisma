@@ -321,22 +321,54 @@ model Users {
 }
 
 model Profiles {
-  id        String   @id @default(uuid()) @db.Uuid
-  username  String?
-  name      String?
-  profile   String?
-  bio       String?
-  tagline   String?
-  email     String?
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-
-  stories      Story[]
+  id           String         @id @default(uuid()) @db.Uuid
+  username     String?
+  name         String?
+  profile      String?
+  bio          String?
+  tagline      String?
+  email        String?
+  createdAt    DateTime       @default(now()) @db.Timestamptz(6)
   bookmarks    Bookmark[]
-  recommended  Recommended[]
+  currentReads CurrentReads[]
+  author       Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   readingLists ReadingList[]
-  author       Users         @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recommended  Recommended[]
+  story        Story[]
+
+  followingCount Int      @default(0)
+  followersCount Int      @default(0)
+  following      Follow[] @relation("FollowToProfilesFollowing")
+  followers      Follow[] @relation("FollowToProfilesFollower")
 
   @@map("profiles")
+  @@schema("public")
+}
+
+model Follow {
+  id          String   @id @default(uuid()) @db.Uuid
+  followerId  String   @db.Uuid
+  followingId String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  follower  Profiles @relation("FollowToProfilesFollower", fields: [followerId], references: [id], onDelete: Cascade)
+  following Profiles @relation("FollowToProfilesFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+  @@schema("public")
+}
+
+model CurrentReads {
+  id        String   @id @default(uuid()) @db.Uuid
+  storyId   String   @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  user      Profiles @relation(fields: [userId], references: [id])
+  stories   Story[]  @relation("CurrentReadsToStory")
+
+  @@index([userId])
+  @@map("current_reads")
   @@schema("public")
 }
 
@@ -344,13 +376,12 @@ model ReadingList {
   id          String   @id @default(uuid()) @db.Uuid
   authorId    String   @db.Uuid
   title       String
-  slug        String   @unique
   description String?
-  private     Boolean  @default(false)
   createdAt   DateTime @default(now())
-
-  author  Profiles @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  stories Story[]
+  private     Boolean  @default(false)
+  slug        String   @unique
+  author      Profiles @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  stories     Story[]  @relation("ReadingListToStory")
 
   @@index([authorId])
   @@index([slug])
@@ -359,32 +390,32 @@ model ReadingList {
 }
 
 model Story {
-  id            String   @id @default(uuid()) @db.Uuid
-  title         String
-  slug          String   @unique
-  description   String
-  thumbnail     String
-  tags          String[]
-  isPremium     Boolean  @default(false)
-  isDeleted     Boolean  @default(false)
-  isMature      Boolean  @default(false)
-  category      Genre?   @relation(fields: [category_name], references: [name])
-  category_name String?
-  reads         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  published     Boolean  @default(false)
-
-  author_id String   @db.Uuid
-  author    Profiles @relation(fields: [author_id], references: [id])
-
+  id           String         @id @default(uuid()) @db.Uuid
+  title        String
+  slug         String         @unique
+  description  String
+  thumbnail    String
+  tags         String[]
+  reads        Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  authorId     String         @db.Uuid
+  isDeleted    Boolean        @default(false)
+  isMature     Boolean        @default(false)
+  isPremium    Boolean        @default(false)
+  published    Boolean        @default(false)
+  categoryName String?
   bookmarks    Bookmark[]
   chapters     Chapter[]
   discussions  Discussion[]
   recommended  Recommended[]
-  readingLists ReadingList[]
+  love         Int            @default(0)
+  author       Profiles       @relation(fields: [authorId], references: [id])
+  category     Genre?         @relation(fields: [categoryName], references: [name])
+  currentReads CurrentReads[] @relation("CurrentReadsToStory")
+  readingLists ReadingList[]  @relation("ReadingListToStory")
 
-  @@index([author_id])
+  @@index([authorId], map: "story_author_id_idx")
   @@index([slug])
   @@index([title])
   @@index([thumbnail])
@@ -404,11 +435,11 @@ model Chapter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
+  storyId   String   @db.Uuid
   published Boolean  @default(false)
-  story_id  String   @db.Uuid
-  story     Story    @relation(fields: [story_id], references: [id])
+  story     Story    @relation(fields: [storyId], references: [id])
 
-  @@index([story_id, slug])
+  @@index([storyId, slug], map: "chapter_story_id_slug_idx")
   @@map("chapter")
   @@schema("public")
 }
@@ -419,7 +450,7 @@ model Genre {
   slug        String   @unique
   description String?
   createdAt   DateTime @default(now())
-  Story       Story[]
+  story       Story[]
 
   @@map("genre")
   @@schema("public")

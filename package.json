@@ -12,7 +12,7 @@
     "lint": "next lint && pnpm check-types",
     "check-types": "tsc --noEmit",
     "update-types-local": "npx supabase gen types typescript --local > src/server/supabase/supabaseTypes.ts",
-    "update-types-remote": "npx supabase gen types typescript --project-id \"yopamwferxxwvnbtbmgl\" --schema public > src/server/supabase/supabaseTypes.ts",
+    "update-types-remote": "npx supabase gen types typescript --project-id \"ankjnfvcqwhmkxcisrys\" --schema public > src/server/supabase/supabaseTypes.ts",
     "prepare:local": "pnpm update-types-local && pnpm prisma db pull && pnpm prisma generate && pnpm prisma-case-format --file prisma/schema.prisma  && pnpm prisma generate",
     "prepare:remote": "pnpm update-types-remote && pnpm prisma db pull && pnpm prisma generate && pnpm prisma-case-format --file prisma/schema.prisma  && pnpm prisma generate",
     "db:reset": "npx supabase db reset",

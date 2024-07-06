@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { createContext, useState, type ReactNode } from "react";
 import Footer from "~/components/sections/footer";
 import Header from "~/components/sections/header";
-import { type RootContextType, type TCard } from "~/types";
+import type { RootContextType, TCard } from "~/types";
 
 export const Context = createContext<RootContextType>({
   activeBook: null,

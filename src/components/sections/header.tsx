@@ -230,10 +230,11 @@ const MobileMenu = ({
     | {
         id: string;
         name: string | null;
-        username: string | null;
-        profile: string | null;
         email: string | null;
+        profile: string | null;
+        username: string | null;
       }
+    | null
     | undefined;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
