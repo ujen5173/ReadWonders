@@ -20,14 +20,10 @@ import { LinkSelector } from "./selectors/link-selector";
 import { NodeSelector } from "./selectors/node-selector";
 
 import { handleImageDrop, handleImagePaste } from "novel/plugins";
-import {
-  autosaveContent,
-  loadDraft,
-  type Draft,
-} from "~/app/(authenticatedRoutes)/write/s/[chapterId]/utils/database";
 import { Separator } from "~/components/ui/separator";
 import "~/styles/prosemirror.css";
 import { defaultEditorContent } from "~/utils/default-content";
+import { autosaveContent, loadDraft, type Draft } from "~/utils/storage";
 import { uploadFn } from "./image-upload";
 import { TextButtons } from "./selectors/text-buttons";
 import { slashCommand, suggestionItems } from "./slash-command";
@@ -36,12 +32,18 @@ const extensions = [...defaultExtensions, slashCommand];
 
 type Details = Omit<Draft, "content">;
 
-const CustomEditor = ({ details }: { details: Details }) => {
+const CustomEditor = ({
+  defaultContent = defaultEditorContent,
+  details,
+}: {
+  defaultContent?: JSONContent | null;
+  details: Details;
+}) => {
   const { editor } = useEditor();
 
   const [open, setOpen] = useState(false);
 
-  const [content, setContent] = useState<JSONContent | null>(null);
+  const [content, setContent] = useState<JSONContent | null>(defaultContent);
 
   useEffect(() => {
     const fetchContent = async () => {

@@ -74,7 +74,7 @@ const Footer = () => {
       <div className="mx-auto max-w-[1440px]">
         <div className="grid grid-cols-1 gap-8 px-4 py-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="grid-cols-2">
-            <Link href="/" className="mb-4 mr-6 flex items-end gap-1">
+            <Link href="/" className="mb-4 mr-6 flex w-fit items-end gap-1">
               <Logo />
             </Link>
             <p className="text-text-light mb-2">{siteConfig.tagline}</p>

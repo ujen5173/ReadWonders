@@ -1,13 +1,21 @@
 "use client";
 
+// import {
+//   Eye,
+//   LayoutList,
+//   MoveRight,
+//   SquareArrowOutUpRight,
+//   Star,
+//   X,
+// } from "lucide-react";
 import {
-  Eye,
-  LayoutList,
-  MoveRight,
-  SquareArrowOutUpRight,
-  Star,
-  X,
-} from "lucide-react";
+  ArrowRight02Icon,
+  LeftToRightListTriangleIcon,
+  LinkSquare02Icon,
+  PlusSignSquareIcon,
+  StarIcon,
+  ViewIcon,
+} from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
@@ -61,9 +69,11 @@ const CoverCard: FC<{
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
           <div className="flex items-center justify-between">
             <div className="mb-2 w-full">
-              <Badge className="border border-border" variant="secondary">
-                {details.categoryName}
-              </Badge>
+              <Link href={`/genre/${details.categoryName}`} passHref>
+                <Badge className="border border-border" variant="secondary">
+                  {details.categoryName}
+                </Badge>
+              </Link>
             </div>
           </div>
 
@@ -73,14 +83,15 @@ const CoverCard: FC<{
               className="flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary/80 hover:underline"
             >
               <span>Full Story Infos</span>
-              <MoveRight size={16} />
+              <ArrowRight02Icon size={16} />
             </Link>
           </div>
 
           <div className="flex items-center justify-between pb-4">
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                <Eye size={16} className="mt-1" />
+                {/* <Eye size={16} className="mt-1" /> */}
+                <ViewIcon size={16} className="mt-1 stroke-2" />
               </div>
               <p className="text-sm font-semibold">
                 {formatNumber(details.reads)}
@@ -89,7 +100,7 @@ const CoverCard: FC<{
             <Separator orientation="vertical" className="h-8" />
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                <Star size={16} className="mt-1" />
+                <StarIcon size={16} className="mt-1 stroke-2" />
               </div>
               <p className="text-sm font-semibold">
                 {formatNumber(details.reads / 4)}
@@ -98,7 +109,10 @@ const CoverCard: FC<{
             <Separator orientation="vertical" className="h-8" />
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                <LayoutList className="mt-1" size={16} />
+                <LeftToRightListTriangleIcon
+                  size={16}
+                  className="mt-1 stroke-2"
+                />
               </div>
               <p className="text-sm font-semibold">
                 {(details?.chapters ?? []).length}
@@ -108,7 +122,7 @@ const CoverCard: FC<{
           <div className="space-y-2">
             <Link target="_blank" href={`/story/${details.slug}`}>
               <Button className="w-full gap-2">
-                <SquareArrowOutUpRight size={16} />
+                <LinkSquare02Icon size={16} className="stroke-2" />
                 <span>Start Reading</span>
               </Button>
             </Link>
@@ -121,7 +135,9 @@ const CoverCard: FC<{
                 loading={removing}
                 className="w-full gap-2"
               >
-                {!removing && <X size={16} />}
+                {!removing && (
+                  <PlusSignSquareIcon size={16} className="stroke-2" />
+                )}
                 <span>Remove from List</span>
               </Button>
             )}

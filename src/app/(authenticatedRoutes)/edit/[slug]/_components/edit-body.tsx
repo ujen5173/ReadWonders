@@ -34,6 +34,7 @@ import { genres } from "~/data";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
+import { formatDate } from "~/utils/helpers";
 
 const EditBody = ({
   details,
@@ -319,6 +320,46 @@ const EditBody = ({
                     </FormItem>
                   )}
                 />
+
+                <div className="mb-6">
+                  <h1 className="mb-4 text-lg font-semibold">Chapters</h1>
+
+                  <div className="space-y-4">
+                    {details.chapters.map((chapter) => (
+                      <div
+                        key={chapter.id}
+                        className="flex items-center justify-between"
+                      >
+                        <span>{chapter.title}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">
+                            {formatDate(chapter.createdAt)}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="secondary"
+                              type={"button"}
+                              size={"sm"}
+                              onClick={() => {
+                                replace(`/edit/${chapter.slug}/chapter`);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              type={"button"}
+                              size={"sm"}
+                              onClick={() => {}}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
                   <Button
                     disabled={isUploading || isLoading}

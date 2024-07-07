@@ -32,6 +32,9 @@ export const storyRouter = createTRPCRouter({
           skip: input.skip,
           include: {
             chapters: {
+              where: {
+                published: true,
+              },
               select: {
                 title: true,
                 id: true,
@@ -74,12 +77,13 @@ export const storyRouter = createTRPCRouter({
             SELECT 
               ${userId}::uuid AS user_id,
               ARRAY_REMOVE(ARRAY_AGG(DISTINCT b."storyId"), NULL) AS bookmarked_stories,
-              ARRAY_REMOVE(ARRAY_AGG(DISTINCT cr."storyId"), NULL) AS current_reads,
+              ARRAY_REMOVE(ARRAY_AGG(DISTINCT crs."A"), NULL) AS current_reads,
               ARRAY_REMOVE(ARRAY_AGG(DISTINCT f."followingId"), NULL) AS followed_authors
             FROM 
               profiles p
               LEFT JOIN bookmark b ON p.id = b."userId"
               LEFT JOIN current_reads cr ON p.id = cr."userId"
+              LEFT JOIN "_CurrentReadsToStory" crs ON cr.id = crs."B"
               LEFT JOIN follows f ON p.id = f."followerId"
             WHERE 
               p.id = ${userId}::uuid
@@ -98,22 +102,27 @@ export const storyRouter = createTRPCRouter({
               s."createdAt",
               s.reads,
               s.love,
+              s."isPremium",
+              s."isMature",
+              s."readingTime",
+              s.slug,
+              s.tags,
               COUNT(DISTINCT c.id) AS chapter_count,
-              COALESCE(SUM(c.time), 0) AS total_read_time,
+              COALESCE(SUM(c."readingTime"), 0) AS total_read_time,
               COUNT(DISTINCT b.id) AS bookmark_count,
-              COUNT(DISTINCT cr.id) AS current_read_count,
+              COUNT(DISTINCT crs."B") AS current_read_count,
               COUNT(DISTINCT r.id) AS recommendation_count
             FROM 
               story s
               LEFT JOIN chapter c ON s.id = c."storyId"
               LEFT JOIN bookmark b ON s.id = b."storyId"
-              LEFT JOIN current_reads cr ON s.id = cr."storyId"
+              LEFT JOIN "_CurrentReadsToStory" crs ON s.id = crs."A"
               LEFT JOIN recommended r ON s.id = r."storyId"
             WHERE 
               s.published = true 
               AND s."isDeleted" = false
             GROUP BY 
-              s.id, s."authorId", s.title, s.description, s.thumbnail, s."categoryName", s."createdAt", s.reads, s.love
+              s.id, s."authorId", s.title, s.description, s.thumbnail, s."categoryName", s."createdAt", s.reads, s.love, s."isPremium", s."isMature", s.slug, s.tags
           ),
 
           RecommendationScores AS (
@@ -149,24 +158,42 @@ export const storyRouter = createTRPCRouter({
               ROW_NUMBER() OVER (ORDER BY rs.recommendation_score DESC) AS rank
             FROM 
               RecommendationScores rs
+          ),
+
+          ChapterInfo AS (
+            SELECT 
+              c."storyId",
+              json_agg(
+                json_build_object(
+                  'id', c.id,
+                  'title', c.title,
+                  'slug', c.slug,
+                  'createdAt', c."createdAt"
+                )
+              ) AS chapters
+            FROM 
+              chapter c
+            WHERE 
+              c.published = true
+            GROUP BY 
+              c."storyId"
           )
 
           SELECT 
-            rr.story_id,
-            rr.title,
+            rr.story_id AS id,
             rr.description,
+            rr.slug,
+            rr.title,
             rr.thumbnail,
-            rr."categoryName",
-            rr.chapter_count,
-            rr.total_read_time,
-            rr.reads,
             rr.love,
-            rr.bookmark_count,
-            rr.current_read_count,
-            rr.recommendation_count,
-            rr.recommendation_score,
+            rr.tags,
+            rr."isPremium",
+            rr."categoryName",
+            rr."isMature",
+            rr."readingTime",
+            rr.reads,
+            COALESCE(ci.chapters, '[]'::json) AS chapters,
             json_build_object(
-              'id', p.id,
               'name', p.name,
               'username', p.username,
               'profile', p.profile
@@ -174,11 +201,12 @@ export const storyRouter = createTRPCRouter({
           FROM 
             RankedRecommendations rr
             JOIN profiles p ON rr."authorId" = p.id
+            LEFT JOIN ChapterInfo ci ON rr.story_id = ci."storyId"
           WHERE 
             rr.rank <= 50
           ORDER BY 
             rr.recommendation_score DESC
-            LIMIT ${input.limit} OFFSET ${input.skip};
+          LIMIT ${input.limit} OFFSET ${input.skip};
         `) as TCard[];
 
         return stories;
@@ -188,6 +216,78 @@ export const storyRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch stories",
+        });
+      }
+    }),
+
+  similar: publicProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+        limit: z.number().default(limit),
+        skip: z.number().default(skip),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const inputStory = await ctx.db.chapter.findFirst({
+          where: { slug: input.slug },
+          select: {
+            story: {
+              select: {
+                tags: true,
+                readingTime: true,
+                categoryName: true,
+              },
+            },
+          },
+        });
+
+        if (!inputStory) {
+          throw new Error("Input story not found");
+        }
+
+        const story = inputStory.story;
+
+        const similarStories = await ctx.db.story.findMany({
+          where: {
+            slug: { not: input.slug },
+            isDeleted: false,
+            published: true,
+            OR: [
+              { tags: { hasSome: story.tags } },
+              { categoryName: story.categoryName },
+            ],
+            readingTime: {
+              gte: story.readingTime * 0.7,
+              lte: story.readingTime * 1.3,
+            },
+          },
+          orderBy: [{ reads: "desc" }, { love: "desc" }, { reads: "desc" }],
+          select: TCardSelect,
+          take: input.limit,
+        });
+
+        // Sort the results based on the number of matching tags
+
+        const sortedSimilarStories = similarStories.sort((a, b) => {
+          const aMatchingTags = a.tags.filter((tag) =>
+            story.tags.includes(tag),
+          ).length;
+          const bMatchingTags = b.tags.filter((tag) =>
+            story.tags.includes(tag),
+          ).length;
+
+          return bMatchingTags - aMatchingTags;
+        });
+
+        return sortedSimilarStories;
+      } catch (err) {
+        console.log({ err });
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch similar stories",
         });
       }
     }),
@@ -213,6 +313,9 @@ export const storyRouter = createTRPCRouter({
           },
           include: {
             chapters: {
+              where: {
+                published: true,
+              },
               select: {
                 title: true,
                 id: true,
@@ -272,8 +375,12 @@ export const storyRouter = createTRPCRouter({
               select: {
                 id: true,
                 title: true,
+                published: true,
                 slug: true,
                 createdAt: true,
+              },
+              orderBy: {
+                createdAt: "asc",
               },
             },
             author: {
@@ -319,6 +426,9 @@ export const storyRouter = createTRPCRouter({
           },
           include: {
             chapters: {
+              where: {
+                published: true,
+              },
               select: {
                 id: true,
                 title: true,
@@ -508,14 +618,16 @@ export const storyRouter = createTRPCRouter({
           title: true,
           slug: true,
           reads: true,
+          published: true,
           chapters: {
             select: {
               id: true,
             },
           },
         },
-        take: limit,
-        skip,
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
       if (!stories) return [];
@@ -654,10 +766,7 @@ export const storyRouter = createTRPCRouter({
       try {
         const { edit, category, ...rest } = input;
 
-        const slug = slugify(
-          rest.title + "-" + Math.random().toString(36).substring(7),
-          slugy,
-        );
+        const slug = slugify(rest.title + "-" + ctx.user.id.slice(0, 5), slugy);
 
         if (edit) {
           const story = await ctx.db.story.update({

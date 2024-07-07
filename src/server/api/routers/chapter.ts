@@ -15,6 +15,7 @@ import slugify from "slugify";
 import { z } from "zod";
 import { limit, slugy } from "~/server/constants";
 import { mainSchema } from "~/types/zod";
+import { error } from "~/utils/helpers";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 
 export const chapterRouter = createTRPCRouter({
@@ -97,6 +98,7 @@ export const chapterRouter = createTRPCRouter({
                 slug: true,
                 love: true,
                 reads: true,
+                tags: true,
                 author: {
                   select: {
                     id: true,
@@ -104,6 +106,9 @@ export const chapterRouter = createTRPCRouter({
                   },
                 },
                 chapters: {
+                  orderBy: {
+                    createdAt: "asc",
+                  },
                   select: {
                     id: true,
                     title: true,
@@ -177,10 +182,37 @@ export const chapterRouter = createTRPCRouter({
 
         return chapter.id;
       } catch (err) {
-        console.log({ err });
+        console.table(error({ err }));
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create chapter",
+        });
+      }
+    }),
+
+  changeVisibility: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        published: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const res = await ctx.db.chapter.update({
+          where: { id: input.id },
+          data: {
+            published: input.published,
+          },
+        });
+
+        console.table({ res });
+
+        return true;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to change visibility",
         });
       }
     }),
@@ -212,22 +244,45 @@ export const chapterRouter = createTRPCRouter({
           ]),
         );
 
+        const story = await ctx.db.chapter.findFirst({
+          where: { id: id },
+          select: {
+            story: {
+              select: {
+                slug: true,
+              },
+            },
+          },
+        });
+
         const chapter = await ctx.db.chapter.update({
           where: { id: id },
           data: {
             ...rest,
-            slug: slugify(input.title, slugy),
-            time: time.minutes,
+            slug: slugify(rest.title + "-" + story?.story.slug, slugy),
+            readingTime: time.minutes,
             content: rest.content as JSONContent,
           },
           select: {
             slug: true,
+            id: true,
+            storyId: true,
           },
         });
 
-        return chapter;
+        await ctx.db.story.update({
+          where: { id: chapter.storyId },
+          data: {
+            readingTime: {
+              increment: time.minutes,
+            },
+          },
+        });
+        console.table("story update completed");
+
+        return { slug: chapter.slug };
       } catch (err) {
-        console.log({ err });
+        console.table(error({ err }));
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update chapter",
@@ -253,6 +308,103 @@ export const chapterRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete chapter",
+        });
+      }
+    }),
+
+  read: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const chapter = await ctx.db.chapter.findFirst({
+          where: { id: input.id },
+          select: {
+            storyId: true,
+          },
+        });
+
+        if (!chapter) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Chapter not found",
+          });
+        }
+
+        const hasAlreadyRead = await ctx.db.currentReads.findFirst({
+          where: {
+            userId: ctx.user.id,
+          },
+          select: {
+            stories: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        if (
+          hasAlreadyRead?.stories.some((story) => story.id === chapter.storyId)
+        ) {
+          return true;
+        }
+
+        const [chapterupdate, storyupdate] = await ctx.db.$transaction([
+          ctx.db.chapter.update({
+            where: { id: input.id },
+            data: {
+              reads: {
+                increment: 1,
+              },
+            },
+          }),
+          ctx.db.story.update({
+            where: { id: chapter.storyId },
+            data: {
+              reads: {
+                increment: 1,
+              },
+            },
+          }),
+          ctx.db.currentReads.upsert({
+            where: {
+              userId: ctx.user.id,
+            },
+            create: {
+              userId: ctx.user.id,
+              stories: {
+                connect: {
+                  id: chapter.storyId,
+                },
+              },
+            },
+            update: {
+              stories: {
+                connect: {
+                  id: chapter.storyId,
+                },
+              },
+            },
+          }),
+        ]);
+
+        if (!chapterupdate || !storyupdate) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to update chapter",
+          });
+        }
+
+        return true;
+      } catch (err) {
+        console.log(error({ err }));
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update chapter",
         });
       }
     }),

@@ -8,9 +8,13 @@ export const TCardSelect = {
   tags: true,
   isPremium: true,
   categoryName: true,
+  readingTime: true,
   isMature: true,
   reads: true,
   chapters: {
+    where: {
+      published: true,
+    },
     select: {
       id: true,
       title: true,

@@ -38,6 +38,8 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
     username: params.slug,
   });
 
+  const user = await api.auth.authInfo.query();
+
   if (!userDetails) return null;
 
   return (
@@ -109,10 +111,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
 
-            <FollowButton
-              id={userDetails.id}
-              username={userDetails.username ?? ""}
-            />
+            <FollowButton id={userDetails.id} isAuth={!!user} />
           </div>
         </div>
 

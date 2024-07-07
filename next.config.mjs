@@ -21,6 +21,9 @@ const config = {
         hostname: "i.pinimg.com",
       },
       {
+        hostname: "pbs.twimg.com",
+      },
+      {
         hostname: "bookcoverzone.com",
       },
       {

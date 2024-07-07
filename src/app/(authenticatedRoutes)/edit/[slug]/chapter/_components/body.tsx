@@ -1,8 +1,12 @@
+// TODO: save draft
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { JSONContent } from "novel";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
 import WritingHeader from "~/components/sections/writing-header";
@@ -21,29 +25,63 @@ import { useUploadFile } from "~/hooks/use-upload-thing";
 import CustomEditor from "~/packages/Editor/advanced-editor";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
-import { defaultEditorContent } from "~/utils/default-content";
 import { getErrorMessage } from "~/utils/handle-errors";
 import { autosaveContent, loadDraft } from "~/utils/storage";
 
-const NewStory = ({ params }: { params: { chapterId: string } }) => {
-  const { chapterId } = params;
+const EditChapterBody = ({
+  chapter,
+  slug,
+}: {
+  chapter: {
+    nextChapter: {
+      id: string;
+      title: string;
+      slug: string;
+    } | null;
+    story: {
+      slug: string;
+      id: string;
+      reads: number;
+      thumbnail: string;
+      title: string;
+      tags: string[];
+      love: number;
+      chapters: {
+        slug: string | null;
+        id: string;
+        title: string | null;
+      }[];
+      author: {
+        id: string;
+        username: string | null;
+      };
+    };
+    id: string;
+    title: string | null;
+    slug: string | null;
+    content: Prisma.JsonValue;
+    thumbnail: string | null;
+    reads: number;
+    readingTime: number;
+    createdAt: Date;
+    updatedAt: Date;
+    isDeleted: boolean;
+    storyId: string;
+    published: boolean;
+  };
+  slug: string;
+}) => {
   const router = useRouter();
   const { replace } = router;
-
-  const { data: chapter } = api.chapter.getSingeChapterById.useQuery(
-    {
-      chapterId: chapterId,
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
 
   const [preparingUpload, setPreparingUpload] = useState(false);
   const [imageLoad, setImageLoad] = useState(true);
   const [fileData, setFileData] = useState<
     { url: string; name: string } | undefined
-  >(undefined);
+  >({
+    url: chapter?.thumbnail ?? "",
+    name: "",
+  });
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
     useUploadFile("imageUploader");
@@ -51,64 +89,39 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      content: defaultEditorContent,
-      thumbnail: null,
+      title: chapter?.title ?? "",
+      content: chapter?.content ?? "",
+      thumbnail: chapter?.thumbnail ?? "",
     },
   });
 
-  const handleFileUpload = useCallback(async () => {
-    if (!uploadedFile || !chapter) return;
-    setFileData({ url: uploadedFile.url, name: uploadedFile.name });
-    const draftData = await loadDraft(chapter.storyId, chapter.id);
+  // const handleFileUpload = useCallback(async () => {
+  //   if (!uploadedFile || !chapter) return;
+  //   setFileData({ url: uploadedFile.url, name: uploadedFile.name });
+  //   const draftData = await loadDraft(chapter.storyId, chapter.id);
 
-    if (draftData) {
-      await autosaveContent({
-        draftKey: "cover_image",
-        value: { name: uploadedFile.name, url: uploadedFile.url },
-        story_id: chapter.storyId,
-        chapterId: chapter.id,
-      });
-    }
-  }, [uploadedFile, chapter]);
+  //   if (draftData) {
+  //     await autosaveContent({
+  //       draftKey: "cover_image",
+  //       value: { name: uploadedFile.name, url: uploadedFile.url },
+  //       story_id: chapter.storyId,
+  //       chapterId: chapter.id,
+  //     });
+  //   }
+  // }, [uploadedFile, chapter]);
 
-  useEffect(() => {
-    handleFileUpload();
-  }, [handleFileUpload]);
-
-  const loadFormData = useCallback(async () => {
-    if (!chapter) return;
-    const draft = await loadDraft(chapter.storyId, chapter.id);
-
-    if (draft) {
-      if (draft.cover_image) setFileData(draft.cover_image);
-      if (draft.title) form.setValue("title", draft.title);
-    }
-  }, [chapter, form]);
-
-  useEffect(() => {
-    loadFormData();
-  }, [loadFormData]);
-
-  const handleImageLoad = useCallback(async () => {
-    if (!chapter) return;
-    const draft = await loadDraft(chapter.storyId, chapter.id);
-
-    if (draft?.cover_image && !fileData) setFileData(draft.cover_image);
-  }, [chapter, fileData]);
-
-  useEffect(() => {
-    handleImageLoad();
-  }, [handleImageLoad]);
+  // useEffect(() => {
+  //   handleFileUpload();
+  // }, [handleFileUpload]);
 
   const [loading, setLoading] = useState<"PUBLISH" | "NEXT" | null>(null);
 
   const { mutateAsync } = api.chapter.update.useMutation();
-  const { mutateAsync: newChapterMutation } = api.chapter.new.useMutation();
 
   const onSubmit = async (type: "PUBLISH" | "NEXT" = "PUBLISH") => {
     try {
       setLoading(type);
+
       if (!chapter) {
         toast({ title: "Chapter not found." });
 
@@ -131,22 +144,9 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
         published: type === "PUBLISH",
       });
 
-      if (type === "NEXT") {
-        const newChapterId = await newChapterMutation({
-          story_id: chapter.storyId,
-        });
+      toast({ title: "Chapter updated successfully." });
 
-        if (newChapterId) {
-          replace(`/write/s/${newChapterId}`);
-          toast({
-            title:
-              "Chapter published successfully. Redirecting to next chapter",
-          });
-        }
-      } else {
-        toast({ title: "Chapter published successfully" });
-        replace(`/works`);
-      }
+      router.push(`/chapter/${chapter.slug}`);
     } catch (err) {
       toast({
         title: getErrorMessage(err),
@@ -224,8 +224,9 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
               </FormItem>
 
               <CustomEditor
+                defaultContent={chapter?.content as JSONContent}
                 details={{
-                  chapterId,
+                  chapterId: chapter?.id ?? "",
                   story_id: chapter?.storyId ?? "",
                   title: form.getValues("title"),
                   cover_image: fileData || { url: "", name: "" },
@@ -239,4 +240,4 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
   );
 };
 
-export default NewStory;
+export default EditChapterBody;

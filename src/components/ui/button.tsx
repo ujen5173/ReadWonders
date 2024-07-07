@@ -20,6 +20,7 @@ const buttonVariants = cva(
         "ghost-link":
           "text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20",
         link: "underline-offset-4 hover:underline text-text-primary",
+        blue: "bg-blue-500 hover:bg-blue-600 text-white",
       },
       size: {
         default: "h-10 py-2 px-4",

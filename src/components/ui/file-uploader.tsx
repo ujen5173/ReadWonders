@@ -221,9 +221,10 @@ const FileUploaded = ({
         <Skeleton className="h-full min-h-[383px] w-full rounded-xl" />
       </div>
       <Image
-        onLoadingComplete={() => setImageLoad((prev) => !prev)}
+        onLoadingComplete={() => setImageLoad(false)}
         src={uploadedFile.url}
         alt={uploadedFile.name}
+        draggable={false}
         width={840}
         height={472}
         className={`${imageLoad ? "opacity-0" : "opacity-1"} absolute h-full w-full object-cover`}

@@ -260,7 +260,7 @@ const WriteStory = () => {
                 />
                 <div className="flex items-center gap-2">
                   <Button
-                    disabled={isUploading}
+                    disabled={isUploading || isLoading}
                     loading={isLoading}
                     type="submit"
                   >

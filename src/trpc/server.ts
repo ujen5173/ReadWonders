@@ -39,7 +39,7 @@ export const api = createTRPCProxyClient<typeof appRouter>({
   transformer,
   links: [
     loggerLink({
-      // enabled: (op) =>
+      enabled: (op) => false,
       //   process.env.NODE_ENV === "development" ||
       //   (op.direction === "down" && op.result instanceof Error),
     }),

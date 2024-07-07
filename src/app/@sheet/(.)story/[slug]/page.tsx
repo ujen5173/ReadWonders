@@ -29,6 +29,7 @@ import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 const Story = () => {
   const router = useRouter();
   const { activeBook } = useContext(Context);
+
   const [open, setOpen] = useState(true);
 
   const calcHeight = () => {
@@ -131,7 +132,7 @@ const Story = () => {
                         <p>Likes</p>
                       </div>
                       <p className="font-medium">
-                        {formatNumber((activeBook?.reads ?? 0) / 4)}
+                        {formatNumber(activeBook?.love ?? 0)}
                       </p>
                     </div>
 
@@ -151,7 +152,7 @@ const Story = () => {
                         <p>Time</p>
                       </div>
                       <p className="font-medium">
-                        {formatReadingTime(activeBook?.reads ?? 0)}
+                        {formatReadingTime(activeBook?.readingTime ?? 0)}
                       </p>
                     </div>
                   </div>

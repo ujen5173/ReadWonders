@@ -27,6 +27,7 @@ export const featuredStoriesSQL = `
       s."isPremium",
       s."isMature",
       s."categoryName",
+      s."readingTime",
       s.reads,
       s."authorId",
       cc.story_count
@@ -49,6 +50,7 @@ export const featuredStoriesSQL = `
     rs."isPremium",
     rs."isMature",
     rs."categoryName",
+    rs."readingTime",
     rs.reads,
     rs.story_count,
     (
@@ -60,6 +62,7 @@ export const featuredStoriesSQL = `
       ))
       FROM chapter c
       WHERE c."storyId" = rs.id
+      AND c.published = true
     ) AS chapters,
     json_build_object(
       'name', p.name,
@@ -137,6 +140,7 @@ export const topPicksSQL = `
       ))
       FROM chapter c
       WHERE c."storyId" = rs.id
+      AND c.published = true
     ) AS chapters,
     json_build_object(
       'name', p.name,
@@ -169,6 +173,7 @@ export const mostLovedSQL = `
       s."isPremium",
       s."isMature",
       s."categoryName",
+      s."readingTime",
       s."authorId",
       COUNT(DISTINCT cr.id) AS current_reads,
       COUNT(DISTINCT rl.id) AS reading_lists,
@@ -211,6 +216,7 @@ export const mostLovedSQL = `
       ))
       FROM chapter c
       WHERE c."storyId" = ms.story_id
+      AND c.published = true
     ) AS chapters
   FROM 
     MonthlyStats ms
@@ -318,6 +324,7 @@ export const searchSystemSQL = async (
       story."isPremium",
       story."categoryName",
       story."isMature",
+      story."readingTime",
       story.reads,
       COALESCE(json_agg(
         json_build_object(

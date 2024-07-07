@@ -12,16 +12,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { MoreHorizontalIcon } from "hugeicons-react";
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
+import DeleteDialog from "~/app/_components/delete-dialog";
+import { Badge } from "~/components/ui/badge";
 
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
@@ -34,6 +39,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { type WorkDetails } from "~/types";
+import { cn } from "~/utils/cn";
 import { formatNumber } from "~/utils/helpers";
 
 export const columns: ColumnDef<WorkDetails>[] = [
@@ -57,7 +63,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
     header: "Thumbnail",
     cell: ({ row }) => (
       <div className="">
-        <Link href={`/${row.getValue("slug")}`}>
+        <Link target="_blank" href={`/story/${row.getValue("slug")}`}>
           <Image
             src={row.getValue("thumbnail")}
             width={120}
@@ -73,17 +79,8 @@ export const columns: ColumnDef<WorkDetails>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <Link href={`/${row.getValue("slug")}`}>
+      <Link target="_blank" href={`/story/${row.getValue("slug")}`}>
         <div className="capitalize">{row.getValue("title")}</div>
-      </Link>
-    ),
-  },
-  {
-    accessorKey: "slug",
-    header: "Slug",
-    cell: ({ row }) => (
-      <Link href={`/${row.getValue("slug")}`}>
-        <div className="">{row.getValue("slug")}</div>
       </Link>
     ),
   },
@@ -137,12 +134,71 @@ export const columns: ColumnDef<WorkDetails>[] = [
   },
   {
     accessorKey: "total_chapters",
-    header: () => <div className="text-right">Total Chapters</div>,
+    header: () => <div className="text-center">Total Chapters</div>,
     cell: ({ row }) => {
       return (
         <div className="text-center font-medium">
           {row.getValue("total_chapters")}
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "published",
+    header: () => <div className="text-center">Published</div>,
+    cell: ({ row }) => {
+      return (
+        <div className="text-center font-medium">
+          <Badge variant={row.getValue("published") ? "green" : "destructive"}>
+            {row.getValue("published") ? "Published" : "Draft"}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: () => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontalIcon className="stoke-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white" align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem className="gap-2">
+              <Link
+                href="/"
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "w-full",
+                )}
+              >
+                Edit
+              </Link>
+              <DeleteDialog
+                style="w-full"
+                title="Delete Story"
+                description="Are you sure you want to delete this story?"
+                onConfirm={() => {}}
+                trigger="Delete"
+                variant="destructive"
+              />
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href="/"
+                className={cn("w-full", buttonVariants({ variant: "blue" }))}
+              >
+                View Analytics
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
@@ -179,7 +235,7 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between gap-2 py-4">
         <Input
           placeholder="Filter stories..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -188,6 +244,9 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
           }
           className="max-w-sm"
         />
+        <div className="mx-auto w-fit text-sm text-muted-foreground">
+          {table.getRowModel().rows?.length} of {table.getRowCount()} row(s).
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -237,21 +296,23 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              <>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
             ) : (
               <TableRow>
                 <TableCell

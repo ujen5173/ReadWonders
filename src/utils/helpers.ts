@@ -1,16 +1,19 @@
+import chalk from "chalk";
 import numeral from "numeral";
 
 export const formatNumber = (num: number) => {
   return numeral(num).format("0.[0]a");
 };
 
-export const formatReadingTime = (min: number) => {
-  // should return <5min, 1hr, 30min, etc
-  if (min < 60) {
-    return `<${min}min`;
+export const formatReadingTime = (minutes: number) => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours === 0) {
+    return `${remainingMinutes} min`;
   }
 
-  return `${Math.floor(min / 60)}hr`;
+  return `${hours} hr ${remainingMinutes} min`.trim();
 };
 
 export const formatDate = (date: Date) => {
@@ -47,3 +50,8 @@ export const urlToFile = async (
 
   return new File([buffer], filename, { type: mimeType });
 };
+
+// chalk (console colors)
+export const error = chalk.bold.red;
+export const warning = chalk.hex("#FFA500");
+export const info = chalk.hex("#00BFFF");

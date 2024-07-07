@@ -31,6 +31,7 @@ export type TCard = {
   isPremium: boolean;
   categoryName: string | null;
   isMature: boolean;
+  readingTime: number;
   reads: number;
   chapters: {
     id: string;
@@ -51,6 +52,7 @@ export type WorkDetails = {
   title: string;
   slug: string;
   reads: number;
+  published: boolean;
   views: number;
   total_chapters: number;
 };

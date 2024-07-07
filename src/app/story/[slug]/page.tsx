@@ -3,6 +3,7 @@ import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
+import FollowButton from "~/components/follow-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { contentFont } from "~/config/font";
@@ -38,7 +39,7 @@ export async function generateMetadata({
 const Story = async ({ params }: { params: { slug: string } }) => {
   const storyDetails = await api.story.getSingle.query({ slug: params.slug });
 
-  const user = await api.auth.getProfile.query();
+  const user = await api.auth.authInfo.query();
 
   return (
     <section className="w-full">
@@ -57,7 +58,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             <div className="flex w-full flex-col gap-4">
               {user?.id === storyDetails.author.id && (
                 <Link href={`/edit/${storyDetails.slug}`}>
-                  <Button className="w-full" variant="default">
+                  <Button className="w-full" variant="secondary">
                     <Edit className="size-4" />
                     Edit Story
                   </Button>
@@ -96,32 +97,36 @@ const Story = async ({ params }: { params: { slug: string } }) => {
           </div>
 
           <div className="w-full flex-1 space-y-8">
-            <header className="space-y-2">
-              <h1
-                className={`scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl`}
-              >
-                {storyDetails.title}
-              </h1>
-
-              <div className="flex items-center space-x-1 text-lg text-foreground">
-                <p className="">By</p>
-                <Link
-                  className="font-medium text-primary underline"
-                  href={`/user/${storyDetails.author.username}`}
+            <header className="flex items-center justify-between gap-4">
+              <div className="flex-1 space-y-2">
+                <h1
+                  className={`scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl`}
                 >
-                  <h2>{storyDetails.author.name}</h2>
-                </Link>
+                  {storyDetails.title}
+                </h1>
+
+                <div className="flex items-center space-x-1 text-lg text-foreground">
+                  <p className="">By</p>
+                  <Link
+                    className="font-medium text-primary underline"
+                    href={`/user/${storyDetails.author.username}`}
+                  >
+                    <h2>{storyDetails.author.name}</h2>
+                  </Link>
+                </div>
+
+                <div>
+                  <a href="/categories/education">
+                    <div className="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs text-primary-foreground transition-colors hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <p className="font-normal capitalize tracking-wider">
+                        Drama
+                      </p>
+                    </div>
+                  </a>
+                </div>
               </div>
 
-              <div>
-                <a href="/categories/education">
-                  <div className="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs text-primary-foreground transition-colors hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                    <p className="font-normal capitalize tracking-wider">
-                      Drama
-                    </p>
-                  </div>
-                </a>
-              </div>
+              <FollowButton id={storyDetails.author.id} isAuth={!!user} />
             </header>
 
             <div className="mx-auto mb-2 flex max-w-[29rem] flex-wrap sm:m-0">
@@ -146,7 +151,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   </div>
 
                   <p className="font-semibold">
-                    {formatNumber(Math.floor(storyDetails.reads / 4))}
+                    {formatNumber(storyDetails.love)}
                   </p>
                 </div>
               </div>
@@ -172,7 +177,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   </div>
 
                   <p className="font-semibold">
-                    {formatReadingTime(Math.floor(storyDetails.reads / 66))}
+                    {formatReadingTime(storyDetails.readingTime)}
                   </p>
                 </div>
               </div>
@@ -201,23 +206,33 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               </h4>
 
               {storyDetails.chapters.length > 0 ? (
-                storyDetails.chapters.map((ch) => (
-                  <Link
-                    key={ch.id}
-                    target="_blank"
-                    href={`/chapter/${ch.slug}`}
-                    className="w-full"
-                  >
-                    <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-400/40">
-                      <p className="line-clamp-1 text-lg text-slate-700">
-                        {ch.title}
-                      </p>
-                      <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
-                        {formatDate(ch.createdAt)}
-                      </p>
-                    </div>
-                  </Link>
-                ))
+                storyDetails.chapters.map((ch) =>
+                  user?.id !== storyDetails.author.id &&
+                  !ch.published ? null : (
+                    <Link
+                      key={ch.id}
+                      target="_blank"
+                      href={`/chapter/${ch.slug}`}
+                      className="w-full"
+                    >
+                      <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-400/40">
+                        <p className="line-clamp-1 text-lg text-slate-700">
+                          {ch.title}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          {!ch.published && (
+                            <Badge className="bg-rose-500 text-xs font-semibold text-white">
+                              Draft
+                            </Badge>
+                          )}
+                          <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
+                            {formatDate(ch.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ),
+                )
               ) : (
                 <div className="py-12">
                   <p className="text-center text-lg text-foreground">

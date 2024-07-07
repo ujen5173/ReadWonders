@@ -4,6 +4,7 @@ import { Menu, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
+import { PlusSignIcon } from "hugeicons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
@@ -122,7 +123,8 @@ const Header = () => {
 
           <Link href="/write">
             <Button className="hidden gap-2 sm:flex" variant="ghost-link">
-              <Plus size={18} />
+              {/* <Plus size={18} /> */}
+              <PlusSignIcon size={18} />
               <span>Write a story</span>
             </Button>
           </Link>
