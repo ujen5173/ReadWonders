@@ -324,6 +324,11 @@ export const chapterRouter = createTRPCRouter({
           where: { id: input.id },
           select: {
             storyId: true,
+            story: {
+              select: {
+                authorId: true,
+              },
+            },
           },
         });
 
@@ -353,22 +358,17 @@ export const chapterRouter = createTRPCRouter({
           return true;
         }
 
+        // Only increment reads if the user is not the author
+        const shouldIncrement = ctx.user.id !== chapter.story.authorId;
+
         const [chapterupdate, storyupdate] = await ctx.db.$transaction([
           ctx.db.chapter.update({
             where: { id: input.id },
-            data: {
-              reads: {
-                increment: 1,
-              },
-            },
+            data: shouldIncrement ? { reads: { increment: 1 } } : {}, // Increment only if not author
           }),
           ctx.db.story.update({
             where: { id: chapter.storyId },
-            data: {
-              reads: {
-                increment: 1,
-              },
-            },
+            data: shouldIncrement ? { reads: { increment: 1 } } : {}, // Increment only if not author
           }),
           ctx.db.currentReads.upsert({
             where: {

@@ -67,16 +67,15 @@ const CoverCard: FC<{
 
       <div className="absolute inset-0 hidden flex-col sm:flex">
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
-          <div className="flex items-center justify-between">
-            <div className="mb-2 w-full">
+          <div className="h-6">
+            {details.categoryName && (
               <Link href={`/genre/${details.categoryName}`} passHref>
                 <Badge className="border border-border" variant="secondary">
                   {details.categoryName}
                 </Badge>
               </Link>
-            </div>
+            )}
           </div>
-
           <div className="flex items-center justify-center py-4">
             <Link
               href={`/story/${details.slug}`}

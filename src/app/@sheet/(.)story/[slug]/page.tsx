@@ -22,6 +22,7 @@ import {
   SheetContent,
   SheetHeader,
 } from "~/components/ui/sheet";
+import { contentFont } from "~/config/font";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { cn } from "~/utils/cn";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
@@ -43,6 +44,8 @@ const Story = () => {
 
     return `calc(100% - ${parentHeight + 24 + buttonHeight}px + ${padding})`;
   };
+
+  const [showMore, setShowMore] = useState(true);
 
   return (
     <Sheet
@@ -111,7 +114,23 @@ const Story = () => {
                   <h1 className="mb-2 text-lg font-semibold text-primary underline underline-offset-4">
                     About
                   </h1>
-                  <p className="text-base">{activeBook?.description}</p>
+                  <article
+                    className={`max-w-none whitespace-pre-line ${contentFont.className}`}
+                  >
+                    <p className="text-base">
+                      {!showMore
+                        ? activeBook?.description
+                        : activeBook?.description.slice(0, 500)}
+                    </p>
+                    {
+                      <button
+                        onClick={() => setShowMore(!showMore)}
+                        className="mt-4 text-primary underline"
+                      >
+                        {showMore ? "Show more" : "Show less"}
+                      </button>
+                    }
+                  </article>
                 </div>
 
                 <div className="mb-8">

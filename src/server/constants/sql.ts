@@ -63,6 +63,7 @@ export const featuredStoriesSQL = `
       FROM chapter c
       WHERE c."storyId" = rs.id
       AND c.published = true
+      AND c."isDeleted" = false
     ) AS chapters,
     json_build_object(
       'name', p.name,
@@ -141,6 +142,7 @@ export const topPicksSQL = `
       FROM chapter c
       WHERE c."storyId" = rs.id
       AND c.published = true
+      AND c."isDeleted" = false
     ) AS chapters,
     json_build_object(
       'name', p.name,
@@ -217,6 +219,7 @@ export const mostLovedSQL = `
       FROM chapter c
       WHERE c."storyId" = ms.story_id
       AND c.published = true
+      AND c."isDeleted" = false
     ) AS chapters
   FROM 
     MonthlyStats ms
@@ -257,7 +260,10 @@ export const searchSystemSQL = async (
         LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
         EXISTS (
           SELECT 1 FROM chapter
-          WHERE chapter."storyId" = story.id AND LOWER(chapter.title) LIKE ${`%${term}%`}
+          WHERE chapter."storyId" = story.id 
+          AND LOWER(chapter.title) LIKE ${`%${term}%`}
+          AND chapter.published = true
+          AND chapter."isDeleted" = false
         )
       )
     `,
@@ -266,7 +272,10 @@ export const searchSystemSQL = async (
   const lengthCondition = input.filter?.len
     ? Prisma.sql`
         AND (
-          SELECT COUNT(*) FROM chapter WHERE chapter."storyId" = story.id
+          SELECT COUNT(*) FROM chapter 
+          WHERE chapter."storyId" = story.id
+          AND chapter.published = true
+          AND chapter."isDeleted" = false
         ) BETWEEN ${parseInt(input.filter.len.split("-")[0] ?? "0")} AND ${input.filter.len.split("-")[1] === "50+" ? "50" : parseInt(input.filter.len.split("-")[1] ?? "100")}
       `
     : Prisma.empty;
@@ -333,15 +342,17 @@ export const searchSystemSQL = async (
           'slug', chapter.slug,
           'createdAt', chapter."createdAt"
         )
-      ) FILTER (WHERE chapter.id IS NOT NULL), '[]') AS chapters,
+      ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
       json_build_object(
         'name', author.name,
         'profile', author.profile
       ) AS author
     FROM story
-    LEFT JOIN chapter ON chapter."storyId" = story.id
+    LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
     LEFT JOIN profiles AS author ON author.id = story."authorId"
     WHERE ${Prisma.join(searchConditions, " AND ")}
+    AND story.published = true
+    AND story."isDeleted" = false
     ${lengthCondition}
     ${matureCondition}
     ${premiumCondition}

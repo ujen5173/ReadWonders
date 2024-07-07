@@ -34,6 +34,7 @@ export const storyRouter = createTRPCRouter({
             chapters: {
               where: {
                 published: true,
+                isDeleted: false,
               },
               select: {
                 title: true,
@@ -114,7 +115,7 @@ export const storyRouter = createTRPCRouter({
               COUNT(DISTINCT r.id) AS recommendation_count
             FROM 
               story s
-              LEFT JOIN chapter c ON s.id = c."storyId"
+              LEFT JOIN chapter c ON s.id = c."storyId" AND c.published = true AND c."isDeleted" = false
               LEFT JOIN bookmark b ON s.id = b."storyId"
               LEFT JOIN "_CurrentReadsToStory" crs ON s.id = crs."A"
               LEFT JOIN recommended r ON s.id = r."storyId"
@@ -175,6 +176,7 @@ export const storyRouter = createTRPCRouter({
               chapter c
             WHERE 
               c.published = true
+              AND c."isDeleted" = false
             GROUP BY 
               c."storyId"
           )
@@ -231,7 +233,11 @@ export const storyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const inputStory = await ctx.db.chapter.findFirst({
-          where: { slug: input.slug },
+          where: {
+            isDeleted: false,
+            published: true,
+            slug: input.slug,
+          },
           select: {
             story: {
               select: {
@@ -258,10 +264,6 @@ export const storyRouter = createTRPCRouter({
               { tags: { hasSome: story.tags } },
               { categoryName: story.categoryName },
             ],
-            readingTime: {
-              gte: story.readingTime * 0.7,
-              lte: story.readingTime * 1.3,
-            },
           },
           orderBy: [{ reads: "desc" }, { love: "desc" }, { reads: "desc" }],
           select: TCardSelect,
@@ -306,6 +308,8 @@ export const storyRouter = createTRPCRouter({
           take: input.limit,
           skip: input.skip,
           where: {
+            isDeleted: false,
+            published: true,
             categoryName: {
               equals: input.slug,
               mode: "insensitive",
@@ -314,6 +318,7 @@ export const storyRouter = createTRPCRouter({
           include: {
             chapters: {
               where: {
+                isDeleted: false,
                 published: true,
               },
               select: {
@@ -369,9 +374,20 @@ export const storyRouter = createTRPCRouter({
         const story = await ctx.db.story.findUnique({
           where: {
             slug: input.slug,
+            isDeleted: false,
+            published: true,
           },
           include: {
+            category: {
+              select: {
+                slug: true,
+              },
+            },
             chapters: {
+              where: {
+                isDeleted: false,
+                published: true,
+              },
               select: {
                 id: true,
                 title: true,
@@ -487,6 +503,10 @@ export const storyRouter = createTRPCRouter({
               },
             },
             stories: {
+              where: {
+                isDeleted: false,
+                published: true,
+              },
               select: TCardSelect,
             },
           },
@@ -519,6 +539,8 @@ export const storyRouter = createTRPCRouter({
       try {
         const stories = await ctx.db.story.findMany({
           where: {
+            isDeleted: false,
+            published: true,
             slug: {
               in: input.slugs,
             },
@@ -591,6 +613,10 @@ export const storyRouter = createTRPCRouter({
         const stories = await ctx.db.story.findMany({
           take: input.limit,
           select: TCardSelect,
+          where: {
+            published: true,
+            isDeleted: false,
+          },
           orderBy: {
             createdAt: "desc",
           },
@@ -752,7 +778,7 @@ export const storyRouter = createTRPCRouter({
         description: z.string().min(10, {
           message: "Description must be at least 10 characters.",
         }),
-        category: z.string().optional(),
+        categoryName: z.string().optional(),
         isMature: z.boolean().default(false),
         isPremium: z.boolean().default(false),
         tags: z.array(z.string()).optional(),
@@ -764,7 +790,7 @@ export const storyRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { edit, category, ...rest } = input;
+        const { edit, ...rest } = input;
 
         const slug = slugify(rest.title + "-" + ctx.user.id.slice(0, 5), slugy);
 
@@ -776,7 +802,7 @@ export const storyRouter = createTRPCRouter({
             data: {
               ...rest,
               slug,
-              categoryName: category,
+
               authorId: ctx.user.id,
             },
             select: {

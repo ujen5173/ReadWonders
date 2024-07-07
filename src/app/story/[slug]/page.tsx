@@ -115,15 +115,17 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                   </Link>
                 </div>
 
-                <div>
-                  <a href="/categories/education">
-                    <div className="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs text-primary-foreground transition-colors hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                      <p className="font-normal capitalize tracking-wider">
-                        Drama
-                      </p>
-                    </div>
-                  </a>
-                </div>
+                {storyDetails.category && (
+                  <div>
+                    <a href={`/genre/${storyDetails.category?.slug ?? ""}`}>
+                      <div className="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs text-primary-foreground transition-colors hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <p className="font-normal capitalize tracking-wider">
+                          {storyDetails.categoryName}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                )}
               </div>
 
               <FollowButton id={storyDetails.author.id} isAuth={!!user} />

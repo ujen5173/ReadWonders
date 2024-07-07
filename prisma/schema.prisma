@@ -403,7 +403,7 @@ model Story {
   isDeleted    Boolean        @default(false)
   isMature     Boolean        @default(false)
   isPremium    Boolean        @default(false)
-  published    Boolean        @default(false)
+  published    Boolean        @default(true)
   categoryName String?
   bookmarks    Bookmark[]
   chapters     Chapter[]

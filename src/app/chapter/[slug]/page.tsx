@@ -30,6 +30,7 @@ import StoriesArea from "~/components/sections/stories-area";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
+import { ArrowDown01Icon } from "hugeicons-react";
 import {
   Select,
   SelectContent,
@@ -326,14 +327,30 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
           </div>
           <section className="w-full">
             <div className="mx-auto w-full max-w-[1440px] border-y border-border px-4 pb-0 pt-8 md:pb-6 md:pt-12">
-              <Suspense fallback={<LoadingColumn />}>
-                <StoriesArea
-                  title="You'll also like"
-                  perRow={6}
-                  stories={similarStories}
-                  inRow={false}
-                />
-              </Suspense>
+              {similarStories.length > 0 ? (
+                <Suspense fallback={<LoadingColumn />}>
+                  <StoriesArea
+                    title="You'll also like"
+                    perRow={6}
+                    stories={similarStories}
+                    inRow={false}
+                  />
+                </Suspense>
+              ) : (
+                <div className="">
+                  <div className="mb-4 flex items-center gap-2">
+                    <h1 className="text-xl font-semibold text-primary sm:text-2xl">
+                      You&rsquo;ll also like
+                    </h1>
+                    <ArrowDown01Icon size={18} className="text-primary" />
+                  </div>
+                  <div className="py-12">
+                    <p className="text-center text-lg font-semibold">
+                      Oops! No similar stories found
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         </section>

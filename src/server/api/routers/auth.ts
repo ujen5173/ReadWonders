@@ -169,6 +169,9 @@ export const authRouter = createTRPCRouter({
           id: true,
           stories: {
             select: TCardSelect,
+            orderBy: {
+              createdAt: "desc",
+            },
           },
         },
       });

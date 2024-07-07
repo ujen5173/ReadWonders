@@ -5,7 +5,7 @@ import { PrivateRouteBase } from "./PrivateRouteBase";
 
 export const PrivateRoute = async ({ children }: PropsWithChildren) => {
   try {
-    const user = await api.auth.getProfile.query();
+    const user = await api.auth.authInfo.query();
 
     if (!user) redirect("/auth/login");
   } catch (err) {
