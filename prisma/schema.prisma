@@ -321,25 +321,28 @@ model Users {
 }
 
 model Profiles {
-  id           String         @id @default(uuid()) @db.Uuid
-  username     String?
-  name         String?
-  profile      String?
-  bio          String?
-  tagline      String?
-  email        String?
-  createdAt    DateTime       @default(now()) @db.Timestamptz(6)
-  bookmarks    Bookmark[]
-  currentReads CurrentReads[]
-  author       Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  readingLists ReadingList[]
-  story        Story[]
+  id            String         @id @default(uuid()) @db.Uuid
+  username      String         @unique
+  name          String
+  profile       String?
+  bio           String?
+  tagline       String?
+  email         String
+  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+  bookmarks     Bookmark[]
+  currentReads  CurrentReads[]
+  author        Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  readingLists  ReadingList[]
+  story         Story[]
+  lovedChapters Love[]
 
   followingCount Int      @default(0)
   followersCount Int      @default(0)
   following      Follow[] @relation("FollowToProfilesFollowing")
   followers      Follow[] @relation("FollowToProfilesFollower")
 
+  @@index([username])
+  @@index([name])
   @@map("profiles")
   @@schema("public")
 }
@@ -436,9 +439,23 @@ model Chapter {
   storyId     String   @db.Uuid
   published   Boolean  @default(false)
   story       Story    @relation(fields: [storyId], references: [id])
+  loves       Love[]
 
   @@index([storyId, slug], map: "chapter_story_id_slug_idx")
   @@map("chapter")
+  @@schema("public")
+}
+
+model Love {
+  id        String   @id @default(uuid()) @db.Uuid
+  chapterId String   @db.Uuid
+  userId    String   @db.Uuid
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  user      Profiles @relation(fields: [userId], references: [id])
+
+  @@unique([chapterId, userId])
+  @@index([userId])
+  @@map("likes")
   @@schema("public")
 }
 

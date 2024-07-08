@@ -1,6 +1,7 @@
-import { Mail01Icon, RecordIcon } from "hugeicons-react";
+import { Edit02Icon, Mail01Icon, RecordIcon } from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import CoverCard from "~/components/cover-card";
@@ -42,6 +43,8 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
   if (!userDetails) return null;
 
+  console.log({ userDetails });
+
   return (
     <>
       <div className="mx-auto min-h-96 w-full max-w-[1440px] px-4">
@@ -65,19 +68,23 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
                 </span>
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center text-base font-medium text-slate-700 xxs:mt-0">
+              <div className="mt-6 flex flex-wrap items-center gap-1 text-base font-medium text-slate-700 xxs:mt-0">
                 <div>
                   <span>{userDetails.story?.length} works</span>
                 </div>
                 <RecordIcon className="size-[6px] fill-slate-600" />
 
                 <div>
-                  <span>{formatNumber(561)} following</span>
+                  <span>
+                    {formatNumber(userDetails.followingCount)} following
+                  </span>
                 </div>
                 <RecordIcon className="size-[6px] fill-slate-600" />
 
                 <div>
-                  <span>{formatNumber(5486516)} followers</span>
+                  <span>
+                    {formatNumber(userDetails.followersCount)} followers
+                  </span>
                 </div>
               </div>
             </div>
@@ -113,7 +120,20 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
 
-            <FollowButton id={userDetails.id} isAuth={!!user} />
+            {userDetails.id === user?.id ? (
+              <Link href="/settings">
+                <Button className="gap-2" variant="secondary">
+                  <Edit02Icon className="size-4" />
+                  <span>Edit Profile</span>
+                </Button>
+              </Link>
+            ) : (
+              <FollowButton
+                id={userDetails.id}
+                isAuth={!!user}
+                following={(userDetails.followers ?? []).length > 0}
+              />
+            )}
           </div>
         </div>
 

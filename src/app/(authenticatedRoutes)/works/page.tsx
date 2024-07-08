@@ -13,11 +13,12 @@ const Works = () => {
 
   return (
     <section className="w-full">
-      <div className="mx-auto w-full max-w-[1340px] border-b border-border px-4 py-6">
+      <div className="mx-auto w-full max-w-[1440px] border-b border-border px-4 py-6">
         <div className="flex items-center justify-between gap-6">
           <h1 className={`scroll-m-20 text-3xl font-bold tracking-tight`}>
             My Stories
           </h1>
+
           <Link href="/write">
             <Button>
               <PlusSignSquareIcon className="size-4" />
@@ -25,6 +26,7 @@ const Works = () => {
             </Button>
           </Link>
         </div>
+
         {isLoading ? (
           <div className="py-12 text-center">Loading...</div>
         ) : (

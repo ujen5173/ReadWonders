@@ -54,8 +54,9 @@ const HeroSection = () => {
                 .map((_, i) => (
                   <StarIcon
                     key={i}
-                    size={22}
-                    className="fill-amber-400 stroke-amber-400"
+                    size={20}
+                    className="fill-amber-400 text-transparent"
+                    stroke="currentColor"
                   />
                 ))}
             </div>

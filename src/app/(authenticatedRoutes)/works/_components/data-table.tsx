@@ -81,15 +81,23 @@ export const columns: ColumnDef<WorkDetails>[] = [
   {
     accessorKey: "title",
     header: "Title",
-    cell: ({ row }) => (
-      <Link
-        className="inline-block min-w-48"
-        target="_blank"
-        href={`/story/${row.getValue("slug")}`}
-      >
-        <div className="capitalize">{row.getValue("title")}</div>
-      </Link>
-    ),
+    cell: ({ row }) => {
+      return (
+        <Link
+          className="inline-block min-w-48"
+          target="_blank"
+          href={`/story/${row.getValue("slug")}`}
+        >
+          <div className="capitalize">{row.getValue("title")}</div>
+        </Link>
+      );
+    },
+  },
+  {
+    // this is a hidden column so that we can access the slug value
+    accessorKey: "slug",
+    header: "",
+    cell: () => null,
   },
   {
     accessorKey: "reads",

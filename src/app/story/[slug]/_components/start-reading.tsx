@@ -1,30 +1,27 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "~/components/ui/button";
+import Link from "next/link";
+import { buttonVariants } from "~/components/ui/button";
+import { cn } from "~/utils/cn";
 
 const StartReading = ({ hasChapter }: { hasChapter: string | null }) => {
-  const router = useRouter();
-
   return (
-    <Button
-      disabled={(() => {
-        if (hasChapter) {
-          return false;
-        }
+    <Link
+      href={hasChapter ?? "#"}
+      className={cn(
+        buttonVariants({ variant: "default" }),
+        "w-full",
+        (() => {
+          if (hasChapter) {
+            return "";
+          }
 
-        return true;
-      })()}
-      onClick={() => {
-        if (hasChapter) {
-          router.push(hasChapter);
-        }
-      }}
-      className="w-full"
-      variant="default"
+          return "pointer-events-none cursor-not-allowed opacity-70";
+        })(),
+      )}
     >
       Start Reading
-    </Button>
+    </Link>
   );
 };
 

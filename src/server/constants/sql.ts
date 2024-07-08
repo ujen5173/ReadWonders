@@ -166,7 +166,7 @@ export const topPicksSQL = `
 export const mostLovedSQL = `
   WITH MonthlyStats AS (
     SELECT 
-      s.id AS story_id,
+      s.id,
       s.title,
       s.slug,
       s.description,
@@ -217,7 +217,7 @@ export const mostLovedSQL = `
         'slug', c.slug
       ))
       FROM chapter c
-      WHERE c."storyId" = ms.story_id
+      WHERE c."storyId" = ms.id
       AND c.published = true
       AND c."isDeleted" = false
     ) AS chapters

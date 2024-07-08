@@ -17,6 +17,7 @@ import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import AddToBookmark from "./_components/add-to-bookmark";
 import StartReading from "./_components/start-reading";
 
 interface Props {
@@ -50,7 +51,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <section className="w-full">
-      <div className="mx-auto flex w-full max-w-[1340px] border-b border-border py-6">
+      <div className="mx-auto flex w-full max-w-[1440px] border-b border-border py-6">
         <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-12 md:p-6 lg:p-12">
           <div className="relative mx-auto flex w-full max-w-80 flex-col items-center gap-8">
             <Image
@@ -62,16 +63,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               className="story-cover-thumbnail w-full overflow-hidden rounded-lg object-fill shadow-2xl"
             />
 
-            <div className="flex w-full flex-col gap-4">
-              {user?.id === storyDetails.author.id && (
-                <Link href={`/edit/${storyDetails.slug}`}>
-                  <Button className="w-full" variant="secondary">
-                    <Edit01Icon className="size-4" />
-                    Edit Story
-                  </Button>
-                </Link>
-              )}
-
+            <div className="mx-auto flex w-10/12 flex-col gap-4">
               <StartReading
                 hasChapter={
                   storyDetails &&
@@ -86,15 +78,22 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 className="flex w-full items-center gap-1"
                 variant="secondary"
               >
-                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <StarIcon
+                      key={i}
+                      size={20}
+                      className="fill-amber-400 text-transparent"
+                      stroke="currentColor"
+                    />
+                  ))}
                 <span>4.5</span>
               </Button>
 
               <ReadingListModel bookId={storyDetails.id} />
+
+              <AddToBookmark slug={storyDetails.slug} />
 
               <Button className="w-full" variant="secondary">
                 <Notebook01Icon className="size-4" />
@@ -135,7 +134,20 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 )}
               </div>
 
-              <FollowButton id={storyDetails.author.id} isAuth={!!user} />
+              {storyDetails.author.id === user?.id ? (
+                <Link href={`/edit/${storyDetails.slug}`}>
+                  <Button className="w-full" variant="secondary">
+                    <Edit01Icon className="size-4" />
+                    Edit Story
+                  </Button>
+                </Link>
+              ) : (
+                <FollowButton
+                  id={storyDetails.author.id}
+                  isAuth={!!user}
+                  following={(storyDetails.author.followers ?? []).length > 0}
+                />
+              )}
             </header>
 
             <div className="mx-auto mb-2 flex max-w-[29rem] flex-wrap sm:m-0">
@@ -257,15 +269,15 @@ const Story = async ({ params }: { params: { slug: string } }) => {
 
             <div>
               <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
-                Disscussions:
+                Comments:
               </h4>
               <div className="py-12">
                 <p className="text-center text-lg text-foreground">
-                  No discussions yet,{" "}
+                  No comments yet,{" "}
                   <span className="cursor-pointer text-primary underline">
                     Click here
                   </span>{" "}
-                  to start one
+                  to add one
                 </p>
               </div>
             </div>

@@ -15,6 +15,7 @@ import { Input } from "~/components/ui/input";
 import { PlusSignIcon, PlusSignSquareIcon } from "hugeicons-react";
 import { createRef, useEffect, useState } from "react";
 import { v4 } from "uuid";
+import { Spinner } from "~/components/Loading";
 import {
   Select,
   SelectContent,
@@ -66,13 +67,21 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
     })();
   }, []);
 
-  const { mutateAsync } = api.story.addToReadingList.useMutation();
+  const { mutateAsync, isLoading } = api.story.addToReadingList.useMutation();
 
   const addReadingList = async (listId: string, newTitle?: string) => {
     try {
       if (!user) {
         toast({
           title: "You need to be logged in to add a story to a reading list",
+        });
+
+        return;
+      }
+
+      if (!listId) {
+        toast({
+          title: "No id",
         });
 
         return;
@@ -90,6 +99,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         });
       }
     } catch (error) {
+      console.log({ error });
       toast({
         title: "Failed to add story to reading list",
       });
@@ -154,9 +164,12 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         </DialogHeader>
 
         <div className="grid gap-2">
-          <h1>Available Lists</h1>
+          <div className="flex items-center gap-2">
+            <h1>Available Lists</h1>
+            {isLoading ? <Spinner className="size-4 text-black" /> : null}
+          </div>
 
-          <div className="mb-2">
+          <div className="">
             <Select
               onValueChange={(data) => {
                 const list = readingLists.find((l) => l.title === data);

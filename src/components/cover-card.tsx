@@ -113,11 +113,11 @@ const CoverCard: FC<{
             <Link target="_blank" href={`/story/${details.slug}`}>
               <Button className="w-full gap-2">
                 <LinkSquare02Icon size={16} className="stroke-2" />
-                <span>Start Reading</span>
+                <span>View Details</span>
               </Button>
             </Link>
             {!readingList ? (
-              <ReadingListModel bookId={details.id} />
+              details.id && <ReadingListModel bookId={details.id} />
             ) : (
               <Button
                 variant={"secondary"}

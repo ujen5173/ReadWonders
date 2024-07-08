@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
-import { Menu01Icon, PlusSignIcon } from "hugeicons-react";
+import {
+  Bookmark02Icon,
+  LibraryIcon,
+  Logout02Icon,
+  Menu01Icon,
+  Notebook01Icon,
+  PlusSignIcon,
+  Settings01Icon,
+} from "hugeicons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
@@ -136,7 +144,7 @@ const Header = () => {
           >
             <Input ref={inputRef} placeholder="Search anything..." />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-white">
-              <kbd className="pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <kbd className="pointer-events-none inline-flex select-none items-center gap-2 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </div>
@@ -171,20 +179,42 @@ const Header = () => {
                 </DropdownMenuItem>
 
                 <Link
+                  href="/reading-list"
+                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
+                >
+                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-blue-500/30">
+                    <Notebook01Icon className="size-4" />
+                    <span>Reading List</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <Link
+                  href="/bookmarks"
+                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
+                >
+                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-cyan-500/30">
+                    <Bookmark02Icon className="size-4" />
+                    <span>Bookmark</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <Link
                   className="block rounded-none border-b border-border px-[2px] py-[3px]"
                   href={`/works`}
                 >
-                  <DropdownMenuItem className="block w-full rounded-sm p-2 transition hover:bg-foreground/10">
+                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-orange-500/30">
+                    <LibraryIcon className="size-4" />
                     <span>Works</span>
                   </DropdownMenuItem>
                 </Link>
 
                 <Link
-                  href="/reading-list"
                   className="block rounded-none border-b border-border px-[2px] py-[3px]"
+                  href={`/settings`}
                 >
-                  <DropdownMenuItem className="block w-full rounded-sm p-2 transition hover:bg-foreground/10">
-                    <span>Reading List</span>
+                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-green-500/30">
+                    <Settings01Icon className="size-4" />
+                    <span>Settings</span>
                   </DropdownMenuItem>
                 </Link>
 
@@ -202,7 +232,8 @@ const Header = () => {
                     }
                   }}
                 >
-                  <DropdownMenuItem className="block w-full rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
+                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
+                    <Logout02Icon className="size-4" />
                     <span>Logout</span>
                   </DropdownMenuItem>
                 </div>
@@ -328,7 +359,7 @@ const MobileMenu = ({
           >
             <Input ref={inputRef} placeholder="Search anything..." />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-white">
-              <kbd className="pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <kbd className="pointer-events-none inline-flex select-none items-center gap-2 rounded border bg-muted px-1.5 py-1 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </div>

@@ -28,7 +28,6 @@ import {
   InstagramIcon,
   LeftToRightListNumberIcon,
   Link02Icon,
-  PlusSignIcon,
   StarIcon,
   TwitterIcon,
 } from "hugeicons-react";
@@ -45,6 +44,7 @@ import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import ReadQuery from "./_components/read-query";
+import UpVote from "./_components/up-vote";
 import Visibility from "./_components/visibility";
 
 interface Props {
@@ -170,6 +170,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                     <FollowButton
                       id={chapterDetails.story.author.id}
                       isAuth={!!user}
+                      following={
+                        (chapterDetails.story.author.followers ?? []).length > 0
+                      }
                     />
                   </>
                 )}
@@ -290,14 +293,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
               <div className="flex w-full flex-wrap items-center justify-center gap-6 pb-6 sm:justify-between">
                 <div className="flex items-center gap-2">
-                  <Button variant="secondary">
-                    <PlusSignIcon size={16} />
-                    <span>Add to favorites</span>
-                  </Button>
-                  <Button variant="secondary">
-                    <PlusSignIcon size={16} />
-                    <span>Up Vote</span>
-                  </Button>
+                  <UpVote chapter={chapterDetails.id} />
                 </div>
                 <div className="flex items-center">
                   <Button variant="ghost-link">

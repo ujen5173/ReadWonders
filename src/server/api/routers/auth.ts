@@ -33,6 +33,78 @@ export const authRouter = createTRPCRouter({
     return user;
   }),
 
+  me: privateProcedure.query(async ({ ctx }) => {
+    const user = await ctx.db.profiles.findFirst({
+      where: {
+        id: ctx.user.id,
+      },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        profile: true,
+        bio: true,
+        tagline: true,
+        email: true,
+      },
+    });
+
+    return user;
+  }),
+
+  bookmark: privateProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const story = await ctx.db.story.findFirst({
+        where: {
+          slug: input.slug,
+        },
+      });
+
+      if (!story) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Story not found",
+        });
+      }
+
+      const bookmark = await ctx.db.bookmark.findFirst({
+        where: {
+          userId: ctx.user.id,
+          storyId: story.id,
+        },
+      });
+
+      if (bookmark) {
+        await ctx.db.bookmark.delete({
+          where: {
+            id: bookmark.id,
+          },
+        });
+
+        return {
+          action: "removed",
+          storyId: story.id,
+        };
+      } else {
+        await ctx.db.bookmark.create({
+          data: {
+            userId: ctx.user.id,
+            storyId: story.id,
+          },
+        });
+      }
+
+      return {
+        action: "added",
+        storyId: story.id,
+      };
+    }),
+
   userProfile: publicProcedure
     .input(
       z.object({
@@ -45,10 +117,25 @@ export const authRouter = createTRPCRouter({
           username: input.username,
         },
         include: {
+          followers:
+            ctx.user?.id !== undefined
+              ? {
+                  select: {
+                    id: true,
+                  },
+                  where: {
+                    followingId: ctx.user?.id,
+                  },
+                }
+              : false,
           story: {
             take: limit,
             include: {
               chapters: {
+                where: {
+                  published: true,
+                  isDeleted: false,
+                },
                 select: {
                   id: true,
                   title: true,
@@ -93,8 +180,8 @@ export const authRouter = createTRPCRouter({
       const existingFollow = await ctx.db.follow.findUnique({
         where: {
           followerId_followingId: {
-            followerId,
-            followingId: authorId,
+            followerId: authorId,
+            followingId: followerId,
           },
         },
       });
@@ -130,8 +217,8 @@ export const authRouter = createTRPCRouter({
           await ctx.db.$transaction([
             ctx.db.follow.create({
               data: {
-                followerId,
-                followingId: authorId,
+                followerId: authorId,
+                followingId: followerId,
               },
             }),
             ctx.db.profiles.update({
@@ -263,5 +350,43 @@ export const authRouter = createTRPCRouter({
       } catch (err) {
         throw new Error("Error deleting reading list");
       }
+    }),
+
+  update: privateProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        name: z.string(),
+        email: z.string(),
+        bio: z.string().nullable(),
+        tagline: z.string().nullable(),
+        profile: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const usernameTaken = await ctx.db.profiles.findFirst({
+        where: {
+          username: input.username,
+          id: {
+            not: ctx.user.id,
+          },
+        },
+      });
+
+      if (usernameTaken) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Username is already taken",
+        });
+      }
+
+      const user = await ctx.db.profiles.update({
+        where: {
+          id: ctx.user.id,
+        },
+        data: input,
+      });
+
+      return user;
     }),
 });

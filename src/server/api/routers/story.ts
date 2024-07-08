@@ -62,6 +62,31 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
+  getBookmark: privateProcedure.query(async ({ ctx }) => {
+    try {
+      const stories = await ctx.db.story.findMany({
+        where: {
+          bookmarks: {
+            some: {
+              userId: ctx.user.id,
+            },
+          },
+        },
+        select: TCardSelect,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return stories;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch bookmarked stories",
+      });
+    }
+  }),
+
   recommendations: privateProcedure
     .input(
       z.object({
@@ -111,14 +136,12 @@ export const storyRouter = createTRPCRouter({
               COUNT(DISTINCT c.id) AS chapter_count,
               COALESCE(SUM(c."readingTime"), 0) AS total_read_time,
               COUNT(DISTINCT b.id) AS bookmark_count,
-              COUNT(DISTINCT crs."B") AS current_read_count,
-              COUNT(DISTINCT r.id) AS recommendation_count
+              COUNT(DISTINCT crs."B") AS current_read_count
             FROM 
               story s
               LEFT JOIN chapter c ON s.id = c."storyId" AND c.published = true AND c."isDeleted" = false
               LEFT JOIN bookmark b ON s.id = b."storyId"
               LEFT JOIN "_CurrentReadsToStory" crs ON s.id = crs."A"
-              LEFT JOIN recommended r ON s.id = r."storyId"
             WHERE 
               s.published = true 
               AND s."isDeleted" = false
@@ -142,8 +165,7 @@ export const storyRouter = createTRPCRouter({
                 0.3 * ln(sm.reads + 1) +
                 0.2 * ln(sm.love + 1) +
                 0.2 * ln(sm.bookmark_count + 1) +
-                0.1 * ln(sm.current_read_count + 1) +
-                0.2 * ln(sm.recommendation_count + 1)
+                0.1 * ln(sm.current_read_count + 1)
               ) * (1.0 / (EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - sm."createdAt")) / 86400 + 1)) AS recommendation_score
             FROM 
               StoryMetrics sm
@@ -400,12 +422,22 @@ export const storyRouter = createTRPCRouter({
               },
             },
             author: {
-              include: {
-                author: {
-                  select: {
-                    rawUserMetaData: true,
-                  },
-                },
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile: true,
+                followers:
+                  ctx.user?.id !== undefined
+                    ? {
+                        select: {
+                          id: true,
+                        },
+                        where: {
+                          followingId: ctx.user?.id,
+                        },
+                      }
+                    : false,
               },
             },
           },
@@ -646,6 +678,10 @@ export const storyRouter = createTRPCRouter({
           reads: true,
           published: true,
           chapters: {
+            where: {
+              published: true,
+              isDeleted: false,
+            },
             select: {
               id: true,
             },

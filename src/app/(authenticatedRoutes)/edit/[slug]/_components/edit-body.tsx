@@ -83,7 +83,6 @@ const EditBody = ({
   useEffect(() => {
     if (isError && error) {
       toast({
-        type: "background",
         title: error.message,
       });
     }
