@@ -333,7 +333,6 @@ model Profiles {
   currentReads CurrentReads[]
   author       Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   readingLists ReadingList[]
-  recommended  Recommended[]
   story        Story[]
 
   followingCount Int      @default(0)
@@ -408,7 +407,6 @@ model Story {
   bookmarks    Bookmark[]
   chapters     Chapter[]
   discussions  Discussion[]
-  recommended  Recommended[]
   love         Int            @default(0)
   author       Profiles       @relation(fields: [authorId], references: [id])
   category     Genre?         @relation(fields: [categoryName], references: [name])
@@ -479,20 +477,6 @@ model Discussion {
 
   @@index([storyId])
   @@map("discussion")
-  @@schema("public")
-}
-
-model Recommended {
-  id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  storyId   String   @db.Uuid
-  userId    String   @db.Uuid
-  story     Story    @relation(fields: [storyId], references: [id])
-  user      Profiles @relation(fields: [userId], references: [id])
-
-  @@index([storyId])
-  @@index([userId])
-  @@map("recommended")
   @@schema("public")
 }
 

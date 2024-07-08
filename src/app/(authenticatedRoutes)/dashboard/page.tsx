@@ -1,4 +1,4 @@
-import { ArrowDown } from "lucide-react";
+import { ArrowDown02Icon } from "hugeicons-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
@@ -53,7 +53,7 @@ const Dashboard = async () => {
                     <h1 className="text-xl font-semibold text-primary sm:text-2xl">
                       Reading List
                     </h1>
-                    <ArrowDown size={18} className="text-primary" />
+                    <ArrowDown02Icon size={18} className="text-primary" />
                   </div>
                 </div>
 

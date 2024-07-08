@@ -1,5 +1,5 @@
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
-import { Check, Trash } from "lucide-react";
+import { Delete02Icon, Tick02Icon } from "hugeicons-react";
 import { useEditor } from "novel";
 import { useEffect, useRef } from "react";
 import { Button } from "~/components/ui/button";
@@ -91,11 +91,11 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
                 if (inputRef.current) inputRef.current.value = "";
               }}
             >
-              <Trash className="h-4 w-4" />
+              <Delete02Icon className="h-4 w-4" />
             </Button>
           ) : (
             <Button size="icon" className="h-8">
-              <Check className="h-4 w-4" />
+              <Tick02Icon className="h-4 w-4" />
             </Button>
           )}
         </form>

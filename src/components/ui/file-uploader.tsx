@@ -4,7 +4,7 @@ import Image from "next/image";
 import * as React from "react";
 import Dropzone, { type DropzoneProps } from "react-dropzone";
 
-import { UploadIcon } from "lucide-react";
+import { Upload01Icon } from "hugeicons-react";
 import { Progress } from "~/components/ui/progress";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { type UploadedFile } from "~/types";
@@ -158,7 +158,7 @@ const NoFileUploaded = ({ maxSize }: { maxSize: number }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
       <div className="rounded-full border border-dashed border-muted-foreground p-3">
-        <UploadIcon
+        <Upload01Icon
           className="size-7 text-muted-foreground"
           aria-hidden="true"
         />
@@ -237,7 +237,7 @@ const DragSection = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
       <div className="rounded-full border border-dashed border-muted-foreground p-3">
-        <UploadIcon
+        <Upload01Icon
           className="size-7 text-muted-foreground"
           aria-hidden="true"
         />

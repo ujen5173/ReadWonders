@@ -1,4 +1,4 @@
-import { EllipsisVertical } from "lucide-react";
+import { MoreVerticalSquare01Icon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import DeleteDialog from "~/app/_components/delete-dialog";
@@ -52,7 +52,7 @@ const ReadingListCard = ({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="icon">
-                <EllipsisVertical size={18} />
+                <MoreVerticalSquare01Icon size={18} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-40 overflow-hidden bg-white p-0">

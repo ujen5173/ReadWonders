@@ -1,4 +1,9 @@
-import { ImageIcon, Text, TextQuote, Youtube } from "lucide-react";
+import {
+  Image02Icon,
+  QuoteDownIcon,
+  TextAlignLeftIcon,
+  YoutubeIcon,
+} from "hugeicons-react";
 import { Command, createSuggestionItems, renderItems } from "novel/extensions";
 import { uploadFn } from "./image-upload";
 
@@ -7,7 +12,7 @@ export const suggestionItems = createSuggestionItems([
     title: "Text",
     description: "Just start typing with plain text.",
     searchTerms: ["p", "paragraph"],
-    icon: <Text size={18} />,
+    icon: <TextAlignLeftIcon size={18} />,
     command: ({ editor, range }) => {
       editor
         .chain()
@@ -21,7 +26,7 @@ export const suggestionItems = createSuggestionItems([
     title: "Quote",
     description: "Capture a quote.",
     searchTerms: ["blockquote"],
-    icon: <TextQuote size={18} />,
+    icon: <QuoteDownIcon size={18} />,
     command: ({ editor, range }) =>
       editor
         .chain()
@@ -35,7 +40,7 @@ export const suggestionItems = createSuggestionItems([
     title: "Image",
     description: "Upload an image from your computer.",
     searchTerms: ["photo", "picture", "media"],
-    icon: <ImageIcon size={18} />,
+    icon: <Image02Icon size={18} />,
     command: ({ editor, range }) => {
       editor?.chain().focus().deleteRange(range).run();
       // upload image
@@ -61,7 +66,7 @@ export const suggestionItems = createSuggestionItems([
     title: "Youtube",
     description: "Embed a Youtube video.",
     searchTerms: ["video", "youtube", "embed"],
-    icon: <Youtube size={18} />,
+    icon: <YoutubeIcon size={18} />,
     command: ({ editor, range }) => {
       const videoLink = prompt("Please enter Youtube Video Link");
 

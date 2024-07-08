@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusSquare } from "lucide-react";
+import { PlusSignSquareIcon } from "hugeicons-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
@@ -13,14 +13,14 @@ const Works = () => {
 
   return (
     <section className="w-full">
-      <div className="mx-auto w-full max-w-[1340px] border-b border-border py-6">
+      <div className="mx-auto w-full max-w-[1340px] border-b border-border px-4 py-6">
         <div className="flex items-center justify-between gap-6">
           <h1 className={`scroll-m-20 text-3xl font-bold tracking-tight`}>
             My Stories
           </h1>
           <Link href="/write">
             <Button>
-              <PlusSquare className="size-4" />
+              <PlusSignSquareIcon className="size-4" />
               <span>Create New Story</span>
             </Button>
           </Link>

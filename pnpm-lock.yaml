@@ -161,9 +161,6 @@ dependencies:
   jotai:
     specifier: ^2.8.3
     version: 2.8.3(@types/react@18.3.2)(react@18.2.0)
-  lucide-react:
-    specifier: ^0.379.0
-    version: 0.379.0(react@18.2.0)
   next:
     specifier: ^14.2.3
     version: 14.2.3(react-dom@18.2.0)(react@18.2.0)
@@ -5549,14 +5546,6 @@ packages:
   /lru-cache@10.2.2:
     resolution: {integrity: sha512-9hp3Vp2/hFQUiIwKo8XCeFVnrg8Pk3TYNPIR7tJADKi5YfcF7vEaK7avFHTlSy3kOKYaJQaalfEo6YuXdceBOQ==}
     engines: {node: 14 || >=16.14}
-
-  /lucide-react@0.379.0(react@18.2.0):
-    resolution: {integrity: sha512-KcdeVPqmhRldldAAgptb8FjIunM2x2Zy26ZBh1RsEUcdLIvsEmbcw7KpzFYUy5BbpGeWhPu9Z9J5YXfStiXwhg==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.2.0
-    dev: false
 
   /make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}

@@ -1,16 +1,8 @@
 "use client";
 
-// import {
-//   Eye,
-//   LayoutList,
-//   MoveRight,
-//   SquareArrowOutUpRight,
-//   Star,
-//   X,
-// } from "lucide-react";
 import {
   ArrowRight02Icon,
-  LeftToRightListTriangleIcon,
+  LeftToRightListNumberIcon,
   LinkSquare02Icon,
   PlusSignSquareIcon,
   StarIcon,
@@ -89,7 +81,6 @@ const CoverCard: FC<{
           <div className="flex items-center justify-between pb-4">
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                {/* <Eye size={16} className="mt-1" /> */}
                 <ViewIcon size={16} className="mt-1 stroke-2" />
               </div>
               <p className="text-sm font-semibold">
@@ -102,13 +93,13 @@ const CoverCard: FC<{
                 <StarIcon size={16} className="mt-1 stroke-2" />
               </div>
               <p className="text-sm font-semibold">
-                {formatNumber(details.reads / 4)}
+                {formatNumber(details.love)}
               </p>
             </div>
             <Separator orientation="vertical" className="h-8" />
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                <LeftToRightListTriangleIcon
+                <LeftToRightListNumberIcon
                   size={16}
                   className="mt-1 stroke-2"
                 />

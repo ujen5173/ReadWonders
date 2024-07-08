@@ -1,4 +1,8 @@
-import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
+import {
+  TextBoldIcon,
+  TextItalicIcon,
+  TextUnderlineIcon,
+} from "hugeicons-react";
 import { EditorBubbleItem, useEditor } from "novel";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/utils/cn";
@@ -13,19 +17,19 @@ export const TextButtons = () => {
       name: "bold",
       isActive: (e) => e?.isActive("bold") ?? false,
       command: (e) => e?.chain().focus().toggleBold().run(),
-      icon: BoldIcon,
+      icon: (className?: string) => <TextBoldIcon className={className} />,
     },
     {
       name: "italic",
       isActive: (e) => e?.isActive("italic") ?? false,
       command: (e) => e?.chain().focus().toggleItalic().run(),
-      icon: ItalicIcon,
+      icon: (className?: string) => <TextItalicIcon className={className} />,
     },
     {
       name: "underline",
       isActive: (e) => e?.isActive("underline") ?? false,
       command: (e) => e?.chain().focus().toggleUnderline().run(),
-      icon: UnderlineIcon,
+      icon: (className?: string) => <TextUnderlineIcon className={className} />,
     },
   ];
 
@@ -39,11 +43,11 @@ export const TextButtons = () => {
           }}
         >
           <Button size="sm" className="rounded-none" variant="ghost">
-            <item.icon
-              className={cn("h-4 w-4", {
+            {item.icon(
+              cn("h-4 w-4", {
                 "text-blue-500": item.isActive(editor),
-              })}
-            />
+              }),
+            )}
           </Button>
         </EditorBubbleItem>
       ))}

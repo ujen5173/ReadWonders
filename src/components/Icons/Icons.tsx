@@ -1,100 +1,7 @@
-import {
-  AlertTriangle,
-  AlignHorizontalDistributeCenter,
-  ArrowRight,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Command,
-  Construction,
-  CreditCard,
-  Download,
-  Edit,
-  Facebook,
-  File,
-  FileText,
-  Flag,
-  HelpCircle,
-  Image,
-  Instagram,
-  Languages,
-  Laptop,
-  Linkedin,
-  Loader2,
-  Lock,
-  Menu,
-  MonitorSmartphone,
-  Moon,
-  MoreVertical,
-  Palette,
-  Pizza,
-  Plus,
-  Scaling,
-  Settings,
-  Settings2,
-  Sparkle,
-  Sparkles,
-  Star,
-  SunMedium,
-  Trash,
-  Truck,
-  Twitter,
-  Type,
-  User,
-  X,
-  Youtube,
-  Zap,
-  type LucideIcon,
-  type LucideProps,
-} from "lucide-react";
-
-export type Icon = LucideIcon;
+import { HugeiconsProps } from "hugeicons-react";
 
 export const Icons = {
-  languages: Languages,
-  logo: Command,
-  close: X,
-  spinner: Loader2,
-  chevronLeft: ChevronLeft,
-  chevronRight: ChevronRight,
-  trash: Trash,
-  post: FileText,
-  page: File,
-  media: Image,
-  settings: Settings,
-  billing: CreditCard,
-  ellipsis: MoreVertical,
-  add: Plus,
-  warning: AlertTriangle,
-  user: User,
-  arrowRight: ArrowRight,
-  help: HelpCircle,
-  pizza: Pizza,
-  sun: SunMedium,
-  moon: Moon,
-  laptop: Laptop,
-  zap: Zap,
-  palette: Palette,
-  truck: Truck,
-  type: Type,
-  customize: AlignHorizontalDistributeCenter,
-  construction: Construction,
-  settings2: Settings2,
-  edit: Edit,
-  star: Star,
-  sparkle: Sparkle,
-  devices: MonitorSmartphone,
-  scaling: Scaling,
-  sparkles: Sparkles,
-  download: Download,
-  menu: Menu,
-  facebook: Facebook,
-  instagram: Instagram,
-  linkedin: Linkedin,
-  youtube: Youtube,
-  lock: Lock,
-  flag: Flag,
-  pinterest: ({ ...props }: LucideProps) => (
+  pinterest: ({ ...props }: HugeiconsProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -124,7 +31,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
-  coffee: ({ ...props }: LucideProps) => (
+  coffee: ({ ...props }: HugeiconsProps) => (
     <svg
       width="35"
       height="35"
@@ -191,7 +98,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
-  productHunt: ({ ...props }: LucideProps) => (
+  productHunt: ({ ...props }: HugeiconsProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" {...props}>
       <g fill="none" fillRule="evenodd">
         <path
@@ -205,7 +112,7 @@ export const Icons = {
       </g>
     </svg>
   ),
-  google: ({ ...props }: LucideProps) => (
+  google: ({ ...props }: HugeiconsProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" {...props}>
       <path
         fill="#fbbb00"
@@ -225,7 +132,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
-  discord: ({ ...props }: LucideProps) => (
+  discord: ({ ...props }: HugeiconsProps) => (
     <svg
       width="256px"
       height="199px"
@@ -242,7 +149,7 @@ export const Icons = {
       </g>
     </svg>
   ),
-  wattpad: ({ ...props }: LucideProps) => (
+  wattpad: ({ ...props }: HugeiconsProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       version="1.0"
@@ -259,7 +166,7 @@ export const Icons = {
       </g>
     </svg>
   ),
-  uploadingFile: ({ ...props }: LucideProps) => (
+  uploadingFile: ({ ...props }: HugeiconsProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 24 24">
       <g
         fill="none"
@@ -301,6 +208,4 @@ export const Icons = {
       </g>
     </svg>
   ),
-  twitter: Twitter,
-  check: Check,
 };

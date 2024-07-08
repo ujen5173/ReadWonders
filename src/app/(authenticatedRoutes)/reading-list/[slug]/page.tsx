@@ -1,4 +1,4 @@
-import { Share } from "lucide-react";
+import { Share05Icon } from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
@@ -58,7 +58,7 @@ const ReadingList = async ({ params }: { params: { slug: string } }) => {
           </div>
 
           <Button className="gap-2" variant={"secondary"}>
-            <Share size={16} />
+            <Share05Icon size={16} />
             Share
           </Button>
         </div>

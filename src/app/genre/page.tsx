@@ -1,4 +1,4 @@
-import { Dot } from "lucide-react";
+import { RecordIcon } from "hugeicons-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getGenre } from "~/server/constants";
@@ -24,11 +24,11 @@ const AllGenre = async () => {
                 <p className="mb-4 text-base">{genre.description}</p>
               </div>
               {genre.stories && (
-                <div className="mb-4 flex items-center text-slate-600">
+                <div className="mb-4 flex items-center gap-1 text-slate-600">
                   <span className="text-base font-medium">
                     {formatNumber(genre.stories!)} stories
                   </span>
-                  <Dot />
+                  <RecordIcon className="size-[6px] fill-slate-600" />
                   <span className="text-base font-medium">
                     {formatNumber(genre.stories! / 51)} authors
                   </span>

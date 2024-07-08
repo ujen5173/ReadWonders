@@ -1,4 +1,11 @@
-import { BookOpen, Edit, Eye, LayoutList, Notebook, Star } from "lucide-react";
+import {
+  BookOpen01Icon,
+  Edit01Icon,
+  LeftToRightListNumberIcon,
+  Notebook01Icon,
+  StarIcon,
+  ViewIcon,
+} from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,7 +66,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               {user?.id === storyDetails.author.id && (
                 <Link href={`/edit/${storyDetails.slug}`}>
                   <Button className="w-full" variant="secondary">
-                    <Edit className="size-4" />
+                    <Edit01Icon className="size-4" />
                     Edit Story
                   </Button>
                 </Link>
@@ -79,18 +86,18 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 className="flex w-full items-center gap-1"
                 variant="secondary"
               >
-                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
-                <Star className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
+                <StarIcon className="size-4 fill-yellow-400 stroke-yellow-400" />
                 <span>4.5</span>
               </Button>
 
               <ReadingListModel bookId={storyDetails.id} />
 
               <Button className="w-full" variant="secondary">
-                <Notebook className="size-4" />
+                <Notebook01Icon className="size-4" />
                 Add notes
               </Button>
             </div>
@@ -135,7 +142,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-r border-border p-2 lg:py-0">
                   <div className="flex items-center gap-1">
-                    <Eye size={16} />
+                    <ViewIcon size={16} className="stroke-2" />
                     <p>Reads</p>
                   </div>
 
@@ -148,7 +155,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
-                    <Star size={16} />
+                    <StarIcon size={16} className="stroke-2" />
                     <p>Likes</p>
                   </div>
 
@@ -161,7 +168,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-r border-border p-2 xxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
-                    <LayoutList size={16} />
+                    <LeftToRightListNumberIcon size={16} className="stroke-2" />
                     <p>Chapters</p>
                   </div>
 
@@ -174,7 +181,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-border p-2 lg:py-0">
                   <div className="flex items-center gap-1">
-                    <BookOpen size={16} />
+                    <BookOpen01Icon size={16} className="stroke-2" />
                     <p>Time</p>
                   </div>
 

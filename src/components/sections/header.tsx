@@ -1,10 +1,9 @@
 "use client";
 
-import { Menu, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
-import { PlusSignIcon } from "hugeicons-react";
+import { Menu01Icon, PlusSignIcon } from "hugeicons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
@@ -105,7 +104,7 @@ const Header = () => {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-2 py-2">
+              <div className="mb-4 space-y-2 py-2">
                 <Label htmlFor="username" className="text-left">
                   Email
                 </Label>
@@ -251,7 +250,7 @@ const MobileMenu = ({
     <Sheet open={open} onOpenChange={(opn) => setOpen(opn)}>
       <SheetTrigger>
         <div className={buttonVariants({ size: "icon", variant: "outline" })}>
-          <Menu size={18} />
+          <Menu01Icon size={18} />
         </div>
       </SheetTrigger>
       <SheetContent side={"left"} className="flex flex-col">
@@ -341,7 +340,7 @@ const MobileMenu = ({
                 "w-full gap-2",
               )}
             >
-              <Plus size={18} />
+              <PlusSignIcon size={18} />
               <span>Write a story</span>
             </SheetClose>
           </Link>

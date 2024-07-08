@@ -1,4 +1,4 @@
-import { ArrowDown } from "lucide-react";
+import { ArrowDown02Icon } from "hugeicons-react";
 import { type FC } from "react";
 import { type TCard } from "~/types";
 import { cn } from "~/utils/cn";
@@ -27,7 +27,7 @@ const StoriesArea: FC<Props> = async ({
             <h1 className="text-xl font-semibold text-primary sm:text-2xl">
               {title}
             </h1>
-            <ArrowDown size={18} className="text-primary" />
+            <ArrowDown02Icon size={18} className="text-primary" />
           </div>
         </div>
 

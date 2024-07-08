@@ -1,6 +1,6 @@
 "use client";
 
-import { Lightbulb, Send } from "lucide-react";
+import { Idea01Icon, Navigation03Icon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -82,7 +82,7 @@ const Footer = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="mb-5 gap-2">
-                  <Lightbulb className="text-danger" size={18} />
+                  <Idea01Icon className="text-danger" size={18} />
                   <span>Any feedback?</span>
                 </Button>
               </DialogTrigger>
@@ -226,7 +226,7 @@ const Footer = () => {
                 placeholder="email@example.com"
               />
               <Button>
-                <Send size={18} />
+                <Navigation03Icon size={18} />
               </Button>
             </form>
             <div className="flex items-center gap-2">

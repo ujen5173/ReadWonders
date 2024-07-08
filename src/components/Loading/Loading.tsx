@@ -1,9 +1,8 @@
-import { type LucideProps } from "lucide-react";
+import { HugeiconsProps, Loading03Icon } from "hugeicons-react";
 import { cn } from "~/utils/cn";
-import { Icons } from "../Icons/Icons";
 
-export const Spinner = ({ className, ...props }: LucideProps) => (
-  <Icons.spinner
+export const Spinner = ({ className, ...props }: HugeiconsProps) => (
+  <Loading03Icon
     className={cn("animate-spin text-gray-500", className)}
     {...props}
   />

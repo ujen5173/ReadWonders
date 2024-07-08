@@ -1,7 +1,7 @@
 "use client";
 
 import { PopoverClose } from "@radix-ui/react-popover";
-import { Filter } from "lucide-react";
+import { PreferenceHorizontalIcon } from "hugeicons-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -66,7 +66,7 @@ const SearchHeader = () => {
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="secondary">
-            <Filter size={18} className="text-foreground" />
+            <PreferenceHorizontalIcon size={18} className="text-foreground" />
             <span className="text-base">Filter</span>
           </Button>
         </PopoverTrigger>

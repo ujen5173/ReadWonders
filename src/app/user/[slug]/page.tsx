@@ -1,4 +1,4 @@
-import { Dot, Mail } from "lucide-react";
+import { Mail01Icon, RecordIcon } from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
@@ -69,11 +69,13 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
                 <div>
                   <span>{userDetails.story?.length} works</span>
                 </div>
-                <Dot size={20} />
+                <RecordIcon className="size-[6px] fill-slate-600" />
+
                 <div>
                   <span>{formatNumber(561)} following</span>
                 </div>
-                <Dot size={20} />
+                <RecordIcon className="size-[6px] fill-slate-600" />
+
                 <div>
                   <span>{formatNumber(5486516)} followers</span>
                 </div>
@@ -102,7 +104,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
                 <span>Pinterest</span>
               </Button>
               <Button className="gap-1" variant="secondary">
-                <Mail className="size-4" />
+                <Mail01Icon className="size-4" />
                 <span>E-mail</span>
               </Button>
               <Button className="gap-1" variant="secondary">

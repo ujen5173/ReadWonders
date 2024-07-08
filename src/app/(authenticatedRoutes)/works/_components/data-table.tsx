@@ -12,8 +12,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontalIcon } from "hugeicons-react";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import {
+  ArrowDown01Icon,
+  ArrowUpDownIcon,
+  MoreHorizontalIcon,
+} from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -79,7 +82,11 @@ export const columns: ColumnDef<WorkDetails>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => (
-      <Link target="_blank" href={`/story/${row.getValue("slug")}`}>
+      <Link
+        className="inline-block min-w-48"
+        target="_blank"
+        href={`/story/${row.getValue("slug")}`}
+      >
         <div className="capitalize">{row.getValue("title")}</div>
       </Link>
     ),
@@ -94,7 +101,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Reads
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDownIcon className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -118,7 +125,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Views
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDownIcon className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -165,7 +172,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontalIcon className="stoke-2 h-4 w-4" />
+              <MoreHorizontalIcon className="stoke-2 h-4 w-4 text-black" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white" align="end">
@@ -250,7 +257,7 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+              Columns <ArrowDown01Icon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white" align="end">
@@ -281,7 +288,7 @@ export function DataTable({ data }: { data: WorkDetails[] }) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="whitespace-nowrap" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(

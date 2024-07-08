@@ -1,7 +1,7 @@
 "use client";
 
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowDown01Icon } from "hugeicons-react";
 import * as React from "react";
 
 import { cn } from "~/utils/cn";
@@ -26,7 +26,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-50" />
+      <ArrowDown01Icon className="h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -45,7 +45,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="h-4 w-4" />
+    <ArrowDown01Icon className="h-4 w-4" />
   </SelectPrimitive.ScrollUpButton>
 ));
 
@@ -63,7 +63,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="h-4 w-4" />
+    <ArrowDown01Icon className="h-4 w-4" />
   </SelectPrimitive.ScrollDownButton>
 ));
 

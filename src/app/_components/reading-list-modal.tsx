@@ -1,6 +1,5 @@
 "use client";
 
-import { Plus, PlusSquare } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 
+import { PlusSignIcon, PlusSignSquareIcon } from "hugeicons-react";
 import { createRef, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import {
@@ -140,7 +140,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="secondary" className="w-full gap-2">
-          <PlusSquare size={16} />
+          <PlusSignSquareIcon size={16} />
           <span className="whitespace-nowrap">Reading List</span>
         </Button>
       </DialogTrigger>
@@ -195,7 +195,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
 
               <DialogClose asChild>
                 <Button type="submit" className="h-10 w-12" size={"icon"}>
-                  <Plus size={16} />
+                  <PlusSignIcon size={16} />
                 </Button>
               </DialogClose>
             </div>

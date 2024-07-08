@@ -7,17 +7,7 @@ import Underline from "@tiptap/extension-underline";
 import Youtube from "@tiptap/extension-youtube";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
-import {
-  BookOpen,
-  Eye,
-  Facebook,
-  Instagram,
-  LayoutList,
-  Link2,
-  Plus,
-  Star,
-  Twitter,
-} from "lucide-react";
+
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,7 +20,18 @@ import StoriesArea from "~/components/sections/stories-area";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
-import { ArrowDown01Icon } from "hugeicons-react";
+import {
+  ArrowDown01Icon,
+  BookOpen01Icon,
+  EyeIcon,
+  Facebook01Icon,
+  InstagramIcon,
+  LeftToRightListNumberIcon,
+  Link02Icon,
+  PlusSignIcon,
+  StarIcon,
+  TwitterIcon,
+} from "hugeicons-react";
 import {
   Select,
   SelectContent,
@@ -197,7 +198,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
-                        <Eye size={16} />
+                        <EyeIcon size={16} />
                         <p>Reads</p>
                       </div>
                       <p className="font-bold">
@@ -209,7 +210,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
-                        <Star size={16} />
+                        <StarIcon size={16} />
                         <p>Likes</p>
                       </div>
                       <p className="font-bold">
@@ -221,7 +222,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
-                        <LayoutList size={16} />
+                        <LeftToRightListNumberIcon size={16} />
                         <p>Chapters</p>
                       </div>
                       <p className="font-bold">
@@ -233,7 +234,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
-                        <BookOpen size={16} />
+                        <BookOpen01Icon size={16} />
                         <p>Time</p>
                       </div>
                       <p className="font-bold">
@@ -290,26 +291,26 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
               <div className="flex w-full flex-wrap items-center justify-center gap-6 pb-6 sm:justify-between">
                 <div className="flex items-center gap-2">
                   <Button variant="secondary">
-                    <Plus size={16} />
+                    <PlusSignIcon size={16} />
                     <span>Add to favorites</span>
                   </Button>
                   <Button variant="secondary">
-                    <Plus size={16} />
+                    <PlusSignIcon size={16} />
                     <span>Up Vote</span>
                   </Button>
                 </div>
                 <div className="flex items-center">
                   <Button variant="ghost-link">
-                    <Twitter size={16} />
+                    <TwitterIcon size={16} />
                   </Button>
                   <Button variant="ghost-link">
-                    <Instagram size={16} />
+                    <InstagramIcon size={16} />
                   </Button>
                   <Button variant="ghost-link">
-                    <Facebook size={16} />
+                    <Facebook01Icon size={16} />
                   </Button>
                   <Button variant="ghost-link">
-                    <Link2 size={16} />
+                    <Link02Icon size={16} />
                   </Button>
                 </div>
                 <div className="pt-8">

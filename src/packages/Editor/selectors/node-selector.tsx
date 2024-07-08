@@ -1,19 +1,19 @@
-import {
-  Check,
-  ChevronDown,
-  TextIcon,
-  TextQuote,
-  type LucideIcon,
-} from "lucide-react";
 import { EditorBubbleItem, useEditor } from "novel";
 
 import { Popover } from "@radix-ui/react-popover";
+import {
+  ArrowDown01Icon,
+  QuoteDownIcon,
+  TextAlignLeft01Icon,
+  Tick01Icon,
+} from "hugeicons-react";
+import { ReactNode } from "react";
 import { Button } from "~/components/ui/button";
 import { PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 
 export type SelectorItem = {
   name: string;
-  icon: LucideIcon;
+  icon: (className?: string) => ReactNode;
   command: (editor: ReturnType<typeof useEditor>["editor"]) => void;
   isActive: (editor: ReturnType<typeof useEditor>["editor"]) => boolean;
 };
@@ -21,7 +21,7 @@ export type SelectorItem = {
 const items: SelectorItem[] = [
   {
     name: "Text",
-    icon: TextIcon,
+    icon: () => <TextAlignLeft01Icon />,
     command: (editor) => editor?.chain().focus().clearNodes().run(),
     isActive: (editor) =>
       (editor?.isActive("paragraph") &&
@@ -31,7 +31,7 @@ const items: SelectorItem[] = [
   },
   {
     name: "Quote",
-    icon: TextQuote,
+    icon: () => <QuoteDownIcon />,
     command: (editor) =>
       editor?.chain().focus().clearNodes().toggleBlockquote().run(),
     isActive: (editor) => editor?.isActive("blockquote") ?? false,
@@ -59,7 +59,7 @@ export const NodeSelector = ({ open, onOpenChange }: NodeSelectorProps) => {
       >
         <Button size="sm" variant="ghost" className="gap-2">
           <span className="whitespace-nowrap text-sm">{activeItem.name}</span>
-          <ChevronDown className="h-4 w-4" />
+          <ArrowDown01Icon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent sideOffset={5} align="start" className="w-48 p-1">
@@ -73,12 +73,12 @@ export const NodeSelector = ({ open, onOpenChange }: NodeSelectorProps) => {
             className="hover:bg-accent flex cursor-pointer items-center justify-between rounded-sm px-2 py-1 text-sm"
           >
             <div className="flex items-center space-x-2">
-              <div className="rounded-sm border p-1">
-                <item.icon className="h-3 w-3" />
-              </div>
+              <div className="rounded-sm border p-1">{item.icon()}</div>
               <span>{item.name}</span>
             </div>
-            {activeItem.name === item.name && <Check className="h-4 w-4" />}
+            {activeItem.name === item.name && (
+              <Tick01Icon className="h-4 w-4" />
+            )}
           </EditorBubbleItem>
         ))}
       </PopoverContent>

@@ -1,4 +1,4 @@
-import { XIcon } from "lucide-react";
+import { Cancel01Icon } from "hugeicons-react";
 import {
   forwardRef,
   useState,
@@ -81,7 +81,7 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
                     onChange(value.filter((i) => i !== item));
                   }}
                 >
-                  <XIcon className="w-3" />
+                  <Cancel01Icon className="w-3" />
                 </button>
               </Badge>
             ))

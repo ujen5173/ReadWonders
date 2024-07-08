@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft } from "lucide-react";
+import { ArrowDown01Icon } from "hugeicons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "../Logo";
@@ -33,7 +33,7 @@ const WritingHeader = ({
             variant="ghost-link"
             className="p-1"
           >
-            <ChevronLeft size={24} />
+            <ArrowDown01Icon size={24} />
           </Button>
           <div>
             <p className="text-xl font-bold text-text-secondary">New Chapter</p>

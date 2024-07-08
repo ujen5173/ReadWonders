@@ -1,6 +1,6 @@
 "use client";
 
-import { BookMarked, Star } from "lucide-react";
+import { BookBookmark02Icon, StarIcon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,18 +24,9 @@ const HeroSection = () => {
     refetchOnWindowFocus: false,
   });
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
-  const { mutate, isLoading: updating } = api.example.update.useMutation();
 
   return (
     <section className="w-full">
-      {/* <Button
-        onClick={() => {
-          mutate();
-        }}
-        loading={updating}
-      >
-        Update
-      </Button> */}
       <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
         <div className="py-12">
           <h1
@@ -52,7 +43,7 @@ const HeroSection = () => {
           </p>
 
           <Button className="mb-5 gap-2">
-            <BookMarked className="rotate-12" size={18} color="#fff" />
+            <BookBookmark02Icon className="rotate-12" size={18} color="#fff" />
             <span>Browse the best Reading collection</span>
           </Button>
 
@@ -61,7 +52,7 @@ const HeroSection = () => {
               {Array(5)
                 .fill(0)
                 .map((_, i) => (
-                  <Star
+                  <StarIcon
                     key={i}
                     size={22}
                     className="fill-amber-400 stroke-amber-400"

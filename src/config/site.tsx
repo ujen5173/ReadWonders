@@ -1,4 +1,4 @@
-import { Github, Twitter } from "lucide-react";
+import { Github01Icon, TwitterIcon } from "hugeicons-react";
 import { type Metadata } from "next";
 import { Icons } from "~/components/Icons";
 import { env } from "~/env.mjs";
@@ -114,12 +114,12 @@ export const siteConfig = {
     },
     {
       name: "Twitter",
-      icon: <Twitter />,
+      icon: <TwitterIcon />,
       href: links.twitter,
     },
     {
       name: "GitHub",
-      icon: <Github />,
+      icon: <Github01Icon />,
       href: links.github,
     },
     {

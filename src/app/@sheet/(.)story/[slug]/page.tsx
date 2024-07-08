@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  BookOpen,
-  Eye,
-  LayoutList,
-  SquareArrowOutUpRight,
-  Star,
-} from "lucide-react";
+  BookOpen01Icon,
+  LeftToRightListNumberIcon,
+  LinkSquare01Icon,
+  StarIcon,
+  ViewIcon,
+} from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -137,7 +137,7 @@ const Story = () => {
                   <div className="mb-2 grid grid-cols-2">
                     <div className="flex flex-col items-center border-b border-border px-2 py-4">
                       <div className="flex gap-2">
-                        <Eye size={16} className="mt-1" />
+                        <ViewIcon size={16} className="mt-1 stroke-2" />
                         <p>Reads</p>
                       </div>
                       <p className="font-medium">
@@ -147,7 +147,7 @@ const Story = () => {
 
                     <div className="flex flex-col items-center border-b border-l border-border px-2 py-4">
                       <div className="flex gap-2">
-                        <Star size={16} className="mt-1" />
+                        <StarIcon size={16} className="mt-1" />
                         <p>Likes</p>
                       </div>
                       <p className="font-medium">
@@ -157,7 +157,7 @@ const Story = () => {
 
                     <div className="flex flex-col items-center px-2 py-4">
                       <div className="flex gap-2">
-                        <LayoutList className="mt-1" size={16} />
+                        <LeftToRightListNumberIcon className="mt-1" size={16} />
                         <p>Chapters</p>
                       </div>
                       <p className="font-medium">
@@ -167,7 +167,7 @@ const Story = () => {
 
                     <div className="flex flex-col items-center border-l border-border px-2 py-4">
                       <div className="flex gap-2">
-                        <BookOpen className="mt-1" size={16} />
+                        <BookOpen01Icon className="mt-1" size={16} />
                         <p>Time</p>
                       </div>
                       <p className="font-medium">
@@ -247,7 +247,7 @@ const Story = () => {
                   )}
                 >
                   <span className="whitespace-nowrap">View Details</span>
-                  <SquareArrowOutUpRight size={16} />
+                  <LinkSquare01Icon size={16} className="stroke-2" />
                 </Button>
               </Link>
 

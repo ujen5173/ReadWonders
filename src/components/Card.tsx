@@ -1,4 +1,10 @@
-import { BookOpen, Bookmark, Eye, LayoutList, Star } from "lucide-react";
+import {
+  BookOpen01Icon,
+  Bookmark01Icon,
+  EyeIcon,
+  LeftToRightListNumberIcon,
+  StarIcon,
+} from "hugeicons-react";
 import Image from "next/image";
 import { merriweather } from "~/config/font";
 import { type TCard } from "~/types";
@@ -25,7 +31,7 @@ const Card = ({ details }: { details: TCard }) => {
       <div className="relative flex-1 py-2">
         <div className="absolute right-0 top-0">
           <button>
-            <Bookmark size={22} />
+            <Bookmark01Icon size={22} />
           </button>
         </div>
 
@@ -41,7 +47,7 @@ const Card = ({ details }: { details: TCard }) => {
         <div className="mb-2 flex items-center gap-2">
           <div className="flex flex-col items-center px-2">
             <div className="flex gap-2">
-              <Eye size={16} className="mt-1" />
+              <EyeIcon size={16} className="mt-1" />
               <p>Reads</p>
             </div>
             <p className="font-bold">{formatNumber(details.reads)}</p>
@@ -49,7 +55,7 @@ const Card = ({ details }: { details: TCard }) => {
           <Separator orientation="vertical" className="h-8" />
           <div className="flex flex-col items-center px-2">
             <div className="flex gap-2">
-              <Star size={16} className="mt-1" />
+              <StarIcon size={16} className="mt-1" />
               <p>Likes</p>
             </div>
             <p className="font-bold">{formatNumber(details.reads / 4)}</p>
@@ -57,7 +63,7 @@ const Card = ({ details }: { details: TCard }) => {
           <Separator orientation="vertical" className="h-8" />
           <div className="flex flex-col items-center px-2">
             <div className="flex gap-2">
-              <LayoutList className="mt-1" size={16} />
+              <LeftToRightListNumberIcon className="mt-1" size={16} />
               <p>Chapters</p>
             </div>
             <p className="font-bold">{12}</p>
@@ -65,7 +71,7 @@ const Card = ({ details }: { details: TCard }) => {
           <Separator orientation="vertical" className="h-8" />
           <div className="flex flex-col items-center px-2">
             <div className="flex gap-2">
-              <BookOpen className="mt-1" size={16} />
+              <BookOpen01Icon className="mt-1" size={16} />
               <p>Time</p>
             </div>
             <p className="font-bold">{formatReadingTime(details.reads)}</p>
