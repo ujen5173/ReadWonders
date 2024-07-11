@@ -70,6 +70,7 @@ export type TReadingListCard = {
 export type RootContextType = {
   activeBook: TCard | null;
   setActiveBook: React.Dispatch<React.SetStateAction<TCard | null>>;
+  removeFromList: (id: string) => Promise<boolean>;
 };
 
 export interface UploadedFile<T = unknown> extends ClientUploadedFileData<T> {}

@@ -1,14 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { User } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
-import {
-  featuredStoriesSQL,
-  mostLovedSQL,
-  searchSystemSQL,
-  topPicksSQL,
-} from "~/server/constants/sql";
 import type { SearchByTitle, TCard } from "~/types";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import { TCardSelect } from "./../../constants/db";
@@ -72,13 +68,20 @@ export const storyRouter = createTRPCRouter({
             },
           },
         },
-        select: TCardSelect,
+        select: TCardSelect(ctx.user?.id),
         orderBy: {
           createdAt: "desc",
         },
       });
 
-      return stories;
+      // Process the result to add the readingList flag
+      const processedStories =
+        stories.map((story) => ({
+          ...story,
+          readingList: story.readingLists.length > 0,
+        })) ?? [];
+
+      return processedStories;
     } catch (err) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -221,7 +224,13 @@ export const storyRouter = createTRPCRouter({
               'name', p.name,
               'username', p.username,
               'profile', p.profile
-            ) AS author
+            ) AS author,
+            EXISTS (
+              SELECT 1 
+              FROM reading_list rl 
+              JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+              WHERE rls."B" = rr.story_id AND rl."authorId" = ${userId ?? "NULL"}::uuid
+            ) AS "readingList"
           FROM 
             RankedRecommendations rr
             JOIN profiles p ON rr."authorId" = p.id
@@ -230,10 +239,15 @@ export const storyRouter = createTRPCRouter({
             rr.rank <= 50
           ORDER BY 
             rr.recommendation_score DESC
-          LIMIT ${input.limit} OFFSET ${input.skip};
-        `) as TCard[];
+          LIMIT ${input.limit} OFFSET ${input.skip}
+        `) as (TCard & { readingList: boolean | null })[];
 
-        return stories;
+        const processedStories = stories.map((story) => ({
+          ...story,
+          readingList: story.readingList ?? false,
+        }));
+
+        return processedStories as (TCard & { readingList: boolean })[];
       } catch (err) {
         console.log({ err });
 
@@ -288,22 +302,27 @@ export const storyRouter = createTRPCRouter({
             ],
           },
           orderBy: [{ reads: "desc" }, { love: "desc" }, { reads: "desc" }],
-          select: TCardSelect,
+          select: TCardSelect(ctx.user?.id),
           take: input.limit,
         });
 
         // Sort the results based on the number of matching tags
 
-        const sortedSimilarStories = similarStories.sort((a, b) => {
-          const aMatchingTags = a.tags.filter((tag) =>
-            story.tags.includes(tag),
-          ).length;
-          const bMatchingTags = b.tags.filter((tag) =>
-            story.tags.includes(tag),
-          ).length;
+        const sortedSimilarStories = similarStories
+          .sort((a, b) => {
+            const aMatchingTags = a.tags.filter((tag) =>
+              story.tags.includes(tag),
+            ).length;
+            const bMatchingTags = b.tags.filter((tag) =>
+              story.tags.includes(tag),
+            ).length;
 
-          return bMatchingTags - aMatchingTags;
-        });
+            return bMatchingTags - aMatchingTags;
+          })
+          .map((e) => ({
+            ...e,
+            readingList: e.readingLists.length > 0,
+          }));
 
         return sortedSimilarStories;
       } catch (err) {
@@ -377,12 +396,99 @@ export const storyRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const mostLoved = (await ctx.db.$queryRaw`
-        ${Prisma.raw(mostLovedSQL)}
-        LIMIT ${input.limit} OFFSET ${input.skip};
-      `) as TCard[];
+      const userId = ctx.user?.id ?? null;
 
-      return mostLoved;
+      // If you need to pass the user ID:
+      const mostLoved = await ctx.db.$queryRaw<
+        (TCard & { readingList: boolean | null })[]
+      >`
+        WITH MonthlyStats AS (
+            SELECT 
+              s.id,
+              s.title,
+              s.slug,
+              s.description,
+              s.thumbnail,
+              s.tags,
+              s."isPremium",
+              s."isMature",
+              s."categoryName",
+              s."readingTime",
+              s."authorId",
+              COUNT(DISTINCT cr.id) AS current_reads,
+              COUNT(DISTINCT rl.id) AS reading_lists,
+              COALESCE(s.love, 0) AS love,
+              COUNT(DISTINCT b.id) AS bookmarks,
+              (COUNT(DISTINCT cr.id) * 2 +
+              COUNT(DISTINCT rl.id) * 3 +
+              COALESCE(s.love, 0) * 4 +
+              COUNT(DISTINCT b.id) * 2) AS love_score
+            FROM 
+              story s
+              LEFT JOIN "_CurrentReadsToStory" crts ON s.id = crts."B"
+              LEFT JOIN current_reads cr ON crts."A" = cr.id AND cr."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
+              LEFT JOIN "_ReadingListToStory" rlts ON s.id = rlts."B"
+              LEFT JOIN reading_list rl ON rlts."A" = rl.id AND rl."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
+              LEFT JOIN bookmark b ON s.id = b."storyId" AND b."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
+            WHERE 
+              s.published = true
+              AND s."isDeleted" = false
+            GROUP BY 
+              s.id, s.title, s.slug, s.description, s.thumbnail, s.tags, s."isPremium", s."isMature", s."categoryName", s."authorId", s.love
+          )
+
+        SELECT 
+            ms.*,
+            json_build_object(
+              'name', p.name,
+              'profile', p.profile,
+              'username', p.username
+            ) AS author,
+            json_build_object(
+              'name', g.name,
+              'slug', g.slug
+            ) AS category,
+            (
+              SELECT json_agg(json_build_object(
+                'id', c.id,
+                'title', c.title,
+                'createdAt', c."createdAt",
+                'slug', c.slug
+              ))
+              FROM chapter c
+              WHERE c."storyId" = ms.id
+              AND c.published = true
+              AND c."isDeleted" = false
+            ) AS chapters,
+
+          CASE 
+                        WHEN ${userId}::uuid IS NOT NULL THEN
+
+          EXISTS (
+                  SELECT 1 
+                  FROM reading_list rl 
+                  JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                  WHERE rls."B" = ms.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
+                )
+              ELSE FALSE
+            END AS "readingList"
+
+          FROM 
+            MonthlyStats ms
+            JOIN profiles p ON ms."authorId" = p.id
+            LEFT JOIN genre g ON ms."categoryName" = g.name
+
+          ORDER BY 
+            ms.love_score DESC
+          LIMIT ${input.limit} OFFSET ${input.skip}
+        `;
+      // Then, if you want to convert null to false:
+      const processedMostLoved = mostLoved.map((story) => ({
+        ...story,
+        readingList: story.readingList ?? false,
+      }));
+
+      return processedMostLoved as (TCard & { readingList: boolean })[];
     }),
 
   getSingle: publicProcedure
@@ -539,7 +645,7 @@ export const storyRouter = createTRPCRouter({
                 isDeleted: false,
                 published: true,
               },
-              select: TCardSelect,
+              select: TCardSelect(ctx.user?.id),
             },
           },
         });
@@ -551,7 +657,17 @@ export const storyRouter = createTRPCRouter({
           });
         }
 
-        return readingList;
+        // Process the result to add the readingList flag
+        const processedStories = {
+          ...readingList,
+          stories:
+            readingList?.stories.map((story) => ({
+              ...story,
+              readingList: story.readingLists.length > 0,
+            })) ?? [],
+        };
+
+        return processedStories;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -596,12 +712,105 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const topStoriesMultipleGenres = (await ctx.db.$queryRaw`
-          ${Prisma.raw(topPicksSQL)}
-            LIMIT ${input.limit};
-        `) as TCard[];
+        const userId = ctx.user?.id ?? null;
 
-        return topStoriesMultipleGenres;
+        const topStoriesMultipleGenres = (await ctx.db.$queryRaw`
+  WITH GenreCounts AS (
+      SELECT 
+        g.name AS genre_name,
+        g.slug AS genre_slug,
+        COUNT(s.id) AS story_count
+      FROM 
+        genre g
+      JOIN 
+        story s ON g.name = s."categoryName"
+      WHERE 
+        s.published = true
+        AND s."isDeleted" = false
+      GROUP BY 
+        g.name, g.slug
+    ),
+    TopGenres AS (
+      SELECT 
+        genre_name,
+        genre_slug
+      FROM 
+        GenreCounts
+      ORDER BY 
+        story_count DESC
+      LIMIT 6
+    ),
+    RankedStories AS (
+      SELECT 
+        s.*,
+        ROW_NUMBER() OVER (PARTITION BY s."categoryName" ORDER BY s.reads DESC) AS rank
+      FROM 
+        story s
+      JOIN 
+        TopGenres tg ON s."categoryName" = tg.genre_name
+      WHERE 
+        s.published = true
+        AND s."isDeleted" = false
+    )
+    SELECT 
+      rs.id,
+      rs.title,
+      rs.slug,
+      rs.description,
+      rs.thumbnail,
+      rs.tags,
+      rs."isPremium",
+      rs."isMature",
+      rs."categoryName",
+      rs.reads,
+      (
+        SELECT json_agg(json_build_object(
+          'id', c.id,
+          'title', c.title,
+          'createdAt', c."createdAt",
+          'slug', c.slug
+        ))
+        FROM chapter c
+        WHERE c."storyId" = rs.id
+        AND c.published = true
+        AND c."isDeleted" = false
+      ) AS chapters,
+      json_build_object(
+        'name', p.name,
+        'profile', p.profile,
+        'username', p.username
+      ) AS author,
+      json_build_object(
+        'name', tg.genre_name,
+        'slug', tg.genre_slug
+      ) AS category,
+      CASE 
+        WHEN ${userId}::uuid IS NOT NULL THEN
+          EXISTS (
+            SELECT 1 
+            FROM reading_list rl 
+            JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+            WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
+          )
+        ELSE NULL
+      END AS "readingList"
+    FROM 
+      RankedStories rs
+      JOIN profiles p ON rs."authorId" = p.id
+      JOIN TopGenres tg ON rs."categoryName" = tg.genre_name
+    WHERE 
+      rs.rank <= 5
+    ORDER BY 
+      tg.genre_name, rs.reads DESC
+    LIMIT ${input.limit}
+`) as (TCard & { readingList: boolean | null })[];
+
+        const processedStories = topStoriesMultipleGenres.map((story) => ({
+          ...story,
+          readingList: story.readingList ?? false,
+        }));
+
+        return processedStories as (TCard & { readingList: boolean })[];
       } catch (err) {
         console.log({ err });
         throw new TRPCError({
@@ -620,13 +829,106 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
+        const userId = ctx.user?.id ?? null;
         const featuredStories = (await ctx.db.$queryRaw`
-          ${Prisma.raw(featuredStoriesSQL)}
-          LIMIT ${input.limit} OFFSET ${input.skip};
-        `) as TCard[];
+  WITH CategoryCounts AS (
+    SELECT 
+      "categoryName",
+      COUNT(*) as story_count
+    FROM 
+      story
+    WHERE 
+      published = true
+      AND "isDeleted" = false
+    GROUP BY 
+      "categoryName"
+  ),
+  RankedStories AS (
+    SELECT 
+      s.id,
+      s.title,
+      s.slug,
+      s.description,
+      s.thumbnail,
+      s.tags,
+      s."isPremium",
+      s."isMature",
+      s."categoryName",
+      s."readingTime",
+      s.reads,
+      s."authorId",
+      cc.story_count
+    FROM 
+      story s
+    LEFT JOIN
+      CategoryCounts cc ON s."categoryName" = cc."categoryName"
+    WHERE 
+      s.published = true
+      AND s."isDeleted" = false
+      AND s."createdAt" >= CURRENT_DATE - INTERVAL '30 days'
+  )
+  SELECT 
+    rs.id,
+    rs.title,
+    rs.slug,
+    rs.description,
+    rs.thumbnail,
+    rs.tags,
+    rs."isPremium",
+    rs."isMature",
+    rs."categoryName",
+    rs."readingTime",
+    rs.reads,
+    rs.story_count,
+    (
+      SELECT json_agg(json_build_object(
+        'id', c.id,
+        'title', c.title,
+        'createdAt', c."createdAt",
+        'slug', c.slug
+      ))
+      FROM chapter c
+      WHERE c."storyId" = rs.id
+      AND c.published = true
+      AND c."isDeleted" = false
+    ) AS chapters,
+    json_build_object(
+      'name', p.name,
+      'profile', p.profile,
+      'username', p.username
+    ) AS author,
+    json_build_object(
+      'name', g.name,
+      'slug', g.slug
+    ) AS category,
+    CASE 
+      WHEN ${userId}::uuid IS NOT NULL THEN
+        EXISTS (
+          SELECT 1 
+          FROM reading_list rl 
+          JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+          WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
+        )
+      ELSE NULL
+    END AS "readingList"
+  FROM 
+    RankedStories rs
+    JOIN profiles p ON rs."authorId" = p.id
+    LEFT JOIN genre g ON rs."categoryName" = g.name
+  ORDER BY 
+    rs.story_count DESC,
+    rs.reads DESC
+  LIMIT ${input.limit} OFFSET ${input.skip}
+`) as (TCard & { readingList: boolean | null })[];
 
-        return featuredStories;
+        const processedStories = featuredStories.map((story) => ({
+          ...story,
+          readingList: story.readingList ?? false,
+        }));
+
+        return processedStories as (TCard & { readingList: boolean })[];
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch featured stories",
@@ -644,7 +946,7 @@ export const storyRouter = createTRPCRouter({
       try {
         const stories = await ctx.db.story.findMany({
           take: input.limit,
-          select: TCardSelect,
+          select: TCardSelect(ctx.user?.id),
           where: {
             published: true,
             isDeleted: false,
@@ -654,7 +956,14 @@ export const storyRouter = createTRPCRouter({
           },
         });
 
-        return stories;
+        // Process the result to add the readingList flag
+        const processedStories =
+          stories.map((story) => ({
+            ...story,
+            readingList: story.readingLists.length > 0,
+          })) ?? [];
+
+        return processedStories;
       } catch (err) {
         console.log({ err });
         throw new TRPCError({
@@ -732,23 +1041,155 @@ export const storyRouter = createTRPCRouter({
       try {
         const { query, cursor } = input;
 
+        const userId = ctx.user?.id?.toString();
+
         if (!query) {
           return { stories: [], hasNextPage: false, nextCursor: undefined };
         }
 
         const searchTerms = query.toLowerCase().split(/\s+/);
 
-        const stories = await searchSystemSQL(searchTerms, input, cursor, ctx);
+        const searchConditions = searchTerms.map(
+          (term) => Prisma.sql`
+            (
+              LOWER(story.title) LIKE ${`%${term}%`} OR
+              LOWER(story.slug) LIKE ${`%${term}%`} OR
+              LOWER(story.description) LIKE ${`%${term}%`} OR
+              LOWER(ARRAY_TO_STRING(story.tags, ' ')) LIKE ${`%${term}%`} OR
+              EXISTS (
+                SELECT 1 FROM chapter
+                WHERE chapter."storyId" = story.id 
+                AND LOWER(chapter.title) LIKE ${`%${term}%`}
+                AND chapter.published = true
+                AND chapter."isDeleted" = false
+              )
+            )
+          `,
+        );
 
-        const hasNextPage = stories.length > input.limit;
+        const lengthCondition = input.filter?.len
+          ? Prisma.sql`
+            AND (
+              SELECT COUNT(*) FROM chapter 
+              WHERE chapter."storyId" = story.id
+              AND chapter.published = true
+              AND chapter."isDeleted" = false
+            ) BETWEEN ${parseInt(input.filter.len.split("-")[0] ?? "0")} AND ${input.filter.len.split("-")[1] === "50+" ? "50" : parseInt(input.filter.len.split("-")[1] ?? "100")}
+          `
+          : Prisma.empty;
+
+        const matureCondition = input.filter?.mature
+          ? Prisma.sql`
+            AND story."isMature" = ${input.filter.mature === "true"}
+          `
+          : Prisma.empty;
+
+        const premiumCondition = input.filter?.premium
+          ? Prisma.sql`
+            AND story."isPremium" = ${input.filter.premium === "true"}
+          `
+          : Prisma.empty;
+
+        const updatedCondition = (() => {
+          if (!input.filter?.updated) return Prisma.empty;
+          const now = new Date();
+
+          let fromDate;
+
+          switch (input.filter.updated) {
+            case "today":
+              fromDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+              );
+              break;
+            case "this week":
+              fromDate = new Date(now.setDate(now.getDate() - now.getDay()));
+              break;
+            case "this month":
+              fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+              break;
+            case "this year":
+              fromDate = new Date(now.getFullYear(), 0, 1);
+              break;
+            default:
+              return Prisma.empty;
+          }
+
+          return Prisma.sql`AND story."updatedAt" >= ${fromDate.toISOString()}::timestamp`;
+        })();
+
+        const cursorCondition = cursor
+          ? Prisma.sql`AND story.id::text > ${cursor}`
+          : Prisma.empty;
+
+        const stories = await ctx.db.$queryRaw<
+          (TCard & { readingList: boolean })[]
+        >`
+          SELECT
+            story.id,
+            story.description,
+            story.slug,
+            story.title,
+            story.thumbnail,
+            story.tags,
+            story."isPremium",
+            story."categoryName",
+            story."isMature",
+            story."readingTime",
+            story.reads,
+            COALESCE(json_agg(
+              json_build_object(
+                'id', chapter.id,
+                'title', chapter.title,
+                'slug', chapter.slug,
+                'createdAt', chapter."createdAt"
+              )
+            ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
+            json_build_object(
+              'name', author.name,
+              'profile', author.profile
+            ) AS author,
+            CASE 
+              WHEN ${userId} IS NOT NULL THEN
+                EXISTS (
+                  SELECT 1 
+                  FROM reading_list rl 
+                  JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                  WHERE rls."B" = story.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
+                )
+              ELSE FALSE
+            END AS "readingList"
+          FROM story
+          LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
+          LEFT JOIN profiles AS author ON author.id = story."authorId"
+          WHERE ${Prisma.join(searchConditions, " AND ")}
+          AND story.published = true
+          AND story."isDeleted" = false
+          ${lengthCondition}
+          ${matureCondition}
+          ${premiumCondition}
+          ${updatedCondition}
+          ${cursorCondition}
+          GROUP BY story.id, author.name, author.profile
+          ORDER BY story.id
+          LIMIT ${input.limit + 1}
+        `;
+        const processedstories = stories.map((story) => ({
+          ...story,
+          readingList: story.readingList ?? false,
+        }));
+
+        const hasNextPage = processedstories.length > input.limit;
 
         if (hasNextPage) {
-          stories.pop();
+          processedstories.pop();
         }
 
-        const nextCursor = stories[stories.length - 1]?.id;
+        const nextCursor = processedstories[processedstories.length - 1]?.id;
 
-        return { stories, hasNextPage, nextCursor };
+        return { stories: processedstories, hasNextPage, nextCursor };
       } catch (err) {
         console.log({ err });
         throw new TRPCError({
@@ -1018,14 +1459,34 @@ export const storyRouter = createTRPCRouter({
     .input(
       z.object({
         storyId: z.string(),
-        readingListSlug: z.string(),
+        // readingListSlug: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const readingListSlug = await ctx.db.readingList.findFirst({
+          where: {
+            stories: {
+              some: {
+                id: input.storyId,
+              },
+            },
+          },
+          select: {
+            slug: true,
+          },
+        });
+
+        if (!readingListSlug) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Reading list not found",
+          });
+        }
+
         await ctx.db.readingList.update({
           where: {
-            slug: input.readingListSlug,
+            slug: readingListSlug.slug,
             authorId: ctx.user.id,
           },
           data: {
@@ -1045,4 +1506,104 @@ export const storyRouter = createTRPCRouter({
         });
       }
     }),
+
+  rating: privateProcedure
+    .input(
+      z.object({
+        storyId: z.string(),
+        rating: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { storyId, rating: value } = input;
+        const userId = ctx.user.id;
+
+        const existingRating = await ctx.db.rating.findUnique({
+          where: {
+            userId_storyId: {
+              userId,
+              storyId,
+            },
+          },
+        });
+
+        if (existingRating) {
+          // Update existing rating
+          await ctx.db.rating.update({
+            where: {
+              id: existingRating.id,
+            },
+            data: {
+              value,
+            },
+          });
+
+          const result = await updateStoryRating(ctx, storyId);
+
+          return result;
+        } else {
+          // Create new rating
+          await ctx.db.rating.create({
+            data: {
+              userId,
+              storyId,
+              value,
+            },
+          });
+
+          const result = await updateStoryRating(ctx, storyId);
+
+          return result;
+        }
+      } catch (err) {
+        console.log({ err });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to rate story",
+        });
+      }
+    }),
 });
+
+async function updateStoryRating(
+  ctx: {
+    user: User;
+    db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
+    headers: Headers;
+  },
+  storyId: string,
+) {
+  const ratings = await ctx.db.rating.findMany({
+    where: {
+      storyId,
+    },
+    select: {
+      value: true,
+    },
+  });
+
+  const ratingCount = ratings.length;
+  const averageRating =
+    ratingCount > 0
+      ? ratings.reduce(
+          (sum: number, rating: { value: number }) => sum + rating.value,
+          0,
+        ) / ratingCount
+      : 0;
+
+  await ctx.db.story.update({
+    where: {
+      id: storyId,
+    },
+    data: {
+      averageRating,
+      ratingCount,
+    },
+  });
+
+  return {
+    averageRating,
+    ratingCount,
+  };
+}

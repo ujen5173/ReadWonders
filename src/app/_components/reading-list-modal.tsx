@@ -3,7 +3,6 @@
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -108,7 +107,9 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
 
   const inputRef = createRef<HTMLInputElement>();
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     try {
       const newTitle = inputRef.current?.value;
 
@@ -206,11 +207,13 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
                 className="h-10 bg-white"
               />
 
-              <DialogClose asChild>
-                <Button type="submit" className="h-10 w-12" size={"icon"}>
+              <Button type="submit" className="h-10 w-12" size={"icon"}>
+                {isLoading ? (
+                  <Spinner className="text-white" />
+                ) : (
                   <PlusSignIcon size={16} />
-                </Button>
-              </DialogClose>
+                )}
+              </Button>
             </div>
           </form>
         </div>

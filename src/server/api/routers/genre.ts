@@ -50,7 +50,7 @@ export const genreRouter = createTRPCRouter({
           description: true,
           story: {
             take: 10,
-            select: TCardSelect,
+            select: TCardSelect(ctx.user?.id),
           },
           _count: {
             select: {
@@ -68,6 +68,10 @@ export const genreRouter = createTRPCRouter({
 
       return {
         ...rest,
+        story: genre.story.map((story) => ({
+          ...story,
+          readingList: story.readingLists.length > 0,
+        })),
         stories: _count.story,
       };
     }),

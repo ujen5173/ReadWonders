@@ -2,10 +2,10 @@
 
 import {
   ArrowRight02Icon,
+  FavouriteIcon,
   LeftToRightListNumberIcon,
   LinkSquare02Icon,
-  PlusSignSquareIcon,
-  StarIcon,
+  MinusSignSquareIcon,
   ViewIcon,
 } from "hugeicons-react";
 import Image from "next/image";
@@ -22,40 +22,44 @@ import { Separator } from "./ui/separator";
 
 const CoverCard: FC<{
   removeFromList?: (id: string) => Promise<void>;
-  readingList?: boolean;
+  showNormalSheet?: boolean;
   removing?: boolean;
-  details: TCard;
-}> = ({ removeFromList, removing, readingList = false, details }) => {
-  const { setActiveBook } = useContext(Context);
+  details: TCard & {
+    readingList: boolean;
+  };
+}> = ({
+  removeFromList: readingLisRemove,
+  removing,
+  showNormalSheet = false,
+  details,
+}) => {
+  const { removeFromList, setActiveBook } = useContext(Context);
 
   return (
     <div
       onClick={() => setActiveBook(details)}
       className="cover-card group relative"
     >
-      <Link href={"/story/" + details.slug} passHref>
-        <Image
-          className="cover-card-img mb-2 rounded-lg object-fill"
-          src={details.thumbnail}
-          alt={details.thumbnail}
-          width={cardWidth}
-          height={cardHeight}
-          style={{
-            aspectRatio: "1/1.5",
-          }}
-        />
+      <Image
+        className="cover-card-img mb-2 rounded-lg object-fill"
+        src={details.thumbnail}
+        alt={details.thumbnail}
+        width={cardWidth}
+        height={cardHeight}
+        style={{
+          aspectRatio: "1/1.5",
+        }}
+      />
 
-        <div className="w-full">
-          <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
-            {details.title}
-          </h1>
-          {!readingList && (
-            <p className="line-clamp-1 text-base text-gray-600">
-              {details.author.name}
-            </p>
-          )}
-        </div>
-      </Link>
+      <div className="w-full">
+        <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
+          {details.title}
+        </h1>
+
+        <p className="line-clamp-1 text-base text-gray-600">
+          {details.author.name}
+        </p>
+      </div>
 
       <div className="absolute inset-0 hidden flex-col sm:flex">
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
@@ -69,13 +73,23 @@ const CoverCard: FC<{
             )}
           </div>
           <div className="flex items-center justify-center py-4">
-            <Link
-              href={`/story/${details.slug}`}
-              className="flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary/80 hover:underline"
-            >
-              <span>Full Story Infos</span>
-              <ArrowRight02Icon size={16} />
-            </Link>
+            {showNormalSheet ? (
+              <div
+                onClick={() => setActiveBook(details)}
+                className="flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary/80 hover:underline"
+              >
+                <span>Full Story Infos</span>
+                <ArrowRight02Icon size={16} />
+              </div>
+            ) : (
+              <Link
+                href={`/story/${details.slug}`}
+                className="flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary/80 hover:underline"
+              >
+                <span>Full Story Infos</span>
+                <ArrowRight02Icon size={16} />
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center justify-between pb-4">
@@ -90,7 +104,7 @@ const CoverCard: FC<{
             <Separator orientation="vertical" className="h-8" />
             <div className="flex flex-col items-center px-2">
               <div className="flex gap-2">
-                <StarIcon size={16} className="mt-1 stroke-2" />
+                <FavouriteIcon size={16} className="mt-1 stroke-2" />
               </div>
               <p className="text-sm font-semibold">
                 {formatNumber(details.love)}
@@ -116,17 +130,21 @@ const CoverCard: FC<{
                 <span>View Details</span>
               </Button>
             </Link>
-            {!readingList ? (
+            {!details.readingList ? (
               details.id && <ReadingListModel bookId={details.id} />
             ) : (
               <Button
                 variant={"secondary"}
-                onClick={() => void removeFromList!(details.id)}
+                onClick={() =>
+                  readingLisRemove !== undefined
+                    ? void readingLisRemove(details.id)
+                    : void removeFromList!(details.id)
+                }
                 loading={removing}
                 className="w-full gap-2"
               >
                 {!removing && (
-                  <PlusSignSquareIcon size={16} className="stroke-2" />
+                  <MinusSignSquareIcon size={16} className="stroke-2" />
                 )}
                 <span>Remove from List</span>
               </Button>
@@ -138,11 +156,10 @@ const CoverCard: FC<{
           <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
             {details.title}
           </h1>
-          {!readingList && (
-            <p className="line-clamp-1 text-base text-gray-600">
-              {details.author.name}
-            </p>
-          )}
+
+          <p className="line-clamp-1 text-base text-gray-600">
+            {details.author.name}
+          </p>
         </div>
       </div>
     </div>

@@ -29,7 +29,6 @@ export async function generateMetadata({
   return constructMetadata({
     title: `${user.name} - ${siteConfig.name}`,
     image: user.profile ? user.profile : `${getBaseUrl()}/og-image.jpg`,
-    publishedTime: user.createdAt.toString(),
     url: `${getBaseUrl()}/user/${params.slug}`,
   });
 }
@@ -41,9 +40,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
   const user = await api.auth.authInfo.query();
 
-  if (!userDetails) return null;
-
-  console.log({ userDetails });
+  if (!userDetails.id) return null;
 
   return (
     <>
@@ -76,14 +73,14 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
                 <div>
                   <span>
-                    {formatNumber(userDetails.followingCount)} following
+                    {formatNumber(userDetails.followingCount ?? 0)} following
                   </span>
                 </div>
                 <RecordIcon className="size-[6px] fill-slate-600" />
 
                 <div>
                   <span>
-                    {formatNumber(userDetails.followersCount)} followers
+                    {formatNumber(userDetails.followersCount ?? 0)} followers
                   </span>
                 </div>
               </div>

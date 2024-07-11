@@ -112,6 +112,7 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
       const userDetails = await ctx.db.profiles.findFirst({
         where: {
           username: input.username,
@@ -131,6 +132,14 @@ export const authRouter = createTRPCRouter({
           story: {
             take: limit,
             include: {
+              readingLists: {
+                where: {
+                  authorId: userId || "",
+                },
+                select: {
+                  id: true,
+                },
+              },
               chapters: {
                 where: {
                   published: true,
@@ -155,7 +164,14 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      return userDetails;
+      return {
+        ...userDetails,
+        story:
+          userDetails?.story.map((story) => ({
+            ...story,
+            readingList: story.readingLists.length > 0,
+          })) ?? [],
+      };
     }),
 
   follow: privateProcedure
@@ -248,22 +264,29 @@ export const authRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const currentReads = await ctx.db.currentReads.findFirst({
-        take: input.limit,
         where: {
-          userId: ctx.user.id,
+          userId: ctx.user?.id, // Make this optional to handle unauthenticated users
         },
         select: {
           id: true,
           stories: {
-            select: TCardSelect,
+            select: TCardSelect(ctx.user?.id),
             orderBy: {
               createdAt: "desc",
             },
           },
         },
+        take: input.limit,
       });
 
-      return currentReads?.stories ?? [];
+      // Process the result to add the readingList flag
+      const processedStories =
+        currentReads?.stories.map((story) => ({
+          ...story,
+          readingList: story.readingLists.length > 0,
+        })) ?? [];
+
+      return processedStories;
     }),
 
   readingLists: publicProcedure

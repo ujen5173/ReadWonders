@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Context } from "~/app/_components/RootContext";
 import CoverCard from "~/components/cover-card";
 import { toast } from "~/components/ui/use-toast";
-import { api } from "~/trpc/react";
-import { type TCard } from "~/types";
+import { RootContextType, type TCard } from "~/types";
 
 const ReadingLists = ({
   data,
@@ -19,27 +19,34 @@ const ReadingLists = ({
       name: string | null;
       bio: string | null;
     };
-    stories: TCard[];
+    stories: (TCard & { readingList: boolean })[];
   };
 }) => {
   const [list, setList] = useState(data.stories);
-  const { mutateAsync, isLoading } =
-    api.story.removeReadingListStory.useMutation();
+  const { removeFromList } = useContext(Context) as RootContextType;
+  const [loading, setLoading] = useState(false);
 
-  const removeFromList = async (id: string) => {
-    const res = await mutateAsync({
-      readingListSlug: listSlug,
-      storyId: id,
-    });
+  const remove = async (id: string) => {
+    setLoading(true);
 
-    if (res) {
-      const updatedList = data.stories.filter((story) => story.id !== id);
+    try {
+      const res = await removeFromList(id);
 
-      setList(updatedList);
+      if (res) {
+        const updatedList = data.stories.filter((story) => story.id !== id);
 
+        setList(updatedList);
+
+        toast({
+          title: "Story removed from reading list",
+        });
+      }
+    } catch (err) {
       toast({
-        title: "Story removed from reading list",
+        title: "Something went wrong! Please try again later.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,9 +57,9 @@ const ReadingLists = ({
           <div className="relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {list.map((story) => (
               <CoverCard
-                readingList={true}
-                removeFromList={removeFromList}
-                removing={isLoading}
+                // readingList={true}
+                removeFromList={remove}
+                removing={loading}
                 details={story}
                 key={story.id}
               />

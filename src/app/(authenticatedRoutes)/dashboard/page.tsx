@@ -22,6 +22,10 @@ const Dashboard = async () => {
     redirect("/auth/login");
   }
 
+  console.log({
+    str: stories.map((e) => ({ title: e.title, readingList: e.readingList })),
+  });
+
   return (
     <>
       <section className="w-full">

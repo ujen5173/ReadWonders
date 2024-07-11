@@ -340,6 +340,7 @@ model Profiles {
   followersCount Int      @default(0)
   following      Follow[] @relation("FollowToProfilesFollowing")
   followers      Follow[] @relation("FollowToProfilesFollower")
+  rating         Rating[]
 
   @@index([username])
   @@index([name])
@@ -391,30 +392,33 @@ model ReadingList {
 }
 
 model Story {
-  id           String         @id @default(uuid()) @db.Uuid
-  title        String
-  slug         String         @unique
-  description  String
-  thumbnail    String
-  tags         String[]
-  reads        Int            @default(0)
-  readingTime  Int            @default(0)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  authorId     String         @db.Uuid
-  isDeleted    Boolean        @default(false)
-  isMature     Boolean        @default(false)
-  isPremium    Boolean        @default(false)
-  published    Boolean        @default(true)
-  categoryName String?
-  bookmarks    Bookmark[]
-  chapters     Chapter[]
-  discussions  Discussion[]
-  love         Int            @default(0)
-  author       Profiles       @relation(fields: [authorId], references: [id])
-  category     Genre?         @relation(fields: [categoryName], references: [name])
-  currentReads CurrentReads[] @relation("CurrentReadsToStory")
-  readingLists ReadingList[]  @relation("ReadingListToStory")
+  id            String         @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String         @unique
+  description   String
+  thumbnail     String
+  tags          String[]
+  reads         Int            @default(0)
+  readingTime   Int            @default(0)
+  ratings       Rating[]
+  averageRating Float          @default(0)
+  ratingCount   Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      String         @db.Uuid
+  isDeleted     Boolean        @default(false)
+  isMature      Boolean        @default(false)
+  isPremium     Boolean        @default(false)
+  published     Boolean        @default(true)
+  categoryName  String?
+  bookmarks     Bookmark[]
+  chapters      Chapter[]
+  discussions   Discussion[]
+  love          Int            @default(0)
+  author        Profiles       @relation(fields: [authorId], references: [id])
+  category      Genre?         @relation(fields: [categoryName], references: [name])
+  currentReads  CurrentReads[] @relation("CurrentReadsToStory")
+  readingLists  ReadingList[]  @relation("ReadingListToStory")
 
   @@index([authorId], map: "story_author_id_idx")
   @@index([slug])
@@ -422,6 +426,21 @@ model Story {
   @@index([thumbnail])
   @@index([tags])
   @@map("story")
+  @@schema("public")
+}
+
+model Rating {
+  id      String @id @default(uuid()) @db.Uuid
+  value   Int    @db.SmallInt
+  userId  String @db.Uuid
+  storyId String @db.Uuid
+
+  user  Profiles @relation(fields: [userId], references: [id])
+  story Story    @relation(fields: [storyId], references: [id])
+
+  @@unique([userId, storyId])
+  @@index([storyId])
+  @@map("rating")
   @@schema("public")
 }
 

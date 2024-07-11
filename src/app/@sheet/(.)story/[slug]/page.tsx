@@ -2,9 +2,9 @@
 
 import {
   BookOpen01Icon,
+  FavouriteIcon,
   LeftToRightListNumberIcon,
   LinkSquare01Icon,
-  StarIcon,
   ViewIcon,
 } from "hugeicons-react";
 import Image from "next/image";
@@ -147,7 +147,7 @@ const Story = () => {
 
                     <div className="flex flex-col items-center border-b border-l border-border px-2 py-4">
                       <div className="flex gap-2">
-                        <StarIcon size={16} className="mt-1" />
+                        <FavouriteIcon size={16} className="mt-1" />
                         <p>Likes</p>
                       </div>
                       <p className="font-medium">

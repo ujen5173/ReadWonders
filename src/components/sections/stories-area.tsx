@@ -9,7 +9,9 @@ type Props = {
   description?: string;
   perRow?: 3 | 6;
   inRow?: boolean;
-  stories?: TCard[];
+  stories?: (TCard & {
+    readingList: boolean;
+  })[];
 };
 
 const StoriesArea: FC<Props> = async ({

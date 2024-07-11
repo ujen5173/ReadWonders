@@ -1,9 +1,9 @@
 import {
   BookOpen01Icon,
   Edit01Icon,
+  FavouriteIcon,
   LeftToRightListNumberIcon,
   Notebook01Icon,
-  StarIcon,
   ViewIcon,
 } from "hugeicons-react";
 import { type Metadata } from "next";
@@ -18,6 +18,7 @@ import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import AddToBookmark from "./_components/add-to-bookmark";
+import RatingButton from "./_components/rating-button";
 import StartReading from "./_components/start-reading";
 
 interface Props {
@@ -74,22 +75,13 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 }
               />
 
-              <Button
-                className="flex w-full items-center gap-1"
-                variant="secondary"
-              >
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <StarIcon
-                      key={i}
-                      size={20}
-                      className="fill-amber-400 text-transparent"
-                      stroke="currentColor"
-                    />
-                  ))}
-                <span>4.5</span>
-              </Button>
+              <RatingButton
+                ratingDetails={{
+                  ratingCount: storyDetails.ratingCount,
+                  ratingAverage: storyDetails.averageRating,
+                }}
+                storyId={storyDetails.id}
+              />
 
               <ReadingListModel bookId={storyDetails.id} />
 
@@ -136,8 +128,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
 
               {storyDetails.author.id === user?.id ? (
                 <Link href={`/edit/${storyDetails.slug}`}>
-                  <Button className="w-full" variant="secondary">
-                    <Edit01Icon className="size-4" />
+                  <Button className="w-full" variant="default">
+                    <Edit01Icon className="size-4 stroke-2" />
                     Edit Story
                   </Button>
                 </Link>
@@ -167,7 +159,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               <div className="flex-1">
                 <div className="flex flex-1 flex-col items-center border-border p-2 xxxs:border-r lg:py-0">
                   <div className="flex items-center gap-1">
-                    <StarIcon size={16} className="stroke-2" />
+                    <FavouriteIcon size={16} className="stroke-2" />
                     <p>Likes</p>
                   </div>
 
@@ -236,7 +228,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                       href={`/chapter/${ch.slug}`}
                       className="w-full"
                     >
-                      <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-400/40">
+                      <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
                         <p className="line-clamp-1 text-lg text-slate-700">
                           {ch.title}
                         </p>
