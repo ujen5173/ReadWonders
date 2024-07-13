@@ -58,38 +58,6 @@ export const storyRouter = createTRPCRouter({
       }
     }),
 
-  getBookmark: privateProcedure.query(async ({ ctx }) => {
-    try {
-      const stories = await ctx.db.story.findMany({
-        where: {
-          bookmarks: {
-            some: {
-              userId: ctx.user.id,
-            },
-          },
-        },
-        select: TCardSelect(ctx.user?.id),
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-
-      // Process the result to add the readingList flag
-      const processedStories =
-        stories.map((story) => ({
-          ...story,
-          readingList: story.readingLists.length > 0,
-        })) ?? [];
-
-      return processedStories;
-    } catch (err) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch bookmarked stories",
-      });
-    }
-  }),
-
   recommendations: privateProcedure
     .input(
       z.object({
@@ -104,14 +72,12 @@ export const storyRouter = createTRPCRouter({
         const stories = (await ctx.db.$queryRaw`
           WITH UserPreferences AS (
             SELECT 
-              ${userId}::uuid AS user_id,
-              ARRAY_REMOVE(ARRAY_AGG(DISTINCT b."storyId"), NULL) AS bookmarked_stories,
+              ${userId}::uuid AS user_id, 
               ARRAY_REMOVE(ARRAY_AGG(DISTINCT crs."A"), NULL) AS current_reads,
               ARRAY_REMOVE(ARRAY_AGG(DISTINCT f."followingId"), NULL) AS followed_authors
             FROM 
               profiles p
-              LEFT JOIN bookmark b ON p.id = b."userId"
-              LEFT JOIN current_reads cr ON p.id = cr."userId"
+               LEFT JOIN current_reads cr ON p.id = cr."userId"
               LEFT JOIN "_CurrentReadsToStory" crs ON cr.id = crs."B"
               LEFT JOIN follows f ON p.id = f."followerId"
             WHERE 
@@ -138,13 +104,11 @@ export const storyRouter = createTRPCRouter({
               s.tags,
               COUNT(DISTINCT c.id) AS chapter_count,
               COALESCE(SUM(c."readingTime"), 0) AS total_read_time,
-              COUNT(DISTINCT b.id) AS bookmark_count,
-              COUNT(DISTINCT crs."B") AS current_read_count
+               COUNT(DISTINCT crs."B") AS current_read_count
             FROM 
               story s
               LEFT JOIN chapter c ON s.id = c."storyId" AND c.published = true AND c."isDeleted" = false
-              LEFT JOIN bookmark b ON s.id = b."storyId"
-              LEFT JOIN "_CurrentReadsToStory" crs ON s.id = crs."A"
+               LEFT JOIN "_CurrentReadsToStory" crs ON s.id = crs."A"
             WHERE 
               s.published = true 
               AND s."isDeleted" = false
@@ -167,16 +131,14 @@ export const storyRouter = createTRPCRouter({
               END * (
                 0.3 * ln(sm.reads + 1) +
                 0.2 * ln(sm.love + 1) +
-                0.2 * ln(sm.bookmark_count + 1) +
-                0.1 * ln(sm.current_read_count + 1)
+                 0.1 * ln(sm.current_read_count + 1)
               ) * (1.0 / (EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - sm."createdAt")) / 86400 + 1)) AS recommendation_score
             FROM 
               StoryMetrics sm
               CROSS JOIN UserPreferences up
             WHERE 
               sm.story_id != ALL(COALESCE(up.current_reads, ARRAY[]::uuid[]))
-              AND sm.story_id != ALL(COALESCE(up.bookmarked_stories, ARRAY[]::uuid[]))
-          ),
+            ),
 
           RankedRecommendations AS (
             SELECT 
@@ -397,12 +359,9 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id ?? null;
-
-      // If you need to pass the user ID:
-      const mostLoved = await ctx.db.$queryRaw<
-        (TCard & { readingList: boolean | null })[]
-      >`
-        WITH MonthlyStats AS (
+      try {
+        const mostLoved = (await ctx.db.$queryRaw`
+          WITH MonthlyStats AS (
             SELECT 
               s.id,
               s.title,
@@ -418,77 +377,77 @@ export const storyRouter = createTRPCRouter({
               COUNT(DISTINCT cr.id) AS current_reads,
               COUNT(DISTINCT rl.id) AS reading_lists,
               COALESCE(s.love, 0) AS love,
-              COUNT(DISTINCT b.id) AS bookmarks,
               (COUNT(DISTINCT cr.id) * 2 +
               COUNT(DISTINCT rl.id) * 3 +
-              COALESCE(s.love, 0) * 4 +
-              COUNT(DISTINCT b.id) * 2) AS love_score
+              COALESCE(s.love, 0) * 4) AS love_score
+              FROM 
+                story s
+                LEFT JOIN "_CurrentReadsToStory" crts ON s.id = crts."B"
+                LEFT JOIN current_reads cr ON crts."A" = cr.id AND cr."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
+                LEFT JOIN "_ReadingListToStory" rlts ON s.id = rlts."B"
+                LEFT JOIN reading_list rl ON rlts."A" = rl.id AND rl."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
+              WHERE 
+                s.published = true
+                AND s."isDeleted" = false
+              GROUP BY 
+                s.id, s.title, s.slug, s.description, s.thumbnail, s.tags, s."isPremium", s."isMature", s."categoryName", s."authorId", s.love
+            )
+
+            SELECT 
+              ms.*,
+              json_build_object(
+                'name', p.name,
+                'profile', p.profile,
+                'username', p.username
+              ) AS author,
+              json_build_object(
+                'name', g.name,
+                'slug', g.slug
+              ) AS category,
+              (
+                SELECT json_agg(json_build_object(
+                  'id', c.id,
+                  'title', c.title,
+                  'createdAt', c."createdAt",
+                  'slug', c.slug
+                ))
+                FROM chapter c
+                WHERE c."storyId" = ms.id
+                AND c.published = true
+                AND c."isDeleted" = false
+              ) AS chapters,
+              CASE 
+                WHEN ${userId}::uuid IS NOT NULL THEN
+                  EXISTS (
+                    SELECT 1 
+                    FROM reading_list rl 
+                    JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                    WHERE rls."B" = ms.id AND rl."authorId" = ${userId}::uuid
+                  )
+                ELSE FALSE
+              END AS "readingList"
             FROM 
-              story s
-              LEFT JOIN "_CurrentReadsToStory" crts ON s.id = crts."B"
-              LEFT JOIN current_reads cr ON crts."A" = cr.id AND cr."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
-              LEFT JOIN "_ReadingListToStory" rlts ON s.id = rlts."B"
-              LEFT JOIN reading_list rl ON rlts."A" = rl.id AND rl."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
-              LEFT JOIN bookmark b ON s.id = b."storyId" AND b."createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
-            WHERE 
-              s.published = true
-              AND s."isDeleted" = false
-            GROUP BY 
-              s.id, s.title, s.slug, s.description, s.thumbnail, s.tags, s."isPremium", s."isMature", s."categoryName", s."authorId", s.love
-          )
+              MonthlyStats ms
+              JOIN profiles p ON ms."authorId" = p.id
+              LEFT JOIN genre g ON ms."categoryName" = g.name
+            ORDER BY 
+              ms.love_score DESC
+            LIMIT ${input.limit} OFFSET ${input.skip} 
+        `) as (TCard & { readingList: boolean | null })[];
+        // Then, if you want to convert null to false:
+        const processedMostLoved = mostLoved.map((story) => ({
+          ...story,
+          readingList: story.readingList ?? false,
+        }));
 
-        SELECT 
-            ms.*,
-            json_build_object(
-              'name', p.name,
-              'profile', p.profile,
-              'username', p.username
-            ) AS author,
-            json_build_object(
-              'name', g.name,
-              'slug', g.slug
-            ) AS category,
-            (
-              SELECT json_agg(json_build_object(
-                'id', c.id,
-                'title', c.title,
-                'createdAt', c."createdAt",
-                'slug', c.slug
-              ))
-              FROM chapter c
-              WHERE c."storyId" = ms.id
-              AND c.published = true
-              AND c."isDeleted" = false
-            ) AS chapters,
-
-          CASE 
-                        WHEN ${userId}::uuid IS NOT NULL THEN
-
-          EXISTS (
-                  SELECT 1 
-                  FROM reading_list rl 
-                  JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
-                  WHERE rls."B" = ms.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
-                )
-              ELSE FALSE
-            END AS "readingList"
-
-          FROM 
-            MonthlyStats ms
-            JOIN profiles p ON ms."authorId" = p.id
-            LEFT JOIN genre g ON ms."categoryName" = g.name
-
-          ORDER BY 
-            ms.love_score DESC
-          LIMIT ${input.limit} OFFSET ${input.skip}
-        `;
-      // Then, if you want to convert null to false:
-      const processedMostLoved = mostLoved.map((story) => ({
-        ...story,
-        readingList: story.readingList ?? false,
-      }));
-
-      return processedMostLoved as (TCard & { readingList: boolean })[];
+        return processedMostLoved as (TCard & { readingList: boolean })[];
+      } catch (err) {
+        console.log({ err });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch most loved stories",
+        });
+      }
     }),
 
   getSingle: publicProcedure
@@ -509,6 +468,11 @@ export const storyRouter = createTRPCRouter({
             category: {
               select: {
                 slug: true,
+              },
+            },
+            ratings: {
+              select: {
+                value: true,
               },
             },
             chapters: {
@@ -1561,6 +1525,110 @@ export const storyRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to rate story",
+        });
+      }
+    }),
+
+  love: privateProcedure
+    .input(
+      z.object({
+        story: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const story = await ctx.db.story.findFirst({
+          where: { id: input.story },
+          select: {
+            loves: {
+              where: {
+                userId: ctx.user.id,
+              },
+            },
+          },
+        });
+
+        if (!story) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Story not found",
+          });
+        }
+
+        if (story.loves.length) {
+          // User has already loved the story, so remove the love
+          await ctx.db.$transaction([
+            ctx.db.story.update({
+              where: { id: input.story },
+              data: {
+                love: {
+                  decrement: 1,
+                },
+              },
+            }),
+            ctx.db.love.delete({
+              where: {
+                storyId_userId: {
+                  storyId: input.story,
+                  userId: ctx.user.id,
+                },
+              },
+            }),
+          ]);
+
+          return false;
+        } else {
+          // User has not loved the story yet, so add the love
+          await ctx.db.$transaction([
+            ctx.db.story.update({
+              where: { id: input.story },
+              data: {
+                love: {
+                  increment: 1,
+                },
+              },
+            }),
+            ctx.db.love.create({
+              data: {
+                storyId: input.story,
+                userId: ctx.user.id,
+              },
+            }),
+          ]);
+
+          return true;
+        }
+      } catch (err) {
+        console.log({ err });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to love story",
+        });
+      }
+    }),
+
+  hasLiked: privateProcedure
+    .input(
+      z.object({
+        storyId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const userId = ctx.user.id;
+
+        const liked = await ctx.db.love.findFirst({
+          where: {
+            storyId: input.storyId,
+            userId,
+          },
+        });
+
+        return !!liked;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check if story is liked",
         });
       }
     }),

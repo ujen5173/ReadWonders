@@ -24,14 +24,10 @@ const AllGenre = async () => {
                 <p className="mb-4 text-base">{genre.description}</p>
               </div>
               {genre.stories && (
-                <div className="mb-4 flex items-center gap-1 text-slate-600">
-                  <span className="text-base font-medium">
-                    {formatNumber(genre.stories!)} stories
-                  </span>
+                <div className="mb-4 flex items-center gap-1 text-sm font-medium text-slate-600">
+                  <span>{formatNumber(genre.stories!)} stories</span>
                   <RecordIcon className="size-[6px] fill-slate-600" />
-                  <span className="text-base font-medium">
-                    {formatNumber(genre.stories! / 51)} authors
-                  </span>
+                  <span>{formatNumber(genre.stories! / 51)} authors</span>
                 </div>
               )}
               <div className="flex gap-2">

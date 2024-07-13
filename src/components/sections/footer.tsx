@@ -1,6 +1,6 @@
 "use client";
 
-import { Idea01Icon, Navigation03Icon } from "hugeicons-react";
+import { Idea01Icon, SentIcon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -77,13 +77,15 @@ const Footer = () => {
             <Link href="/" className="mb-4 mr-6 flex w-fit items-end gap-1">
               <Logo />
             </Link>
-            <p className="text-text-light mb-2">{siteConfig.tagline}</p>
-            <p className="text-text-light mb-4">{siteConfig.description}</p>
+            <p className="text-text-light mb-2 text-sm">{siteConfig.tagline}</p>
+            <p className="text-text-light mb-4 text-sm">
+              {siteConfig.description}
+            </p>
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="mb-5 gap-2">
                   <Idea01Icon className="text-danger" size={18} />
-                  <span>Any feedback?</span>
+                  <span className="text-sm">Any feedback?</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
@@ -194,7 +196,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {siteConfig.navItemsFooter.map((navItem) => (
               <div key={navItem.title} className=" flex-1">
-                <h1 className="mb-2 text-lg font-semibold text-slate-800">
+                <h1 className="mb-2 text-base font-semibold text-slate-800">
                   {navItem.title}
                 </h1>
                 <ul>
@@ -202,7 +204,7 @@ const Footer = () => {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-text-light inline-block py-1 hover:text-slate-800 hover:underline"
+                        className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
                       >
                         {link.name}
                       </Link>
@@ -213,23 +215,23 @@ const Footer = () => {
             ))}
           </div>
           <div className="flex-1">
-            <h1 className="mb-2 text-xl font-semibold text-text-primary">
+            <h1 className="mb-2 text-base font-semibold text-text-primary">
               Want to be updated?
             </h1>
-            <p className="text-text-light mb-4">
+            <p className="text-text-light mb-4 text-sm">
               Subscribe to our newsletter for the latest updates and promotions.
             </p>
             <form className="mb-4 flex items-center gap-2" action="">
               <Input
-                className="text-md"
+                className="text-sm"
                 type="email"
                 placeholder="email@example.com"
               />
               <Button>
-                <Navigation03Icon size={18} />
+                <SentIcon size={18} />
               </Button>
             </form>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               {siteConfig.socials.map((social) => (
                 <TooltipProvider key={social.name} delayDuration={100}>
                   <Tooltip>
@@ -251,7 +253,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="w-full border-t border-border p-4">
-          <p className="text-center text-text-secondary">
+          <p className="text-center text-sm text-text-secondary">
             &copy; {new Date().getFullYear()} {siteConfig.name}. All Rights
             Reserved.
           </p>

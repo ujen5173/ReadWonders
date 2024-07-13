@@ -17,7 +17,7 @@ import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
-import AddToBookmark from "./_components/add-to-bookmark";
+import LikeStory from "./_components/like-story";
 import RatingButton from "./_components/rating-button";
 import StartReading from "./_components/start-reading";
 
@@ -54,7 +54,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] border-b border-border py-6">
         <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-12 md:p-6 lg:p-12">
-          <div className="relative mx-auto flex w-full max-w-80 flex-col items-center gap-8">
+          <div className="relative mx-auto mb-6 flex w-full max-w-80 flex-col items-center gap-8 md:mb-0">
             <Image
               alt="Story cover"
               loading="eager"
@@ -85,8 +85,6 @@ const Story = async ({ params }: { params: { slug: string } }) => {
 
               <ReadingListModel bookId={storyDetails.id} />
 
-              <AddToBookmark slug={storyDetails.slug} />
-
               <Button className="w-full" variant="secondary">
                 <Notebook01Icon className="size-4" />
                 Add notes
@@ -95,7 +93,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
           </div>
 
           <div className="w-full flex-1 space-y-8">
-            <header className="flex items-center justify-between gap-4">
+            <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="flex-1 space-y-2">
                 <h1
                   className={`scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl`}
@@ -126,20 +124,24 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 )}
               </div>
 
-              {storyDetails.author.id === user?.id ? (
-                <Link href={`/edit/${storyDetails.slug}`}>
-                  <Button className="w-full" variant="default">
-                    <Edit01Icon className="size-4 stroke-2" />
-                    Edit Story
-                  </Button>
-                </Link>
-              ) : (
-                <FollowButton
-                  id={storyDetails.author.id}
-                  isAuth={!!user}
-                  following={(storyDetails.author.followers ?? []).length > 0}
-                />
-              )}
+              <div className="flex items-center gap-2">
+                <LikeStory id={storyDetails.id} love={storyDetails.love} />
+
+                {storyDetails.author.id === user?.id ? (
+                  <Link href={`/edit/${storyDetails.slug}`}>
+                    <Button className="w-full" variant="default">
+                      <Edit01Icon className="size-4 stroke-2" />
+                      Edit Story
+                    </Button>
+                  </Link>
+                ) : (
+                  <FollowButton
+                    id={storyDetails.author.id}
+                    isAuth={!!user}
+                    following={(storyDetails.author.followers ?? []).length > 0}
+                  />
+                )}
+              </div>
             </header>
 
             <div className="mx-auto mb-2 flex max-w-[29rem] flex-wrap sm:m-0">

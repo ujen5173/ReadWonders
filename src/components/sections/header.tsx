@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
 import {
-  Bookmark02Icon,
   LibraryIcon,
   Logout02Icon,
   Menu01Icon,
@@ -185,16 +184,6 @@ const Header = () => {
                   <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-blue-500/30">
                     <Notebook01Icon className="size-4" />
                     <span>Reading List</span>
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link
-                  href="/bookmarks"
-                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
-                >
-                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-cyan-500/30">
-                    <Bookmark02Icon className="size-4" />
-                    <span>Bookmark</span>
                   </DropdownMenuItem>
                 </Link>
 

@@ -109,7 +109,7 @@ export const siteConfig = {
   socials: [
     {
       name: "Buy me a Coffee",
-      icon: <Icons.coffee className="size-7" />,
+      icon: <Icons.coffee className="size-6" />,
       href: links.linkedin,
     },
     {
@@ -124,7 +124,7 @@ export const siteConfig = {
     },
     {
       name: "ProductHunt",
-      icon: <Icons.productHunt className="size-8" />,
+      icon: <Icons.productHunt className="size-6" />,
       href: links.linkedin,
     },
   ],

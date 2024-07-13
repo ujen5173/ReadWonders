@@ -2,6 +2,7 @@
 
 import { StarIcon } from "hugeicons-react";
 import { useEffect, useState } from "react";
+import { Spinner } from "~/components/Loading";
 import { Button } from "~/components/ui/button";
 import {
   Tooltip,
@@ -25,7 +26,8 @@ const RatingButton = ({
   storyId: string;
 }) => {
   const [details, setDetails] = useState(ratingDetails);
-  const { mutateAsync, isSuccess, isError } = api.story.rating.useMutation();
+  const { isLoading, mutateAsync, isSuccess, isError } =
+    api.story.rating.useMutation();
 
   useEffect(() => {
     if (isSuccess) {
@@ -61,16 +63,16 @@ const RatingButton = ({
                   <div
                     key={index}
                     onClick={async () => {
-                      setRating(index);
-                      const res = await mutateAsync({ rating: index, storyId });
+                      const newRating = await mutateAsync({
+                        rating: index,
+                        storyId,
+                      });
 
-                      if (res) {
-                        setRating(res.averageRating);
-                        setDetails({
-                          ratingCount: res.ratingCount,
-                          ratingAverage: res.averageRating,
-                        });
-                      }
+                      setRating(newRating.averageRating);
+                      setDetails({
+                        ratingCount: newRating.ratingCount,
+                        ratingAverage: newRating.averageRating,
+                      });
                     }}
                     onMouseEnter={() => setHover(index)}
                     onMouseLeave={() => setHover(rating)}
@@ -91,6 +93,11 @@ const RatingButton = ({
             </div>
 
             <p className="text-foreground">
+              {isLoading && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <Spinner size={20} />
+                </div>
+              )}
               {details.ratingAverage > 0
                 ? details.ratingAverage.toFixed(1)
                 : "..."}

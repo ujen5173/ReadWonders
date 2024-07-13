@@ -1,13 +1,12 @@
 "use client";
 
 import { type PropsWithChildren } from "react";
-import { UmamiAnalyticsProvider } from "./AnalyticsProvider/AnalyticsProvider";
+import { CSPostHogProvider } from "./AnalyticsProvider/AnalyticsProvider";
 
 export function Providers({ children }: PropsWithChildren) {
   return (
     <>
-      {children}
-      <UmamiAnalyticsProvider />
+      <CSPostHogProvider>{children}</CSPostHogProvider>
     </>
   );
 }

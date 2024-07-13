@@ -8,13 +8,6 @@ const Recommended = async () => {
     limit: 6,
   });
 
-  console.log({
-    rstr: recommendations.map((e) => ({
-      title: e.title,
-      readingList: e.readingList,
-    })),
-  });
-
   return (
     <section className="w-full">
       <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">

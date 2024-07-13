@@ -52,59 +52,6 @@ export const authRouter = createTRPCRouter({
     return user;
   }),
 
-  bookmark: privateProcedure
-    .input(
-      z.object({
-        slug: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const story = await ctx.db.story.findFirst({
-        where: {
-          slug: input.slug,
-        },
-      });
-
-      if (!story) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Story not found",
-        });
-      }
-
-      const bookmark = await ctx.db.bookmark.findFirst({
-        where: {
-          userId: ctx.user.id,
-          storyId: story.id,
-        },
-      });
-
-      if (bookmark) {
-        await ctx.db.bookmark.delete({
-          where: {
-            id: bookmark.id,
-          },
-        });
-
-        return {
-          action: "removed",
-          storyId: story.id,
-        };
-      } else {
-        await ctx.db.bookmark.create({
-          data: {
-            userId: ctx.user.id,
-            storyId: story.id,
-          },
-        });
-      }
-
-      return {
-        action: "added",
-        storyId: story.id,
-      };
-    }),
-
   userProfile: publicProcedure
     .input(
       z.object({

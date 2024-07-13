@@ -329,7 +329,6 @@ model Profiles {
   tagline       String?
   email         String
   createdAt     DateTime       @default(now()) @db.Timestamptz(6)
-  bookmarks     Bookmark[]
   currentReads  CurrentReads[]
   author        Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   readingLists  ReadingList[]
@@ -411,7 +410,6 @@ model Story {
   isPremium     Boolean        @default(false)
   published     Boolean        @default(true)
   categoryName  String?
-  bookmarks     Bookmark[]
   chapters      Chapter[]
   discussions   Discussion[]
   love          Int            @default(0)
@@ -419,6 +417,7 @@ model Story {
   category      Genre?         @relation(fields: [categoryName], references: [name])
   currentReads  CurrentReads[] @relation("CurrentReadsToStory")
   readingLists  ReadingList[]  @relation("ReadingListToStory")
+  loves         Love[]
 
   @@index([authorId], map: "story_author_id_idx")
   @@index([slug])
@@ -458,7 +457,6 @@ model Chapter {
   storyId     String   @db.Uuid
   published   Boolean  @default(false)
   story       Story    @relation(fields: [storyId], references: [id])
-  loves       Love[]
 
   @@index([storyId, slug], map: "chapter_story_id_slug_idx")
   @@map("chapter")
@@ -466,15 +464,16 @@ model Chapter {
 }
 
 model Love {
-  id        String   @id @default(uuid()) @db.Uuid
-  chapterId String   @db.Uuid
-  userId    String   @db.Uuid
-  chapter   Chapter  @relation(fields: [chapterId], references: [id])
-  user      Profiles @relation(fields: [userId], references: [id])
+  id      String   @id @default(uuid()) @db.Uuid
+  storyId String   @db.Uuid
+  userId  String   @db.Uuid
+  story   Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user    Profiles @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([chapterId, userId])
+  @@unique([storyId, userId])
   @@index([userId])
-  @@map("likes")
+  @@index([storyId])
+  @@map("love")
   @@schema("public")
 }
 
@@ -487,19 +486,6 @@ model Genre {
   story       Story[]
 
   @@map("genre")
-  @@schema("public")
-}
-
-model Bookmark {
-  id        String   @id @default(uuid()) @db.Uuid
-  storyId   String   @db.Uuid
-  userId    String   @db.Uuid
-  createdAt DateTime @default(now())
-  story     Story    @relation(fields: [storyId], references: [id])
-  user      Profiles @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@map("bookmark")
   @@schema("public")
 }
 

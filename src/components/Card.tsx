@@ -1,6 +1,5 @@
 import {
   BookOpen01Icon,
-  Bookmark01Icon,
   EyeIcon,
   LeftToRightListNumberIcon,
   StarIcon,
@@ -29,12 +28,6 @@ const Card = ({ details }: { details: TCard }) => {
       </div>
 
       <div className="relative flex-1 py-2">
-        <div className="absolute right-0 top-0">
-          <button>
-            <Bookmark01Icon size={22} />
-          </button>
-        </div>
-
         <h1 className="mb-4 text-xl font-bold text-foreground">
           {details.title}
         </h1>
