@@ -4,14 +4,14 @@ import { PlusSignIcon } from "hugeicons-react";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
 
-const UpVote = ({ chapter }: { chapter: string }) => {
-  const { mutate, isLoading } = api.chapter.love.useMutation();
+const UpVote = ({ story }: { story: string }) => {
+  const { mutate, isLoading } = api.story.love.useMutation();
 
   return (
     <Button
       onClick={() => {
         mutate({
-          chapter,
+          story,
         });
       }}
       variant="secondary"

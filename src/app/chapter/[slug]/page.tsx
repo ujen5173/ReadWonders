@@ -481,7 +481,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
               <div className="flex w-full flex-wrap items-center justify-center gap-6 sm:justify-between">
                 <div className="flex items-center gap-2">
-                  <UpVote chapter={chapterDetails.id} />
+                  <UpVote story={chapterDetails.story.id} />
                 </div>
 
                 <div className="flex items-center">

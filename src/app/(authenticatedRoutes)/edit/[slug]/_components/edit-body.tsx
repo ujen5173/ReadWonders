@@ -45,13 +45,13 @@ const EditBody = ({
     description: string;
     categoryName: string | null;
     isMature: boolean;
-    isPremium: boolean;
     tags: string[];
     thumbnail: string;
     chapters: {
       id: string;
       title: string | null;
       slug: string | null;
+      isPremium: boolean;
       createdAt: Date;
     }[];
     author: {
@@ -95,7 +95,6 @@ const EditBody = ({
       description: details.description,
       categoryName: details.categoryName ?? "",
       isMature: details.isMature,
-      isPremium: details.isPremium,
       tags: details.tags,
       thumbnail: null,
     },
@@ -295,23 +294,6 @@ const EditBody = ({
                       <FormControl>
                         <Switch
                           defaultChecked={form.getValues("isMature")}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="isPremium"
-                  render={({ field }) => (
-                    <FormItem className="mb-6">
-                      <FormLabel>Premium content?</FormLabel>
-                      <br />
-                      <FormControl>
-                        <Switch
-                          defaultChecked={form.getValues("isPremium")}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />

@@ -58,7 +58,6 @@ const WriteStory = () => {
       description: "",
       categoryName: "",
       isMature: false,
-      isPremium: false,
       tags: [],
       thumbnail: null,
     },
@@ -242,22 +241,7 @@ const WriteStory = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="isPremium"
-                  render={({ field }) => (
-                    <FormItem className="mb-6">
-                      <FormLabel>Premium content?</FormLabel>
-                      <br />
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+
                 <div className="flex items-center gap-2">
                   <Button
                     disabled={isUploading || isLoading}

@@ -360,6 +360,7 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id ?? null;
+
       try {
         const mostLoved = (await ctx.db.$queryRaw`
           WITH MonthlyStats AS (
@@ -1259,7 +1260,6 @@ LIMIT ${input.limit + 1}
         }),
         categoryName: z.string().optional(),
         isMature: z.boolean().default(false),
-        isPremium: z.boolean().default(false),
         tags: z.array(z.string()).optional(),
         thumbnail: z.string().min(1).url({
           message: "Thumbnail must be a valid URL",
@@ -1281,7 +1281,6 @@ LIMIT ${input.limit + 1}
             data: {
               ...rest,
               slug,
-
               authorId: ctx.user.id,
             },
             select: {

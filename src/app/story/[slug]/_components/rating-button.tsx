@@ -36,6 +36,7 @@ const RatingButton = ({
         description: "Story rated successfully",
       });
     }
+
     if (isError) {
       toast({
         title: "Error",
@@ -58,13 +59,12 @@ const RatingButton = ({
           >
             <div className="flex items-center gap-[2px]">
               {[...Array(5)].map((_, index) => {
-                index += 1;
                 return (
                   <div
-                    key={index}
+                    key={index + 1}
                     onClick={async () => {
                       const newRating = await mutateAsync({
-                        rating: index,
+                        rating: index + 1,
                         storyId,
                       });
 
@@ -74,14 +74,14 @@ const RatingButton = ({
                         ratingAverage: newRating.averageRating,
                       });
                     }}
-                    onMouseEnter={() => setHover(index)}
+                    onMouseEnter={() => setHover(index + 1)}
                     onMouseLeave={() => setHover(rating)}
                   >
                     <StarIcon
                       size={20}
                       className={cn(
                         "transition-colors duration-200 ease-in-out",
-                        hover >= index || rating >= index
+                        hover >= index + 1 || rating >= index + 1
                           ? "fill-amber-400 text-transparent "
                           : "fill-gray-300 text-transparent",
                       )}
