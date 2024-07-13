@@ -4,6 +4,7 @@ import {
   FavouriteIcon,
   LeftToRightListNumberIcon,
   Notebook01Icon,
+  SquareLock02Icon,
   ViewIcon,
 } from "hugeicons-react";
 import { type Metadata } from "next";
@@ -235,6 +236,11 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                           {ch.title}
                         </p>
                         <div className="flex items-center gap-2">
+                          {ch.isPremium && (
+                            <span>
+                              <SquareLock02Icon size={16} />
+                            </span>
+                          )}
                           {!ch.published && (
                             <Badge className="bg-rose-500 text-xs font-semibold text-white">
                               Draft

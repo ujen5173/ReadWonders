@@ -28,7 +28,6 @@ export type TCard = {
   thumbnail: string;
   love: number;
   tags: string[];
-  isPremium: boolean;
   categoryName: string | null;
   isMature: boolean;
   readingTime: number;
@@ -36,6 +35,7 @@ export type TCard = {
   chapters: {
     id: string;
     title: string | null;
+    isPremium: boolean;
     slug: string | null;
     createdAt: Date;
   }[];

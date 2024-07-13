@@ -6,7 +6,6 @@ export const TCardSelect = (userId: string | undefined) => ({
   thumbnail: true,
   love: true,
   tags: true,
-  isPremium: true,
   categoryName: true,
   readingTime: true,
   isMature: true,
@@ -26,6 +25,7 @@ export const TCardSelect = (userId: string | undefined) => ({
     select: {
       id: true,
       title: true,
+      isPremium: true,
       slug: true,
       createdAt: true,
     },

@@ -321,24 +321,25 @@ model Users {
 }
 
 model Profiles {
-  id            String         @id @default(uuid()) @db.Uuid
-  username      String         @unique
-  name          String
-  profile       String?
-  bio           String?
-  tagline       String?
-  email         String
-  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
-  currentReads  CurrentReads[]
-  author        Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  readingLists  ReadingList[]
-  story         Story[]
-  lovedChapters Love[]
-
-  followingCount Int      @default(0)
-  followersCount Int      @default(0)
-  following      Follow[] @relation("FollowToProfilesFollowing")
-  followers      Follow[] @relation("FollowToProfilesFollower")
+  id             String         @id @default(uuid()) @db.Uuid
+  username       String         @unique
+  name           String
+  profile        String?
+  bio            String?
+  tagline        String?
+  email          String
+  hasPremium     Boolean        @default(false)
+  coins          Int            @default(0)
+  followingCount Int            @default(0)
+  followersCount Int            @default(0)
+  createdAt      DateTime       @default(now()) @db.Timestamptz(6)
+  currentReads   CurrentReads[]
+  author         Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  readingLists   ReadingList[]
+  story          Story[]
+  lovedChapters  Love[]
+  following      Follow[]       @relation("FollowToProfilesFollowing")
+  followers      Follow[]       @relation("FollowToProfilesFollower")
   rating         Rating[]
 
   @@index([username])
@@ -352,9 +353,8 @@ model Follow {
   followerId  String   @db.Uuid
   followingId String   @db.Uuid
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
-
-  follower  Profiles @relation("FollowToProfilesFollower", fields: [followerId], references: [id], onDelete: Cascade)
-  following Profiles @relation("FollowToProfilesFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  follower    Profiles @relation("FollowToProfilesFollower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   Profiles @relation("FollowToProfilesFollowing", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
   @@map("follows")
@@ -378,9 +378,9 @@ model ReadingList {
   authorId    String   @db.Uuid
   title       String
   description String?
-  createdAt   DateTime @default(now())
   private     Boolean  @default(false)
   slug        String   @unique
+  createdAt   DateTime @default(now())
   author      Profiles @relation(fields: [authorId], references: [id], onDelete: Cascade)
   stories     Story[]  @relation("ReadingListToStory")
 
@@ -399,25 +399,24 @@ model Story {
   tags          String[]
   reads         Int            @default(0)
   readingTime   Int            @default(0)
-  ratings       Rating[]
   averageRating Float          @default(0)
   ratingCount   Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
   authorId      String         @db.Uuid
   isDeleted     Boolean        @default(false)
   isMature      Boolean        @default(false)
-  isPremium     Boolean        @default(false)
   published     Boolean        @default(true)
   categoryName  String?
+  love          Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  loves         Love[]
+  ratings       Rating[]
   chapters      Chapter[]
   discussions   Discussion[]
-  love          Int            @default(0)
   author        Profiles       @relation(fields: [authorId], references: [id])
   category      Genre?         @relation(fields: [categoryName], references: [name])
   currentReads  CurrentReads[] @relation("CurrentReadsToStory")
   readingLists  ReadingList[]  @relation("ReadingListToStory")
-  loves         Love[]
 
   @@index([authorId], map: "story_author_id_idx")
   @@index([slug])
@@ -429,13 +428,12 @@ model Story {
 }
 
 model Rating {
-  id      String @id @default(uuid()) @db.Uuid
-  value   Int    @db.SmallInt
-  userId  String @db.Uuid
-  storyId String @db.Uuid
-
-  user  Profiles @relation(fields: [userId], references: [id])
-  story Story    @relation(fields: [storyId], references: [id])
+  id      String   @id @default(uuid()) @db.Uuid
+  value   Int      @db.SmallInt
+  userId  String   @db.Uuid
+  storyId String   @db.Uuid
+  user    Profiles @relation(fields: [userId], references: [id])
+  story   Story    @relation(fields: [storyId], references: [id])
 
   @@unique([userId, storyId])
   @@index([storyId])
@@ -451,12 +449,13 @@ model Chapter {
   thumbnail   String?
   reads       Int      @default(0)
   readingTime Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   isDeleted   Boolean  @default(false)
+  isPremium   Boolean  @default(false)
   storyId     String   @db.Uuid
   published   Boolean  @default(false)
   story       Story    @relation(fields: [storyId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([storyId, slug], map: "chapter_story_id_slug_idx")
   @@map("chapter")

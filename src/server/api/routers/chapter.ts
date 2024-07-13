@@ -113,6 +113,8 @@ export const chapterRouter = createTRPCRouter({
                           }
                         : false,
                     id: true,
+                    name: true,
+                    profile: true,
                     username: true,
                   },
                 },

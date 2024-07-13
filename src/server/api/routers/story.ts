@@ -77,7 +77,7 @@ export const storyRouter = createTRPCRouter({
               ARRAY_REMOVE(ARRAY_AGG(DISTINCT f."followingId"), NULL) AS followed_authors
             FROM 
               profiles p
-               LEFT JOIN current_reads cr ON p.id = cr."userId"
+              LEFT JOIN current_reads cr ON p.id = cr."userId"
               LEFT JOIN "_CurrentReadsToStory" crs ON cr.id = crs."B"
               LEFT JOIN follows f ON p.id = f."followerId"
             WHERE 
@@ -97,7 +97,7 @@ export const storyRouter = createTRPCRouter({
               s."createdAt",
               s.reads,
               s.love,
-              s."isPremium",
+              
               s."isMature",
               s."readingTime",
               s.slug,
@@ -113,7 +113,7 @@ export const storyRouter = createTRPCRouter({
               s.published = true 
               AND s."isDeleted" = false
             GROUP BY 
-              s.id, s."authorId", s.title, s.description, s.thumbnail, s."categoryName", s."createdAt", s.reads, s.love, s."isPremium", s."isMature", s.slug, s.tags
+              s.id, s."authorId", s.title, s.description, s.thumbnail, s."categoryName", s."createdAt", s.reads, s.love, s."isMature", s.slug, s.tags
           ),
 
           RecommendationScores AS (
@@ -154,6 +154,7 @@ export const storyRouter = createTRPCRouter({
               json_agg(
                 json_build_object(
                   'id', c.id,
+                  "isPremium", c."isPremium",
                   'title', c.title,
                   'slug', c.slug,
                   'createdAt', c."createdAt"
@@ -176,7 +177,6 @@ export const storyRouter = createTRPCRouter({
             rr.thumbnail,
             rr.love,
             rr.tags,
-            rr."isPremium",
             rr."categoryName",
             rr."isMature",
             rr."readingTime",
@@ -325,10 +325,11 @@ export const storyRouter = createTRPCRouter({
                 published: true,
               },
               select: {
-                title: true,
                 id: true,
-                createdAt: true,
+                title: true,
                 slug: true,
+                isPremium: true,
+                createdAt: true,
               },
             },
             author: {
@@ -369,7 +370,6 @@ export const storyRouter = createTRPCRouter({
               s.description,
               s.thumbnail,
               s.tags,
-              s."isPremium",
               s."isMature",
               s."categoryName",
               s."readingTime",
@@ -390,7 +390,7 @@ export const storyRouter = createTRPCRouter({
                 s.published = true
                 AND s."isDeleted" = false
               GROUP BY 
-                s.id, s.title, s.slug, s.description, s.thumbnail, s.tags, s."isPremium", s."isMature", s."categoryName", s."authorId", s.love
+                s.id, s.title, s.slug, s.description, s.thumbnail, s.tags,  s."isMature", s."categoryName", s."authorId", s.love
             )
 
             SELECT 
@@ -409,7 +409,8 @@ export const storyRouter = createTRPCRouter({
                   'id', c.id,
                   'title', c.title,
                   'createdAt', c."createdAt",
-                  'slug', c.slug
+                  'slug', c.slug,
+                  "isPremium", c."isPremium"
                 ))
                 FROM chapter c
                 WHERE c."storyId" = ms.id
@@ -486,6 +487,7 @@ export const storyRouter = createTRPCRouter({
                 published: true,
                 slug: true,
                 createdAt: true,
+                isPremium: true,
               },
               orderBy: {
                 createdAt: "asc",
@@ -522,6 +524,7 @@ export const storyRouter = createTRPCRouter({
 
         return story;
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch story",
@@ -551,6 +554,7 @@ export const storyRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 slug: true,
+                isPremium: true,
                 createdAt: true,
               },
             },
@@ -722,8 +726,7 @@ export const storyRouter = createTRPCRouter({
       rs.slug,
       rs.description,
       rs.thumbnail,
-      rs.tags,
-      rs."isPremium",
+      rs.tags, 
       rs."isMature",
       rs."categoryName",
       rs.reads,
@@ -732,7 +735,8 @@ export const storyRouter = createTRPCRouter({
           'id', c.id,
           'title', c.title,
           'createdAt', c."createdAt",
-          'slug', c.slug
+          'slug', c.slug,
+          "isPremium", c."isPremium" 
         ))
         FROM chapter c
         WHERE c."storyId" = rs.id
@@ -815,8 +819,7 @@ export const storyRouter = createTRPCRouter({
       s.description,
       s.thumbnail,
       s.tags,
-      s."isPremium",
-      s."isMature",
+       s."isMature",
       s."categoryName",
       s."readingTime",
       s.reads,
@@ -838,8 +841,7 @@ export const storyRouter = createTRPCRouter({
     rs.description,
     rs.thumbnail,
     rs.tags,
-    rs."isPremium",
-    rs."isMature",
+     rs."isMature",
     rs."categoryName",
     rs."readingTime",
     rs.reads,
@@ -849,6 +851,7 @@ export const storyRouter = createTRPCRouter({
         'id', c.id,
         'title', c.title,
         'createdAt', c."createdAt",
+        "isPremium", c."isPremium",
         'slug', c.slug
       ))
       FROM chapter c
@@ -1050,8 +1053,15 @@ export const storyRouter = createTRPCRouter({
 
         const premiumCondition = input.filter?.premium
           ? Prisma.sql`
-            AND story."isPremium" = ${input.filter.premium === "true"}
-          `
+          AND EXISTS (
+            SELECT 1
+            FROM chapter
+            WHERE chapter."storyId" = story.id
+            AND chapter.published = true
+            AND chapter."isDeleted" = false
+            AND chapter."isPremium" = ${input.filter.premium === "true"}
+          )
+        `
           : Prisma.empty;
 
         const updatedCondition = (() => {
@@ -1092,53 +1102,81 @@ export const storyRouter = createTRPCRouter({
           (TCard & { readingList: boolean })[]
         >`
           SELECT
-            story.id,
-            story.description,
-            story.slug,
-            story.title,
-            story.thumbnail,
-            story.tags,
-            story."isPremium",
-            story."categoryName",
-            story."isMature",
-            story."readingTime",
-            story.reads,
-            COALESCE(json_agg(
-              json_build_object(
-                'id', chapter.id,
-                'title', chapter.title,
-                'slug', chapter.slug,
-                'createdAt', chapter."createdAt"
-              )
-            ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
-            json_build_object(
-              'name', author.name,
-              'profile', author.profile
-            ) AS author,
-            CASE 
-              WHEN ${userId} IS NOT NULL THEN
-                EXISTS (
-                  SELECT 1 
-                  FROM reading_list rl 
-                  JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
-                  WHERE rls."B" = story.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
-                )
-              ELSE FALSE
-            END AS "readingList"
-          FROM story
-          LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
-          LEFT JOIN profiles AS author ON author.id = story."authorId"
-          WHERE ${Prisma.join(searchConditions, " AND ")}
-          AND story.published = true
-          AND story."isDeleted" = false
-          ${lengthCondition}
-          ${matureCondition}
-          ${premiumCondition}
-          ${updatedCondition}
-          ${cursorCondition}
-          GROUP BY story.id, author.name, author.profile
-          ORDER BY story.id
-          LIMIT ${input.limit + 1}
+            story.id,SELECT
+  story.id,
+  story.description,
+  story.slug,
+  story.title,
+  story.thumbnail,
+  story.tags,
+  story."categoryName",
+  story."isMature",
+  story."readingTime",
+  story.reads,
+  COALESCE(json_agg(
+    json_build_object(
+      'id', chapter.id,
+      'title', chapter.title,
+      'slug', chapter.slug,
+      "isPremium", chapter."isPremium",
+      'createdAt', chapter."createdAt"
+    )
+  ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
+  json_build_object(
+    'name', author.name,
+    'profile', author.profile
+  ) AS author,
+  CASE 
+    WHEN ${userId} IS NOT NULL THEN
+      EXISTS (
+        SELECT 1 
+        FROM reading_list rl 
+        JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+        WHERE rls."B" = story.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
+      )
+    ELSE FALSE
+  END AS "readingList",
+  COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) AS premium_chapter_count
+FROM story
+LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
+LEFT JOIN profiles AS author ON author.id = story."authorId"
+WHERE ${Prisma.join(searchConditions, " AND ")}
+AND story.published = true
+AND story."isDeleted" = false
+${lengthCondition}
+${matureCondition}
+${updatedCondition}
+${cursorCondition}
+${
+  premiumCondition
+    ? Prisma.sql`
+  AND EXISTS (
+    SELECT 1
+    FROM chapter
+    WHERE chapter."storyId" = story.id
+    AND chapter.published = true
+    AND chapter."isDeleted" = false
+    AND chapter."isPremium" = ${input.filter?.premium === "true"}
+  )
+`
+    : Prisma.empty
+}
+GROUP BY story.id, author.name, author.profile
+${
+  input.filter?.premium === "true"
+    ? Prisma.sql`
+  HAVING COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) > 0
+`
+    : Prisma.empty
+}
+ORDER BY 
+  ${
+    input.filter?.premium === "true"
+      ? Prisma.sql`COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) DESC,`
+      : Prisma.empty
+  }
+  story.id
+LIMIT ${input.limit + 1}
         `;
         const processedstories = stories.map((story) => ({
           ...story,

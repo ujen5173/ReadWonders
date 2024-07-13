@@ -5,6 +5,7 @@ import {
   FavouriteIcon,
   LeftToRightListNumberIcon,
   LinkSquare01Icon,
+  SquareLock02Icon,
   ViewIcon,
 } from "hugeicons-react";
 import Image from "next/image";
@@ -218,9 +219,16 @@ const Story = () => {
                           <p className="line-clamp-1 text-base text-slate-700">
                             {chapter.title}
                           </p>
-                          <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
-                            {formatDate(chapter.createdAt)}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            {chapter.isPremium && (
+                              <span>
+                                <SquareLock02Icon size={16} />
+                              </span>
+                            )}
+                            <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
+                              {formatDate(chapter.createdAt)}
+                            </p>
+                          </div>
                         </div>
                       </Link>
                     ))
