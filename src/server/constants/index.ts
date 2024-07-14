@@ -1,5 +1,3 @@
-import { type TReadingListCard } from "~/types";
-
 export const limit = 10;
 
 export const skip = 0;
@@ -43,13 +41,3 @@ export const getGenre = (
 export const bookWidth = cardWidth / 1.5;
 
 export const bookHeight = cardHeight / 1.4;
-
-export const defaultReadingList: TReadingListCard[] = [
-  {
-    stories: [],
-    id: "001",
-    title: "My Reading List",
-    slug: "/",
-    description: null,
-  },
-];

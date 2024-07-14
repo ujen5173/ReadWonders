@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { type Database } from "./supabaseTypes";
-
 import { env } from "~/env.mjs";
+import { type Database } from "./supabaseTypes";
 
 export const getServiceSupabase = () =>
   createClient<Database>(
@@ -10,7 +9,9 @@ export const getServiceSupabase = () =>
     env.SUPABASE_SERVICE_KEY,
     {
       auth: {
+        flowType: "pkce",
         autoRefreshToken: true,
+        detectSessionInUrl: false,
         persistSession: true,
       },
     },
@@ -21,7 +22,9 @@ export const clientSupabase = createClient<Database>(
   env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   {
     auth: {
+      flowType: "pkce",
       autoRefreshToken: true,
+      detectSessionInUrl: false,
       persistSession: true,
     },
   },

@@ -800,94 +800,94 @@ export const storyRouter = createTRPCRouter({
       try {
         const userId = ctx.user?.id ?? null;
         const featuredStories = (await ctx.db.$queryRaw`
-  WITH CategoryCounts AS (
-    SELECT 
-      "categoryName",
-      COUNT(*) as story_count
-    FROM 
-      story
-    WHERE 
-      published = true
-      AND "isDeleted" = false
-    GROUP BY 
-      "categoryName"
-  ),
-  RankedStories AS (
-    SELECT 
-      s.id,
-      s.title,
-      s.slug,
-      s.description,
-      s.thumbnail,
-      s.tags,
-       s."isMature",
-      s."categoryName",
-      s."readingTime",
-      s.reads,
-      s."authorId",
-      cc.story_count
-    FROM 
-      story s
-    LEFT JOIN
-      CategoryCounts cc ON s."categoryName" = cc."categoryName"
-    WHERE 
-      s.published = true
-      AND s."isDeleted" = false
-      AND s."createdAt" >= CURRENT_DATE - INTERVAL '30 days'
-  )
-  SELECT 
-    rs.id,
-    rs.title,
-    rs.slug,
-    rs.description,
-    rs.thumbnail,
-    rs.tags,
-     rs."isMature",
-    rs."categoryName",
-    rs."readingTime",
-    rs.reads,
-    rs.story_count,
-    (
-      SELECT json_agg(json_build_object(
-        'id', c.id,
-        'title', c.title,
-        'createdAt', c."createdAt",
-        "isPremium", c."isPremium",
-        'slug', c.slug
-      ))
-      FROM chapter c
-      WHERE c."storyId" = rs.id
-      AND c.published = true
-      AND c."isDeleted" = false
-    ) AS chapters,
-    json_build_object(
-      'name', p.name,
-      'profile', p.profile,
-      'username', p.username
-    ) AS author,
-    json_build_object(
-      'name', g.name,
-      'slug', g.slug
-    ) AS category,
-    CASE 
-      WHEN ${userId}::uuid IS NOT NULL THEN
-        EXISTS (
-          SELECT 1 
-          FROM reading_list rl 
-          JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
-          WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
-        )
-      ELSE NULL
-    END AS "readingList"
-  FROM 
-    RankedStories rs
-    JOIN profiles p ON rs."authorId" = p.id
-    LEFT JOIN genre g ON rs."categoryName" = g.name
-  ORDER BY 
-    rs.story_count DESC,
-    rs.reads DESC
-  LIMIT ${input.limit} OFFSET ${input.skip}
-`) as (TCard & { readingList: boolean | null })[];
+          WITH CategoryCounts AS (
+            SELECT 
+              "categoryName",
+              COUNT(*) as story_count
+            FROM 
+              story
+            WHERE 
+              published = true
+              AND "isDeleted" = false
+            GROUP BY 
+              "categoryName"
+          ),
+          RankedStories AS (
+            SELECT 
+              s.id,
+              s.title,
+              s.slug,
+              s.description,
+              s.thumbnail,
+              s.tags,
+              s."isMature",
+              s."categoryName",
+              s."readingTime",
+              s.reads,
+              s."authorId", 
+              cc.story_count
+            FROM 
+              story s
+            LEFT JOIN
+              CategoryCounts cc ON s."categoryName" = cc."categoryName"
+            WHERE 
+              s.published = true
+              AND s."isDeleted" = false
+              AND s."createdAt" >= CURRENT_DATE - INTERVAL '30 days'
+          )
+          SELECT 
+            rs.id,
+            rs.title,
+            rs.slug,
+            rs.description,
+            rs.thumbnail,
+            rs.tags,
+            rs."isMature",
+            rs."categoryName",
+            rs."readingTime",
+            rs.reads,
+            rs.story_count,
+            (
+              SELECT json_agg(json_build_object(
+                'id', c.id,
+                'title', c.title,
+                'createdAt', c."createdAt",
+                "isPremium", c."isPremium",
+                'slug', c.slug
+              ))
+              FROM chapter c
+              WHERE c."storyId" = rs.id
+              AND c.published = true
+              AND c."isDeleted" = false
+            ) AS chapters,
+            json_build_object(
+              'name', p.name,
+              'profile', p.profile,
+              'username', p.username
+            ) AS author,
+            json_build_object(
+              'name', g.name,
+              'slug', g.slug
+            ) AS category,
+            CASE 
+              WHEN ${userId}::uuid IS NOT NULL THEN
+                EXISTS (
+                  SELECT 1 
+                  FROM reading_list rl 
+                  JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                  WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
+                )
+              ELSE NULL
+            END AS "readingList"
+          FROM 
+            RankedStories rs
+            JOIN profiles p ON rs."authorId" = p.id
+            LEFT JOIN genre g ON rs."categoryName" = g.name
+          ORDER BY 
+            rs.story_count DESC,
+            rs.reads DESC
+          LIMIT ${input.limit} OFFSET ${input.skip}
+        `) as (TCard & { readingList: boolean | null })[];
 
         const processedStories = featuredStories.map((story) => ({
           ...story,

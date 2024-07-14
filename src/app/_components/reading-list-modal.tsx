@@ -12,7 +12,7 @@ import {
 import { Input } from "~/components/ui/input";
 
 import { PlusSignIcon, PlusSignSquareIcon } from "hugeicons-react";
-import { createRef, useEffect, useState } from "react";
+import { createRef } from "react";
 import { v4 } from "uuid";
 import { Spinner } from "~/components/Loading";
 import {
@@ -30,41 +30,7 @@ import { api } from "~/trpc/react";
 const ReadingListModel = ({ bookId }: { bookId: string }) => {
   const { user } = useUser();
 
-  const [readingLists, setReadingLists] = useState<
-    {
-      id: string;
-      title: string;
-    }[]
-  >([]);
-
-  useEffect(() => {
-    void (async () => {
-      const readingList = localStorage.getItem("readingList");
-
-      if (readingList) {
-        setReadingLists(JSON.parse(readingList));
-      } else {
-        const myReadingListId = v4();
-
-        localStorage.setItem(
-          "readingList",
-          JSON.stringify([
-            {
-              id: myReadingListId,
-              title: "My Reading List",
-            },
-          ]),
-        );
-
-        setReadingLists([
-          {
-            id: myReadingListId,
-            title: "My Reading List",
-          },
-        ]);
-      }
-    })();
-  }, []);
+  const { data: readingList, refetch } = api.auth.readingListNames.useQuery();
 
   const { mutateAsync, isLoading } = api.story.addToReadingList.useMutation();
 
@@ -93,6 +59,8 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
       });
 
       if (res) {
+        refetch();
+
         toast({
           title: "Story added to reading list",
         });
@@ -122,24 +90,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         }
       }
 
-      localStorage.setItem(
-        "readingList",
-        JSON.stringify([
-          ...readingLists,
-          {
-            id: newId,
-            title: newTitle,
-          },
-        ]),
-      );
-
-      setReadingLists([
-        ...readingLists,
-        {
-          id: newId,
-          title: newTitle ?? "New Reading lists",
-        },
-      ]);
+      refetch();
     } catch (error) {
       toast({
         title: "Failed to add story to reading list",
@@ -173,7 +124,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
           <div className="">
             <Select
               onValueChange={(data) => {
-                const list = readingLists.find((l) => l.title === data);
+                const list = (readingList ?? []).find((l) => l.title === data);
                 const listId = list?.id;
 
                 if (listId) {
@@ -187,7 +138,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
 
               <SelectContent className="w-full bg-white">
                 <SelectGroup>
-                  {readingLists.map((list, index) => (
+                  {(readingList ?? []).map((list, index) => (
                     <SelectItem key={index} value={list.title}>
                       {list.title}
                     </SelectItem>
@@ -208,11 +159,7 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
               />
 
               <Button type="submit" className="h-10 w-12" size={"icon"}>
-                {isLoading ? (
-                  <Spinner className="text-white" />
-                ) : (
-                  <PlusSignIcon size={16} />
-                )}
+                <PlusSignIcon size={16} />
               </Button>
             </div>
           </form>

@@ -360,4 +360,18 @@ export const authRouter = createTRPCRouter({
 
       return user;
     }),
+
+  readingListNames: privateProcedure.query(async ({ ctx }) => {
+    const readingListNames = await ctx.db.readingList.findMany({
+      where: {
+        authorId: ctx.user?.id,
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+
+    return readingListNames;
+  }),
 });

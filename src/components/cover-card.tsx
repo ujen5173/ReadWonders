@@ -46,7 +46,7 @@ const CoverCard: FC<{
         <a className="relative block">
           {details.isMature && (
             <div className="absolute right-2 top-2 z-50">
-              <Badge className={cn(`bg-primary/80 text-xs`, suezOne.className)}>
+              <Badge className={cn(`bg-primary text-xs`, suezOne.className)}>
                 18+
               </Badge>
             </div>

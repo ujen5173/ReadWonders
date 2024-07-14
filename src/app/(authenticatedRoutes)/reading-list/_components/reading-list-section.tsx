@@ -3,7 +3,7 @@
 import ReadingListCard from "~/components/reading-list-card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { toast } from "~/components/ui/use-toast";
-import { cardHeight, defaultReadingList } from "~/server/constants";
+import { cardHeight } from "~/server/constants";
 import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 
@@ -84,17 +84,15 @@ const ReadingListSection = ({
       ) : (
         <>
           {readingLists &&
-            (readingLists.length > 0 ? readingLists : defaultReadingList)?.map(
-              (readingList) => (
-                <ReadingListCard
-                  key={readingList.id}
-                  showActions={showActions}
-                  readingList={readingList}
-                  onEditConfirm={onEditConfirm}
-                  onDeleteConfirm={onDeleteConfirm}
-                />
-              ),
-            )}
+            readingLists?.map((readingList) => (
+              <ReadingListCard
+                key={readingList.id}
+                showActions={showActions}
+                readingList={readingList}
+                onEditConfirm={onEditConfirm}
+                onDeleteConfirm={onDeleteConfirm}
+              />
+            ))}
         </>
       )}
       {Array(Math.abs(perRow - (readingLists ?? []).length))

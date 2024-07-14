@@ -41,7 +41,7 @@ export const genreRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const genre = await ctx.db.genre.findFirst({
         where: {
-          slug: "/" + input.slug,
+          slug: input.slug,
         },
         select: {
           id: true,
