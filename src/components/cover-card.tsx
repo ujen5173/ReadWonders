@@ -77,7 +77,10 @@ const CoverCard: FC<{
         <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
           <div className="h-6">
             {details.categoryName && (
-              <Link href={`/genre/${details.categoryName}`} passHref>
+              <Link
+                href={`/genre/${details.categoryName.toLowerCase()}`}
+                passHref
+              >
                 <Badge className="border border-border" variant="secondary">
                   {details.categoryName}
                 </Badge>

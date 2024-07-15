@@ -162,7 +162,7 @@ const Story = () => {
                         <p>Chapters</p>
                       </div>
                       <p className="font-medium">
-                        {activeBook?.chapters.length}
+                        {(activeBook?.chapters ?? []).length}
                       </p>
                     </div>
 

@@ -1103,83 +1103,68 @@ export const storyRouter = createTRPCRouter({
 
         const stories = await ctx.db.$queryRaw<
           (TCard & { readingList: boolean })[]
-        >`
-          SELECT
-            story.id,SELECT
-  story.id,
-  story.description,
-  story.slug,
-  story.title,
-  story.thumbnail,
-  story.tags,
-  story."categoryName",
-  story."isMature",
-  story."readingTime",
-  story.reads,
-  COALESCE(json_agg(
-    json_build_object(
-      'id', chapter.id,
-      'title', chapter.title,
-      'slug', chapter.slug,
-      "isPremium", chapter."isPremium",
-      'createdAt', chapter."createdAt"
-    )
-  ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
-  json_build_object(
-    'name', author.name,
-    'profile', author.profile
-  ) AS author,
-  CASE 
-    WHEN ${userId} IS NOT NULL THEN
-      EXISTS (
-        SELECT 1 
-        FROM reading_list rl 
-        JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
-        WHERE rls."B" = story.id AND rl."authorId" = ${userId ?? "NULL"}::uuid
-      )
-    ELSE FALSE
-  END AS "readingList",
-  COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) AS premium_chapter_count
-FROM story
-LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
-LEFT JOIN profiles AS author ON author.id = story."authorId"
-WHERE ${Prisma.join(searchConditions, " AND ")}
-AND story.published = true
-AND story."isDeleted" = false
-${lengthCondition}
-${matureCondition}
-${updatedCondition}
-${cursorCondition}
-${
-  premiumCondition
-    ? Prisma.sql`
-  AND EXISTS (
-    SELECT 1
-    FROM chapter
-    WHERE chapter."storyId" = story.id
-    AND chapter.published = true
-    AND chapter."isDeleted" = false
-    AND chapter."isPremium" = ${input.filter?.premium === "true"}
-  )
-`
-    : Prisma.empty
-}
-GROUP BY story.id, author.name, author.profile
-${
-  input.filter?.premium === "true"
-    ? Prisma.sql`
-  HAVING COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) > 0
-`
-    : Prisma.empty
-}
-ORDER BY 
-  ${
-    input.filter?.premium === "true"
-      ? Prisma.sql`COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) DESC,`
-      : Prisma.empty
-  }
-  story.id
-LIMIT ${input.limit + 1}
+        >`SELECT
+          story.id,
+          story.description,
+          story.slug,
+          story.title,
+          story.thumbnail,
+          story.tags,
+          story."categoryName",
+          story."isMature",
+          story."readingTime",
+          story.reads,
+          COALESCE(json_agg(
+            json_build_object(
+              'id', chapter.id,
+              'title', chapter.title,
+              'slug', chapter.slug,
+              "isPremium", chapter."isPremium",
+              'createdAt', chapter."createdAt"
+            )
+          ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
+          json_build_object(
+            'name', author.name,
+            'profile', author.profile
+          ) AS author,
+          CASE 
+            WHEN ${userId}::uuid IS NOT NULL THEN
+              EXISTS (
+                SELECT 1 
+                FROM reading_list rl 
+                JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                WHERE rls."B" = story.id AND rl."authorId" = ${userId}::uuid
+              )
+            ELSE FALSE
+          END AS "readingList",
+          COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) AS premium_chapter_count
+        FROM story
+        LEFT JOIN chapter ON chapter."storyId" = story.id AND chapter.published = true AND chapter."isDeleted" = false
+        LEFT JOIN profiles AS author ON author.id = story."authorId"
+        WHERE ${Prisma.join(searchConditions, " AND ")}
+        AND story.published = true
+        AND story."isDeleted" = false
+        ${lengthCondition}
+        ${matureCondition}
+        ${updatedCondition}
+        ${cursorCondition}
+        ${premiumCondition}
+        GROUP BY story.id, author.name, author.profile
+        ${
+          input.filter?.premium === "true"
+            ? Prisma.sql`
+              HAVING COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) > 0
+            `
+            : Prisma.empty
+        }
+        ORDER BY 
+          ${
+            input.filter?.premium === "true"
+              ? Prisma.sql`COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) DESC,`
+              : Prisma.empty
+          }
+          story.id
+        LIMIT ${input.limit + 1}
         `;
         const processedstories = stories.map((story) => ({
           ...story,

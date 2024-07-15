@@ -48,7 +48,6 @@ const Login = () => {
       provider: provider,
       options: {
         redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
-        skipBrowserRedirect: true,
       },
     });
   };

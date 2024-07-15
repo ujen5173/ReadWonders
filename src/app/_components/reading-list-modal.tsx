@@ -115,55 +115,63 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-2">
-          <div className="flex items-center gap-2">
-            <h1>Available Lists</h1>
-            {isLoading ? <Spinner className="size-4 text-black" /> : null}
-          </div>
-
-          <div className="">
-            <Select
-              onValueChange={(data) => {
-                const list = (readingList ?? []).find((l) => l.title === data);
-                const listId = list?.id;
-
-                if (listId) {
-                  addReadingList(listId);
-                }
-              }}
-            >
-              <SelectTrigger className="bg-white outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0">
-                <SelectValue placeholder="Select a reading list" />
-              </SelectTrigger>
-
-              <SelectContent className="w-full bg-white">
-                <SelectGroup>
-                  {(readingList ?? []).map((list, index) => (
-                    <SelectItem key={index} value={list.title}>
-                      {list.title}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <span className="text-center">Or</span>
-
-          <form onSubmit={handleSubmit}>
+        {user ? (
+          <div className="grid gap-2">
             <div className="flex items-center gap-2">
-              <Input
-                placeholder="New list title"
-                ref={inputRef}
-                className="h-10 bg-white"
-              />
-
-              <Button type="submit" className="h-10 w-12" size={"icon"}>
-                <PlusSignIcon size={16} />
-              </Button>
+              <h1>Available Lists</h1>
+              {isLoading ? <Spinner className="size-4 text-black" /> : null}
             </div>
-          </form>
-        </div>
+
+            <div className="">
+              <Select
+                onValueChange={(data) => {
+                  const list = (readingList ?? []).find(
+                    (l) => l.title === data,
+                  );
+                  const listId = list?.id;
+
+                  if (listId) {
+                    addReadingList(listId);
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-white outline-none focus:ring-0 focus:ring-transparent focus:ring-offset-0">
+                  <SelectValue placeholder="Select a reading list" />
+                </SelectTrigger>
+
+                <SelectContent className="w-full bg-white">
+                  <SelectGroup>
+                    {(readingList ?? []).map((list, index) => (
+                      <SelectItem key={index} value={list.title}>
+                        {list.title}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <span className="text-center">Or</span>
+
+            <form onSubmit={handleSubmit}>
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="New list title"
+                  ref={inputRef}
+                  className="h-10 bg-white"
+                />
+
+                <Button type="submit" className="h-10 w-12" size={"icon"}>
+                  <PlusSignIcon size={16} />
+                </Button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <DialogDescription className="rounded-md bg-primary/80 p-3 text-center text-base text-white">
+            You need to be logged in to add a story to a reading list.
+          </DialogDescription>
+        )}
       </DialogContent>
     </Dialog>
   );

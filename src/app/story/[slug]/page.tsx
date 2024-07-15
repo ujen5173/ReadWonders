@@ -267,7 +267,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             </div>
 
             <div>
-              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-bold   tracking-tight first:mt-0">
+              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-bold tracking-tight first:mt-0">
                 Comments:
               </h4>
               <div className="px-4 py-6">
