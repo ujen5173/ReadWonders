@@ -18,6 +18,7 @@ import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import Comments from "./_components/comments";
 import LikeStory from "./_components/like-story";
 import RatingButton from "./_components/rating-button";
 import StartReading from "./_components/start-reading";
@@ -54,7 +55,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
   return (
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] border-b border-border py-6">
-        <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-12 md:p-6 lg:p-12">
+        <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-8 md:p-6 lg:p-8">
           <div className="relative mx-auto mb-6 flex w-full max-w-80 flex-col items-center gap-8 md:mb-0">
             <Image
               alt="Story cover"
@@ -153,7 +154,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Reads</p>
                   </div>
 
-                  <p className="font-semibold">
+                  <p className="font-bold ">
                     {formatNumber(storyDetails.reads)}
                   </p>
                 </div>
@@ -166,7 +167,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Likes</p>
                   </div>
 
-                  <p className="font-semibold">
+                  <p className="font-bold ">
                     {formatNumber(storyDetails.love)}
                   </p>
                 </div>
@@ -179,9 +180,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Chapters</p>
                   </div>
 
-                  <p className="font-semibold">
-                    {storyDetails.chapters.length}
-                  </p>
+                  <p className="font-bold ">{storyDetails.chapters.length}</p>
                 </div>
               </div>
 
@@ -192,7 +191,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Time</p>
                   </div>
 
-                  <p className="font-semibold">
+                  <p className="font-bold ">
                     {formatReadingTime(storyDetails.readingTime)}
                   </p>
                 </div>
@@ -217,7 +216,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             </article>
 
             <div>
-              <h4 className="mb-4 scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+              <h4 className="mb-4 scroll-m-20 border-b px-4 pb-2 text-2xl font-bold  tracking-tight first:mt-0">
                 Chapters:
               </h4>
 
@@ -232,7 +231,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                       className="w-full"
                     >
                       <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
-                        <p className="line-clamp-1 text-lg text-slate-700">
+                        <p className="line-clamp-1 text-lg font-semibold text-slate-700">
                           {ch.title}
                         </p>
                         <div className="flex items-center gap-2">
@@ -242,11 +241,11 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                             </span>
                           )}
                           {!ch.published && (
-                            <Badge className="bg-rose-500 text-xs font-semibold text-white">
+                            <Badge className="bg-rose-500 text-xs font-bold  text-white">
                               Draft
                             </Badge>
                           )}
-                          <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
+                          <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
                             {formatDate(ch.createdAt)}
                           </p>
                         </div>
@@ -268,17 +267,11 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             </div>
 
             <div>
-              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-bold   tracking-tight first:mt-0">
                 Comments:
               </h4>
-              <div className="py-12">
-                <p className="text-center text-lg text-foreground">
-                  No comments yet,{" "}
-                  <span className="cursor-pointer text-primary underline">
-                    Click here
-                  </span>{" "}
-                  to add one
-                </p>
+              <div className="px-4 py-6">
+                <Comments storyId={storyDetails.id} />
               </div>
             </div>
           </div>

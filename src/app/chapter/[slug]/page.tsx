@@ -439,7 +439,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
             <div className="mx-auto flex max-w-screen-lg flex-col items-center justify-stretch gap-8 py-8">
               <div
-                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-xl`}
+                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-lg`}
                 dangerouslySetInnerHTML={{
                   __html: generateHTML(chapterDetails.content as JSONContent, [
                     Placeholder,

@@ -1,4 +1,4 @@
-import { Merienda, Merriweather, Rubik } from "next/font/google";
+import { Merienda, Merriweather, Source_Sans_3 } from "next/font/google";
 
 export const merriweather = Merriweather({
   subsets: ["latin"],
@@ -12,8 +12,8 @@ export const suezOne = Merienda({
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-export const contentFont = Rubik({
+export const contentFont = Source_Sans_3({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-rubik",
+  variable: "--font-sans-3",
 });

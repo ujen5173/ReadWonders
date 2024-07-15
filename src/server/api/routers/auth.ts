@@ -246,27 +246,29 @@ export const authRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const readingLists = await ctx.db.readingList.findMany({
-          take: input.limit,
-          where: {
-            authorId: input.authorId,
-          },
-          select: {
-            id: true,
-            authorId: false,
-            title: true,
-            slug: true,
-            description: true,
-            private: false,
-            createdAt: false,
-            stories: {
-              take: 3,
-              select: {
-                thumbnail: true,
+        const readingLists = await ctx.db.readingList
+          .findMany({
+            take: input.limit,
+            where: {
+              authorId: input.authorId,
+            },
+            select: {
+              id: true,
+              authorId: false,
+              title: true,
+              slug: true,
+              description: true,
+              private: false,
+              createdAt: false,
+              stories: {
+                take: 3,
+                select: {
+                  thumbnail: true,
+                },
               },
             },
-          },
-        });
+          })
+          .withAccelerateInfo();
 
         return readingLists;
       } catch (err) {

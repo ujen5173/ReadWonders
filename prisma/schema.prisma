@@ -341,6 +341,7 @@ model Profiles {
   following      Follow[]       @relation("FollowToProfilesFollowing")
   followers      Follow[]       @relation("FollowToProfilesFollower")
   rating         Rating[]
+  comments       Comment[]
 
   @@index([username])
   @@index([name])
@@ -409,6 +410,7 @@ model Story {
   love          Int            @default(0)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  comments      Comment[]
   loves         Love[]
   ratings       Rating[]
   chapters      Chapter[]
@@ -424,6 +426,27 @@ model Story {
   @@index([thumbnail])
   @@index([tags])
   @@map("story")
+  @@schema("public")
+}
+
+model Comment {
+  id        String    @id @default(uuid()) @db.Uuid
+  content   String
+  userId    String    @db.Uuid
+  storyId   String    @db.Uuid
+  parentId  String?   @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      Profiles  @relation(fields: [userId], references: [id])
+  story     Story     @relation(fields: [storyId], references: [id])
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  children  Comment[] @relation("CommentToComment")
+
+  @@index([userId])
+  @@index([storyId])
+  @@index([parentId])
+  @@index([createdAt])
+  @@map("comment")
   @@schema("public")
 }
 

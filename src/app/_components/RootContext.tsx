@@ -29,9 +29,9 @@ const RootContext = ({ children }: { children: ReactNode }) => {
 
   return (
     <Context.Provider value={{ removeFromList, activeBook, setActiveBook }}>
-      {!path.includes("write/s/") && !path.includes("edit") && <Header />}
+      {!path.includes("/write/s/") && !path.includes("/edit") && <Header />}
       {children}
-      {!path.includes("write") && !path.includes("edit") && <Footer />}
+      {!path.includes("/write") && !path.includes("/edit") && <Footer />}
     </Context.Provider>
   );
 };

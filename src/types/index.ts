@@ -88,3 +88,15 @@ export type SearchByTitle = {
   title: string;
   slug: string;
 };
+
+export type TComment = {
+  id: string;
+  content: string;
+  user: {
+    id: string;
+    username: string;
+    profile: string | null;
+  };
+  childrenCount: number;
+  createdAt: Date;
+};

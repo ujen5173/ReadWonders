@@ -24,6 +24,9 @@ const config = {
         hostname: "pbs.twimg.com",
       },
       {
+        hostname: "yt3.ggpht.com",
+      },
+      {
         hostname: "bookcoverzone.com",
       },
       {
@@ -34,6 +37,9 @@ const config = {
       },
       {
         hostname: "www.kpop.ae",
+      },
+      {
+        hostname: "lh3.google.com",
       },
       {
         hostname: "covers.bookcoverzone.com",

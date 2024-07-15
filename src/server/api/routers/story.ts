@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 import { User } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
+import { PrismaClientSingleton } from "~/server/db";
 import type { SearchByTitle, TCard } from "~/types";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import { TCardSelect } from "./../../constants/db";
@@ -23,31 +23,33 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const stories = await ctx.db.story.findMany({
-          take: input.limit,
-          skip: input.skip,
-          include: {
-            chapters: {
-              where: {
-                published: true,
-                isDeleted: false,
+        const stories = await ctx.db.story
+          .findMany({
+            take: input.limit,
+            skip: input.skip,
+            include: {
+              chapters: {
+                where: {
+                  published: true,
+                  isDeleted: false,
+                },
+                select: {
+                  title: true,
+                  id: true,
+                  createdAt: true,
+                  slug: true,
+                },
               },
-              select: {
-                title: true,
-                id: true,
-                createdAt: true,
-                slug: true,
+              author: {
+                select: {
+                  name: true,
+                  profile: true,
+                  username: true,
+                },
               },
             },
-            author: {
-              select: {
-                name: true,
-                profile: true,
-                username: true,
-              },
-            },
-          },
-        });
+          })
+          .withAccelerateInfo();
 
         return stories;
       } catch (err) {
@@ -1674,7 +1676,7 @@ LIMIT ${input.limit + 1}
 async function updateStoryRating(
   ctx: {
     user: User;
-    db: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
+    db: PrismaClientSingleton;
     headers: Headers;
   },
   storyId: string,
