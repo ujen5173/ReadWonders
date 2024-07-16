@@ -56,52 +56,19 @@ export const siteConfig = {
   navItemsMobile: [],
   navItemsFooter: [
     {
-      title: "Stories Categories",
-      links: [
-        {
-          name: "Romance",
-          href: "/Romance",
-        },
-        {
-          name: "Fantasy",
-          href: "/Fantasy",
-        },
-        {
-          name: "Young Adult",
-          href: "/Young",
-        },
-        {
-          name: "Science Fiction",
-          href: "/Science",
-        },
-        {
-          name: "Thriller/Mystery",
-          href: "/Thriller",
-        },
-      ],
-    },
-    {
       title: "Important Links",
       links: [
         {
-          name: "About",
-          href: "/About",
-        },
-        {
           name: "Privacy Policy",
-          href: "/Privacy Policy",
+          href: "/privacy-policy",
         },
         {
           name: "Terms & Conditions",
-          href: "/Terms & Conditions",
+          href: "/terms-and-condition",
         },
         {
           name: "Careers",
-          href: "/Careers",
-        },
-        {
-          name: "Creators",
-          href: "/Creators",
+          href: "/careers",
         },
       ] as { name: string; href: string }[],
     },

@@ -332,6 +332,10 @@ model Profiles {
   coins          Int            @default(0)
   followingCount Int            @default(0)
   followersCount Int            @default(0)
+  website        String?
+  twitter        String?
+  wattpad        String?
+  goodreads      String?
   createdAt      DateTime       @default(now()) @db.Timestamptz(6)
   currentReads   CurrentReads[]
   author         Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)

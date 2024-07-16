@@ -42,10 +42,16 @@ const HeroSection = () => {
             {siteConfig.description}
           </p>
 
-          <Button className="mb-5 gap-2">
-            <BookBookmark02Icon className="rotate-12" size={18} color="#fff" />
-            <span>Browse the best Reading collection</span>
-          </Button>
+          <Link href="/genre">
+            <Button className="mb-5 gap-2">
+              <BookBookmark02Icon
+                className="rotate-12"
+                size={18}
+                color="#fff"
+              />
+              <span>Get Started on Your Story Quest</span>
+            </Button>
+          </Link>
 
           <div className="flex flex-col items-start">
             <div className="mb-1 flex">

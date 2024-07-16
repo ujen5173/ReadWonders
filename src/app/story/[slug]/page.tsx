@@ -71,7 +71,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 hasChapter={
                   storyDetails &&
                   storyDetails.chapters &&
-                  storyDetails.chapters.length > 0
+                  (storyDetails.chapters ?? []).length > 0
                     ? `/chapter/${storyDetails.chapters[0]?.slug}`
                     : null
                 }
@@ -180,7 +180,9 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Chapters</p>
                   </div>
 
-                  <p className="font-bold ">{storyDetails.chapters.length}</p>
+                  <p className="font-bold ">
+                    {(storyDetails.chapters ?? []).length}
+                  </p>
                 </div>
               </div>
 
@@ -220,7 +222,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 Chapters:
               </h4>
 
-              {storyDetails.chapters.length > 0 ? (
+              {(storyDetails.chapters ?? []).length > 0 ? (
                 storyDetails.chapters.map((ch) =>
                   user?.id !== storyDetails.author.id &&
                   !ch.published ? null : (

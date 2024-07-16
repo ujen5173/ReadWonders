@@ -223,7 +223,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                       <p>Chapters</p>
                     </div>
                     <p className="font-bold">
-                      {chapterDetails.story.chapters.length}
+                      {(chapterDetails.story.chapters ?? []).length}
                     </p>
                   </div>
                 </div>
@@ -417,7 +417,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                         <p>Chapters</p>
                       </div>
                       <p className="font-bold">
-                        {chapterDetails.story.chapters.length}
+                        {(chapterDetails.story.chapters ?? []).length}
                       </p>
                     </div>
                   </div>

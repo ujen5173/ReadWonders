@@ -40,6 +40,9 @@ import {
 import { toast } from "../ui/use-toast";
 
 const Footer = () => {
+  const { data } = api.genre.getGenre.useQuery({
+    limit: 5,
+  });
   const [selectedEmoji, setSelectedEmoji] = useState<
     "bad" | "good" | "amazing" | "okay" | "terrible"
   >("okay");
@@ -64,6 +67,9 @@ const Footer = () => {
 
     if (res) {
       toast({ title: "Feedback submitted successfully!" });
+      inputRef.current!.value = "";
+      setSelectedEmoji("okay");
+      setFrom(undefined);
     } else {
       toast({ title: "An error occurred. Please try again later." });
     }
@@ -194,6 +200,23 @@ const Footer = () => {
             </Dialog>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className=" flex-1">
+              <h1 className="mb-2 text-base font-semibold text-slate-800">
+                Stories Categories
+              </h1>
+              <ul>
+                {data?.map((genre) => (
+                  <li key={genre.id}>
+                    <Link
+                      href={`/genre/${genre.slug}`}
+                      className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
+                    >
+                      {genre.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
             {siteConfig.navItemsFooter.map((navItem) => (
               <div key={navItem.title} className=" flex-1">
                 <h1 className="mb-2 text-base font-semibold text-slate-800">
@@ -203,6 +226,7 @@ const Footer = () => {
                   {navItem.links.map((link) => (
                     <li key={link.name}>
                       <Link
+                        target="_blank"
                         href={link.href}
                         className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
                       >

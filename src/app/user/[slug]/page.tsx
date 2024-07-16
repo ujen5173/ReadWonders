@@ -1,4 +1,9 @@
-import { Edit02Icon, Mail01Icon, RecordIcon } from "hugeicons-react";
+import {
+  Edit02Icon,
+  NewTwitterIcon,
+  RecordIcon,
+  WebProgrammingIcon,
+} from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -99,22 +104,31 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-8">
             <div className="flex flex-wrap items-center gap-2">
-              <Button className="gap-1" variant="secondary">
-                <Icons.wattpad className="size-4" />
-                <span>Wattpad</span>
-              </Button>
-              <Button className="gap-1" variant="secondary">
-                <Icons.pinterest className="size-4" />
-                <span>Pinterest</span>
-              </Button>
-              <Button className="gap-1" variant="secondary">
-                <Mail01Icon className="size-4" />
-                <span>E-mail</span>
-              </Button>
-              <Button className="gap-1" variant="secondary">
-                <Icons.discord className="size-4" />
-                <span>Discord</span>
-              </Button>
+              {userDetails.twitter && (
+                <Button className="gap-1" variant="secondary">
+                  <NewTwitterIcon className="size-4" />
+                  <span>Twitter</span>
+                </Button>
+              )}
+              {userDetails.website && (
+                <Button className="gap-1" variant="secondary">
+                  <WebProgrammingIcon className="size-4" />
+                  <span>Website</span>
+                </Button>
+              )}
+
+              {userDetails.goodreads && (
+                <Button className="gap-1" variant="secondary">
+                  <Icons.goodreads className="size-4" />
+                  <span>goodReads</span>
+                </Button>
+              )}
+              {userDetails.wattpad && (
+                <Button className="gap-1" variant="secondary">
+                  <Icons.wattpad className="size-4" />
+                  <span>Wattpad</span>
+                </Button>
+              )}
             </div>
 
             {userDetails.id === user?.id ? (

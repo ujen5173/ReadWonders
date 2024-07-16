@@ -7,30 +7,37 @@ export const genreRouter = createTRPCRouter({
     return "Story router";
   }),
 
-  getGenre: publicProcedure.query(async ({ ctx }) => {
-    const genres = await ctx.db.genre.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        _count: {
-          select: {
-            story: true,
+  getGenre: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().default(5),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const genres = await ctx.db.genre.findMany({
+        take: input.limit,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          _count: {
+            select: {
+              story: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return genres.map((genre) => {
-      const { _count, ...rest } = genre;
+      return genres.map((genre) => {
+        const { _count, ...rest } = genre;
 
-      return {
-        ...rest,
-        stories: _count.story,
-      };
-    });
-  }),
+        return {
+          ...rest,
+          stories: _count.story,
+        };
+      });
+    }),
 
   getSingleGenre: publicProcedure
     .input(

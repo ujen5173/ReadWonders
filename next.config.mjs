@@ -1,8 +1,10 @@
+import withMDX from "@next/mdx";
 await import("./src/env.mjs");
 
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
 
   /**
    * If you are using `appDir` then you must comment the below `i18n` config out.
@@ -66,4 +68,4 @@ const config = {
   },
 };
 
-export default config;
+export default withMDX()(config);

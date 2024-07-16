@@ -27,6 +27,10 @@ const formSchema = z.object({
   bio: z.string(),
   profile: z.instanceof(File).nullable(),
   tagline: z.string(),
+  website: z.string().url().optional().nullable(),
+  twitter: z.string().optional().nullable(),
+  wattpad: z.string().optional().nullable(),
+  goodreads: z.string().url().optional().nullable(),
 });
 
 const UserFormDetails = ({
@@ -40,6 +44,10 @@ const UserFormDetails = ({
     bio: string | null;
     profile: string | null;
     tagline: string | null;
+    website: string | null;
+    twitter: string | null;
+    wattpad: string | null;
+    goodreads: string | null;
   };
 }) => {
   const { mutate, isLoading, isError, error, isSuccess } =
@@ -53,6 +61,8 @@ const UserFormDetails = ({
       bio: details.bio ?? "",
       profile: null,
       tagline: details.tagline ?? "",
+      website: details.website ?? "",
+      twitter: details.twitter ?? "",
     },
   });
 
@@ -230,6 +240,82 @@ const UserFormDetails = ({
               </FormItem>
             )}
           />
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Website</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="example.com"
+                      value={form.getValues("website") ?? ""}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="twitter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Twitter / X username</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="@john5173"
+                      value={form.getValues("twitter") ?? ""}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="wattpad"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wattpad</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="ujen5173"
+                      value={form.getValues("wattpad") ?? ""}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="goodreads"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>goodReads</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="goodreads.com/author/show/john-doe"
+                      value={form.getValues("goodreads") ?? ""}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         <Button loading={isLoading} disabled={isLoading} type="submit">
