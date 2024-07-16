@@ -1,12 +1,14 @@
 import { RecordIcon } from "hugeicons-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { getGenre } from "~/server/constants";
+import { getGenre, limit } from "~/server/constants";
 import { api } from "~/trpc/server";
 import { formatNumber } from "~/utils/helpers";
 
 const AllGenre = async () => {
-  const genres = await api.genre.getGenre.query();
+  const genres = await api.genre.getGenre.query({
+    limit: limit,
+  });
 
   return (
     <section className="w-full">

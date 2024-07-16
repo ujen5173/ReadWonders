@@ -48,6 +48,8 @@ export const authRouter = createTRPCRouter({
         email: true,
         website: true,
         twitter: true,
+        goodreads: true,
+        wattpad: true,
       },
     });
 

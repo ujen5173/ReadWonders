@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { limit } from "~/server/constants";
 import { TCardSelect } from "~/server/constants/db";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -10,7 +11,7 @@ export const genreRouter = createTRPCRouter({
   getGenre: publicProcedure
     .input(
       z.object({
-        limit: z.number().default(5),
+        limit: z.number().optional().default(limit),
       }),
     )
     .query(async ({ input, ctx }) => {
