@@ -121,7 +121,7 @@ export const authRouter = createTRPCRouter({
         story:
           userDetails?.story.map((story) => ({
             ...story,
-            readingList: story.readingLists.length > 0,
+            readingList: (story.readingLists ?? []).length > 0,
           })) ?? [],
       };
     }),
@@ -235,7 +235,7 @@ export const authRouter = createTRPCRouter({
       const processedStories =
         currentReads?.stories.map((story) => ({
           ...story,
-          readingList: story.readingLists.length > 0,
+          readingList: (story.readingLists ?? []).length > 0,
         })) ?? [];
 
       return processedStories;

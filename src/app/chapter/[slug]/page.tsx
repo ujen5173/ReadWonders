@@ -87,8 +87,6 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
   const user = await api.auth.authInfo.query();
 
-  console.log({ chapterDetails });
-
   if (!chapterDetails) return null;
 
   if (!hasPaid) {
@@ -139,8 +137,14 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                           href={`/chapter/${chapter.slug}`}
                           key={chapter.slug}
                         >
-                          <div className="focus:text-text-light focus:bg-accent relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-4 pr-2 text-sm outline-none hover:bg-slate-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
-                            {chapter.title}
+                          <div className="focus:text-text-light focus:bg-accent relative flex w-full cursor-pointer select-none items-center justify-between rounded-sm py-1.5 pl-4 pr-2 text-sm outline-none hover:bg-slate-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                            <span>{chapter.title}</span>
+                            {chapter.isPremium && (
+                              <SquareLock02Icon
+                                size={16}
+                                className="text-accent"
+                              />
+                            )}
                           </div>
                         </Link>
                       ))}

@@ -10,14 +10,16 @@ export const TCardSelect = (userId: string | undefined) => ({
   readingTime: true,
   isMature: true,
   reads: true,
-  readingLists: {
-    where: {
-      authorId: userId || "",
-    },
-    select: {
-      id: true,
-    },
-  },
+  readingLists: userId
+    ? {
+        where: {
+          authorId: userId,
+        },
+        select: {
+          id: true,
+        },
+      }
+    : false,
   chapters: {
     where: {
       published: true,

@@ -116,7 +116,17 @@ export const chapterRouter = createTRPCRouter({
                 },
                 chapters: {
                   orderBy: { createdAt: "asc" },
-                  select: { id: true, title: true, slug: true, price: true },
+                  where: {
+                    published: true,
+                    isDeleted: false,
+                  },
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    price: true,
+                    isPremium: true,
+                  },
                 },
               },
             },

@@ -285,7 +285,7 @@ export const storyRouter = createTRPCRouter({
           })
           .map((e) => ({
             ...e,
-            readingList: e.readingLists.length > 0,
+            readingList: (e.readingLists ?? []).length > 0,
           }));
 
         return sortedSimilarStories;
@@ -632,7 +632,7 @@ export const storyRouter = createTRPCRouter({
           stories:
             readingList?.stories.map((story) => ({
               ...story,
-              readingList: story.readingLists.length > 0,
+              readingList: (story.readingLists ?? []).length > 0,
             })) ?? [],
         };
 
@@ -928,7 +928,7 @@ export const storyRouter = createTRPCRouter({
         const processedStories =
           stories.map((story) => ({
             ...story,
-            readingList: story.readingLists.length > 0,
+            readingList: (story.readingLists ?? []).length > 0,
           })) ?? [];
 
         return processedStories;

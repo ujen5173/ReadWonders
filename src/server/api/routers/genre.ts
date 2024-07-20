@@ -78,7 +78,7 @@ export const genreRouter = createTRPCRouter({
         ...rest,
         story: genre.story.map((story) => ({
           ...story,
-          readingList: story.readingLists.length > 0,
+          readingList: (story.readingLists ?? []).length > 0,
         })),
         stories: _count.story,
       };
