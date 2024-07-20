@@ -1,4 +1,7 @@
 import {
+  LeftToRightBlockQuoteIcon,
+  RightToLeftBlockQuoteIcon,
+  TextAlignCenterIcon,
   TextBoldIcon,
   TextItalicIcon,
   TextUnderlineIcon,
@@ -28,13 +31,41 @@ export const TextButtons = () => {
     {
       name: "underline",
       isActive: (e) => e?.isActive("underline") ?? false,
+      // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
       command: (e) => e?.chain().focus().toggleUnderline().run(),
       icon: (className?: string) => <TextUnderlineIcon className={className} />,
+    },
+    {
+      name: "left",
+      isActive: (e) => e?.isActive("underline") ?? false,
+      // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
+      command: (e) => e?.chain().focus().setTextAlign("left").run(),
+      icon: (className?: string) => (
+        <LeftToRightBlockQuoteIcon className={className} />
+      ),
+    },
+    {
+      name: "center",
+      isActive: (e) => e?.isActive("underline") ?? false,
+      // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
+      command: (e) => e?.chain().focus().setTextAlign("center").run(),
+      icon: (className?: string) => (
+        <TextAlignCenterIcon className={className} />
+      ),
+    },
+    {
+      name: "right",
+      isActive: (e) => e?.isActive("underline") ?? false,
+      // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
+      command: (e) => e?.chain().focus().setTextAlign("right").run(),
+      icon: (className?: string) => (
+        <RightToLeftBlockQuoteIcon className={className} />
+      ),
     },
   ];
 
   return (
-    <div className="flex">
+    <div className="flex bg-white">
       {items.map((item) => (
         <EditorBubbleItem
           key={item.name}
@@ -42,7 +73,12 @@ export const TextButtons = () => {
             item.command(e);
           }}
         >
-          <Button size="sm" className="rounded-none" variant="ghost">
+          <Button
+            type="button"
+            size="sm"
+            className="rounded-none bg-white hover:bg-slate-300"
+            variant="ghost"
+          >
             {item.icon(
               cn("h-4 w-4", {
                 "text-blue-500": item.isActive(editor),

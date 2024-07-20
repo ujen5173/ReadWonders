@@ -48,7 +48,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
         <Button
           size="sm"
           variant="ghost"
-          className="gap-2 rounded-none border-none"
+          className="gap-2 rounded-none border-none bg-white hover:bg-slate-300"
         >
           <p className="text-base">↗</p>
           <p
@@ -69,6 +69,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
             const input = target[0] as HTMLInputElement;
             const url = getUrlFromString(input.value);
 
+            // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
             url && editor?.chain().focus()?.setLink({ href: url }).run();
           }}
           className="flex  p-1 "
@@ -87,6 +88,8 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
               type="button"
               className="flex h-8 items-center rounded-sm p-1 text-red-600 transition-all hover:bg-red-100 dark:hover:bg-red-800"
               onClick={() => {
+                // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
+
                 editor?.chain().focus().unsetLink().run();
                 if (inputRef.current) inputRef.current.value = "";
               }}

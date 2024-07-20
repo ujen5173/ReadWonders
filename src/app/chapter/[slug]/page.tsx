@@ -17,6 +17,7 @@ import FollowButton from "~/components/follow-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
+import TextAlign from "@tiptap/extension-text-align";
 import {
   ArrowDown01Icon,
   BookOpen01Icon,
@@ -462,7 +463,12 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                     TImage,
                     CharacterCount,
                     TextStyle,
+
+                    // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
                     StarterKit,
+                    TextAlign.configure({
+                      types: ["paragraph"],
+                    }),
                   ]),
                 }}
               ></div>

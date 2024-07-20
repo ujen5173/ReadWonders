@@ -81,6 +81,7 @@ export const suggestionItems = createSuggestionItems([
           .chain()
           .focus()
           .deleteRange(range)
+          // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
           .setYoutubeVideo({
             src: videoLink,
           })

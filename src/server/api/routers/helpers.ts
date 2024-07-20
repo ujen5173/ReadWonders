@@ -7,6 +7,10 @@ export const helpersRouter = createTRPCRouter({
       orderBy: {
         createdAt: "desc",
       },
+      where: {
+        isDeleted: false,
+        published: true,
+      },
       select: {
         title: true,
         slug: true,

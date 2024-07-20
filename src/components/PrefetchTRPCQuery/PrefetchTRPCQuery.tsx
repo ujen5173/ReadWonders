@@ -1,7 +1,7 @@
 import { Hydrate, dehydrate } from "@tanstack/react-query";
 import { api as serverApi } from "~/trpc/server";
-import { getServerQueryClient } from "~/utils/getQueryClient";
 import { type RouterInputs } from "~/trpc/shared";
+import { getServerQueryClient } from "~/utils/getQueryClient";
 
 type AccessPaths<T> = {
   [K in keyof T]: {
@@ -17,12 +17,10 @@ type ValueTypeAt<T, P extends string> = P extends `${infer K}.${infer L}`
     : never
   : never;
 
-type ParamsType<T extends AccessPaths<RouterInputs>> = ValueTypeAt<
-  RouterInputs,
-  T
-> extends void | undefined
-  ? { params?: undefined }
-  : { params: ValueTypeAt<RouterInputs, T> };
+type ParamsType<T extends AccessPaths<RouterInputs>> =
+  ValueTypeAt<RouterInputs, T> extends void | undefined
+    ? { params?: undefined }
+    : { params: ValueTypeAt<RouterInputs, T> };
 
 export const PrefetchTRPCQuery = async <T extends AccessPaths<RouterInputs>>({
   children,
@@ -38,7 +36,7 @@ export const PrefetchTRPCQuery = async <T extends AccessPaths<RouterInputs>>({
   try {
     // Just let the frontend handle it if it fails
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     const data = await serverApi[router][procedure].query(params);
 
     await queryClient.prefetchQuery(

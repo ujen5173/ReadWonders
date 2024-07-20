@@ -3,13 +3,18 @@
 import { useRef } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Skeleton } from "~/components/ui/skeleton";
 import { api } from "~/trpc/react";
 import CommentCard from "./comment-card";
 
 const Comments = ({ storyId }: { storyId: string }) => {
   const commentRef = useRef<HTMLInputElement | null>(null);
   const { mutateAsync } = api.comments.addStoryComment.useMutation();
-  const { data: comments, refetch } = api.comments.getAll.useQuery(
+  const {
+    data: comments,
+    isLoading,
+    refetch,
+  } = api.comments.getAll.useQuery(
     { storyId },
     {
       refetchOnWindowFocus: false,
@@ -40,14 +45,41 @@ const Comments = ({ storyId }: { storyId: string }) => {
       </div>
 
       <div className="space-y-4">
-        {(comments ?? []).length > 0 ? (
-          comments?.map((comment) => (
-            <CommentCard key={comment.id} storyId={storyId} comment={comment} />
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex gap-2">
+              <Skeleton className="size-10 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="mb-2 h-4 w-20" />
+                <Skeleton
+                  className="mb-2 h-4"
+                  style={{
+                    width: Math.random() * 30 + 30 + "%",
+                  }}
+                />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-10" />
+                  <Skeleton className="h-4 w-10" />
+                </div>
+              </div>
+            </div>
           ))
         ) : (
-          <p className="text-center text-lg text-foreground">
-            No comments yet, be the first to comment!
-          </p>
+          <>
+            {(comments ?? []).length > 0 ? (
+              comments?.map((comment) => (
+                <CommentCard
+                  key={comment.id}
+                  storyId={storyId}
+                  comment={comment}
+                />
+              ))
+            ) : (
+              <p className="text-center text-lg text-foreground">
+                No comments yet, be the first to comment!
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

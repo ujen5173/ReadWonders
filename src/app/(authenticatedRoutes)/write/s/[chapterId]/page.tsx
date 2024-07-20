@@ -28,7 +28,6 @@ import { autosaveContent, loadDraft } from "~/utils/storage";
 const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const { chapterId } = params;
   const router = useRouter();
-  const { replace } = router;
 
   const { data: chapter } = api.chapter.getSingeChapterById.useQuery(
     {
@@ -142,7 +141,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       });
 
       toast({ title: "Chapter published successfully" });
-      replace(`/story/${chapter.storyId}`);
+      window.location.href = `/story/${chapter.storyId}`;
     } catch (err) {
       toast({
         title: getErrorMessage(err),

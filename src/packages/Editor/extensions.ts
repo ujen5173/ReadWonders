@@ -1,3 +1,4 @@
+import TextAlign from "@tiptap/extension-text-align";
 import {
   CharacterCount,
   GlobalDragHandle,
@@ -68,6 +69,10 @@ const youtube = Youtube.configure({
 
 const characterCount = CharacterCount.configure();
 
+const align = TextAlign.configure({
+  types: ["paragraph"],
+});
+
 export const defaultExtensions = [
   starterKit,
   placeholder,
@@ -77,4 +82,5 @@ export const defaultExtensions = [
   youtube,
   characterCount,
   GlobalDragHandle,
+  align,
 ];

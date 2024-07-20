@@ -109,7 +109,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     className="font-medium text-primary underline"
                     href={`/user/${storyDetails.author.username}`}
                   >
-                    <h2>{storyDetails.author.name}</h2>
+                    <h2>{storyDetails.author.username}</h2>
                   </Link>
                 </div>
 

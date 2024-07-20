@@ -6,6 +6,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Youtube from "@tiptap/extension-youtube";
 
+import TextAlign from "@tiptap/extension-text-align";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import { TRPCError } from "@trpc/server";
@@ -254,7 +255,11 @@ export const chapterRouter = createTRPCRouter({
             Image,
             CharacterCount,
             TextStyle,
+            // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
             StarterKit,
+            TextAlign.configure({
+              types: ["paragraph"],
+            }),
           ]),
         );
 

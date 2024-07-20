@@ -107,6 +107,8 @@ const CustomEditor = ({
       </div>
       <EditorRoot>
         <EditorContent
+          // @ts-expect-error: A bug due to overlaping with textalign from tiptap with noval
+
           extensions={extensions}
           initialContent={content}
           className="relative min-h-[500px] w-full text-lg sm:rounded-lg"

@@ -29,7 +29,7 @@ const CommentCard = ({
   const [reply, setReply] = useState(false);
 
   return (
-    <div className="flex gap-2">
+    <div className="relative flex h-full gap-2">
       <Image
         src={comment.user.profile!}
         alt={comment.user.profile!}

@@ -44,8 +44,8 @@ const Chapters = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between border-t border-border pt-4">
-        <h4 className="scroll-m-20 px-4 pb-2 text-2xl font-bold tracking-tight first:mt-0">
+      <div className="mb-4 flex items-center justify-between border-t border-border px-4 pb-2 pt-4 first:mt-0">
+        <h4 className="scroll-m-20 text-2xl font-bold tracking-tight">
           Chapters:
         </h4>
         {userId === storyDetails.author.id && (
