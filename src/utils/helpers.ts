@@ -5,16 +5,29 @@ export const formatNumber = (num: number) => {
   return numeral(num).format("0.[0]a");
 };
 
-export const formatReadingTime = (minutes: number) => {
+export function formatReadingTime(milliseconds: number) {
+  const seconds = Math.floor(milliseconds / 1000);
+  let minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
 
-  if (hours === 0) {
-    return `${remainingMinutes} min`;
+  minutes = minutes % 60;
+
+  let readableTime = "";
+
+  if (hours > 0) {
+    readableTime += `${hours} hr${hours > 1 ? "s" : ""} `;
   }
 
-  return `${hours} hr ${remainingMinutes} min`.trim();
-};
+  if (minutes > 0) {
+    readableTime += `${minutes} min${minutes > 1 ? "s" : ""} `;
+  }
+
+  if (hours === 0 && minutes === 0) {
+    readableTime = "< minute";
+  }
+
+  return readableTime.trim();
+}
 
 export const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString("en-US", {

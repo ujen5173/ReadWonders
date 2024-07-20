@@ -63,7 +63,7 @@ const ReadingList = async ({ params }: { params: { slug: string } }) => {
           </Button>
         </div>
 
-        <ReadingLists data={data} listSlug={params.slug} />
+        <ReadingLists data={data} />
       </div>
     </section>
   );

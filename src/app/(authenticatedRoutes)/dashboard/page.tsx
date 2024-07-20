@@ -69,15 +69,15 @@ const Dashboard = async () => {
       </Suspense>
 
       <Suspense fallback={<LoadingRow />}>
+        <FeaturedAndLatest />
+      </Suspense>
+
+      <Suspense fallback={<LoadingRow />}>
         <MostLoved />
       </Suspense>
 
       <Suspense fallback={<LoadingRow />}>
         <TopPicks />
-      </Suspense>
-
-      <Suspense fallback={<LoadingRow />}>
-        <FeaturedAndLatest />
       </Suspense>
     </>
   );

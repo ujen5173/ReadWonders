@@ -20,7 +20,7 @@ import { toast } from "~/components/ui/use-toast";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import CustomEditor from "~/packages/Editor/advanced-editor";
 import { api } from "~/trpc/react";
-import { formSchema } from "~/types/zod";
+import { chapterFormSchema } from "~/types/zod";
 import { defaultEditorContent } from "~/utils/default-content";
 import { getErrorMessage } from "~/utils/handle-errors";
 import { autosaveContent, loadDraft } from "~/utils/storage";
@@ -39,6 +39,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     },
   );
 
+  const [coverImageHidden, setCoverImageHidden] = useState(false);
   const [preparingUpload, setPreparingUpload] = useState(false);
   const [imageLoad, setImageLoad] = useState(true);
   const [fileData, setFileData] = useState<
@@ -49,11 +50,14 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     useUploadFile("imageUploader");
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(chapterFormSchema),
     defaultValues: {
-      title: "",
+      title: "Untitled part",
       content: defaultEditorContent,
       thumbnail: null,
+      scheduledAt: null,
+      premium: false,
+      coins: 0,
     },
   });
 
@@ -101,14 +105,17 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
     handleImageLoad();
   }, [handleImageLoad]);
 
-  const [loading, setLoading] = useState<"PUBLISH" | "NEXT" | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = api.chapter.update.useMutation();
-  const { mutateAsync: newChapterMutation } = api.chapter.new.useMutation();
 
-  const onSubmit = async (type: "PUBLISH" | "NEXT" = "PUBLISH") => {
+  const onSubmit = async (
+    premium: boolean,
+    coins: number,
+    scheduledAt: Date | undefined,
+  ) => {
     try {
-      setLoading(type);
+      setLoading(true);
       if (!chapter) {
         toast({ title: "Chapter not found." });
 
@@ -128,31 +135,20 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
         content: JSON.parse(draftData.content),
         thumbnail: uploadedFile?.url ?? null,
         id: chapter.id,
-        published: type === "PUBLISH",
+        published: scheduledAt ? false : true,
+        isPremium: premium,
+        coins,
+        scheduledAt,
       });
 
-      if (type === "NEXT") {
-        const newChapterId = await newChapterMutation({
-          story_id: chapter.storyId,
-        });
-
-        if (newChapterId) {
-          replace(`/write/s/${newChapterId}`);
-          toast({
-            title:
-              "Chapter published successfully. Redirecting to next chapter",
-          });
-        }
-      } else {
-        toast({ title: "Chapter published successfully" });
-        replace(`/works`);
-      }
+      toast({ title: "Chapter published successfully" });
+      replace(`/story/${chapter.storyId}`);
     } catch (err) {
       toast({
         title: getErrorMessage(err),
       });
     } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -173,33 +169,36 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
 
       <section className="w-full">
         <div className="mx-auto max-w-[1140px] px-4 py-8">
-          <Button variant="secondary" size="sm" className="mb-4">
-            Enter Writing Mode
+          <Button
+            onClick={() => setCoverImageHidden((prev) => !prev)}
+            variant="secondary"
+            size="sm"
+            className="mb-4"
+          >
+            {coverImageHidden ? "Show cover image" : "Hide cover image"}
           </Button>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(() => onSubmit("PUBLISH"))}
-              className="w-full"
-            >
-              <div className="mb-5">
-                <Label>Cover Image</Label>
-                <div className="h-[360px]">
-                  <FileUploader
-                    maxSize={4 * 1024 * 1024}
-                    progresses={progresses}
-                    uploadedFile={uploadedFile ?? fileData}
-                    preparingUpload={preparingUpload}
-                    setPreparingUpload={setPreparingUpload}
-                    imageLoad={imageLoad}
-                    setImageLoad={setImageLoad}
-                    onUpload={(e) =>
-                      uploadFiles(e, setPreparingUpload, setImageLoad)
-                    }
-                    disabled={isUploading}
-                  />
+            <form onSubmit={undefined} className="w-full">
+              {!coverImageHidden && (
+                <div className="mb-5">
+                  <Label>Cover Image</Label>
+                  <div className="h-[360px]">
+                    <FileUploader
+                      maxSize={4 * 1024 * 1024}
+                      progresses={progresses}
+                      uploadedFile={uploadedFile ?? fileData}
+                      preparingUpload={preparingUpload}
+                      setPreparingUpload={setPreparingUpload}
+                      imageLoad={imageLoad}
+                      setImageLoad={setImageLoad}
+                      onUpload={(e) =>
+                        uploadFiles(e, setPreparingUpload, setImageLoad)
+                      }
+                      disabled={isUploading}
+                    />
+                  </div>
                 </div>
-              </div>
-
+              )}
               <FormItem className="w-full">
                 <FormControl>
                   <FormField
@@ -215,7 +214,6 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
                           debouncedUpdates(e.target.value);
                         }}
                         className="w-full border-b border-border bg-transparent py-4 text-center text-3xl font-semibold outline-none"
-                        defaultValue="Untitled part"
                       />
                     )}
                   />

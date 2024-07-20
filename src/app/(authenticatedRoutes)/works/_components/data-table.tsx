@@ -174,7 +174,7 @@ export const columns: ColumnDef<WorkDetails>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -186,15 +186,15 @@ export const columns: ColumnDef<WorkDetails>[] = [
           <DropdownMenuContent className="bg-white" align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem className="gap-2">
-              <Link
-                href="/"
-                className={cn(
-                  buttonVariants({ variant: "secondary" }),
-                  "w-full",
-                )}
+              <Button
+                onClick={() => {
+                  window.location.href = `/story/${row.getValue("slug")}`;
+                }}
+                variant={"secondary"}
+                className={cn("w-full")}
               >
                 Edit
-              </Link>
+              </Button>
               <DeleteDialog
                 style="w-full"
                 title="Delete Story"

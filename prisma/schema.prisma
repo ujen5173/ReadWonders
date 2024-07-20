@@ -321,31 +321,32 @@ model Users {
 }
 
 model Profiles {
-  id             String         @id @default(uuid()) @db.Uuid
-  username       String         @unique
-  name           String
-  profile        String?
-  bio            String?
-  tagline        String?
-  email          String
-  hasPremium     Boolean        @default(false)
-  coins          Int            @default(0)
-  followingCount Int            @default(0)
-  followersCount Int            @default(0)
-  website        String?
-  twitter        String?
-  wattpad        String?
-  goodreads      String?
-  createdAt      DateTime       @default(now()) @db.Timestamptz(6)
-  currentReads   CurrentReads[]
-  author         Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  readingLists   ReadingList[]
-  story          Story[]
-  lovedChapters  Love[]
-  following      Follow[]       @relation("FollowToProfilesFollowing")
-  followers      Follow[]       @relation("FollowToProfilesFollower")
-  rating         Rating[]
-  comments       Comment[]
+  id               String         @id @default(uuid()) @db.Uuid
+  username         String         @unique
+  name             String
+  profile          String?
+  bio              String?
+  tagline          String?
+  email            String
+  hasPremium       Boolean        @default(false)
+  coins            Int            @default(0)
+  followingCount   Int            @default(0)
+  followersCount   Int            @default(0)
+  website          String?
+  twitter          String?
+  wattpad          String?
+  goodreads        String?
+  createdAt        DateTime       @default(now()) @db.Timestamptz(6)
+  currentReads     CurrentReads[]
+  author           Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  readingLists     ReadingList[]
+  story            Story[]
+  lovedChapters    Love[]
+  following        Follow[]       @relation("FollowToProfilesFollowing")
+  followers        Follow[]       @relation("FollowToProfilesFollower")
+  rating           Rating[]
+  comments         Comment[]
+  unlockedChapters Chapter[]      @relation("UnlockedChaptersToProfiles")
 
   @@index([username])
   @@index([name])
@@ -396,33 +397,34 @@ model ReadingList {
 }
 
 model Story {
-  id            String         @id @default(uuid()) @db.Uuid
-  title         String
-  slug          String         @unique
-  description   String
-  thumbnail     String
-  tags          String[]
-  reads         Int            @default(0)
-  readingTime   Int            @default(0)
-  averageRating Float          @default(0)
-  ratingCount   Int            @default(0)
-  authorId      String         @db.Uuid
-  isDeleted     Boolean        @default(false)
-  isMature      Boolean        @default(false)
-  published     Boolean        @default(true)
-  categoryName  String?
-  love          Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  comments      Comment[]
-  loves         Love[]
-  ratings       Rating[]
-  chapters      Chapter[]
-  discussions   Discussion[]
-  author        Profiles       @relation(fields: [authorId], references: [id])
-  category      Genre?         @relation(fields: [categoryName], references: [name])
-  currentReads  CurrentReads[] @relation("CurrentReadsToStory")
-  readingLists  ReadingList[]  @relation("ReadingListToStory")
+  id                String         @id @default(uuid()) @db.Uuid
+  title             String
+  slug              String         @unique
+  description       String
+  thumbnail         String
+  tags              String[]
+  reads             Int            @default(0)
+  readingTime       Int            @default(0)
+  averageRating     Float          @default(0)
+  ratingCount       Int            @default(0)
+  authorId          String         @db.Uuid
+  isDeleted         Boolean        @default(false)
+  isMature          Boolean        @default(false)
+  published         Boolean        @default(true)
+  categoryName      String?
+  totalChapterPrice Int            @default(0)
+  love              Int            @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  comments          Comment[]
+  loves             Love[]
+  ratings           Rating[]
+  chapters          Chapter[]
+  discussions       Discussion[]
+  author            Profiles       @relation(fields: [authorId], references: [id])
+  category          Genre?         @relation(fields: [categoryName], references: [name])
+  currentReads      CurrentReads[] @relation("CurrentReadsToStory")
+  readingLists      ReadingList[]  @relation("ReadingListToStory")
 
   @@index([authorId], map: "story_author_id_idx")
   @@index([slug])
@@ -469,20 +471,23 @@ model Rating {
 }
 
 model Chapter {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String     @id @default(uuid()) @db.Uuid
   title       String?
   slug        String?
   content     Json?
   thumbnail   String?
-  reads       Int      @default(0)
-  readingTime Int      @default(0)
-  isDeleted   Boolean  @default(false)
-  isPremium   Boolean  @default(false)
-  storyId     String   @db.Uuid
-  published   Boolean  @default(false)
-  story       Story    @relation(fields: [storyId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reads       Int        @default(0)
+  readingTime Int        @default(0)
+  scheduledAt DateTime?
+  isDeleted   Boolean    @default(false)
+  isPremium   Boolean    @default(false)
+  storyId     String     @db.Uuid
+  published   Boolean    @default(false)
+  price       Int        @default(0)
+  story       Story      @relation(fields: [storyId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  unlockedBy  Profiles[] @relation("UnlockedChaptersToProfiles")
 
   @@index([storyId, slug], map: "chapter_story_id_slug_idx")
   @@map("chapter")

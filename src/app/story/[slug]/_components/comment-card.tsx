@@ -47,7 +47,7 @@ const CommentCard = ({
             </Badge>
           )}
         </div>
-        <p className={cn("mb-4 text-base font-medium")}>{comment.content}</p>
+        <p className={cn("mb-2 text-base font-medium")}>{comment.content}</p>
         <div className="mb-2 flex items-center gap-3">
           <span className="text-sm">
             {formatDate(new Date(comment.createdAt))}
@@ -105,10 +105,7 @@ const CommentCard = ({
               replies &&
               replies.length > 0 &&
               replies.map((r) => (
-                <div
-                  key={r.id}
-                  className="mt-4 border-b border-border pb-2 last:border-0"
-                >
+                <div key={r.id} className="mt-4 pb-2">
                   <CommentCard storyId={storyId} comment={r} />
                 </div>
               ))

@@ -156,7 +156,7 @@ export const storyRouter = createTRPCRouter({
               json_agg(
                 json_build_object(
                   'id', c.id,
-                  "isPremium", c."isPremium",
+                  'isPremium', c."isPremium",
                   'title', c.title,
                   'slug', c.slug,
                   'createdAt', c."createdAt"
@@ -413,7 +413,7 @@ export const storyRouter = createTRPCRouter({
                   'title', c.title,
                   'createdAt', c."createdAt",
                   'slug', c.slug,
-                  "isPremium", c."isPremium"
+                  'isPremium', c."isPremium"
                 ))
                 FROM chapter c
                 WHERE c."storyId" = ms.id
@@ -550,15 +550,13 @@ export const storyRouter = createTRPCRouter({
           },
           include: {
             chapters: {
-              where: {
-                published: true,
-              },
               select: {
                 id: true,
                 title: true,
                 slug: true,
                 isPremium: true,
                 createdAt: true,
+                published: true,
               },
             },
             author: {
@@ -686,95 +684,95 @@ export const storyRouter = createTRPCRouter({
         const userId = ctx.user?.id ?? null;
 
         const topStoriesMultipleGenres = (await ctx.db.$queryRaw`
-  WITH GenreCounts AS (
-      SELECT 
-        g.name AS genre_name,
-        g.slug AS genre_slug,
-        COUNT(s.id) AS story_count
-      FROM 
-        genre g
-      JOIN 
-        story s ON g.name = s."categoryName"
-      WHERE 
-        s.published = true
-        AND s."isDeleted" = false
-      GROUP BY 
-        g.name, g.slug
-    ),
-    TopGenres AS (
-      SELECT 
-        genre_name,
-        genre_slug
-      FROM 
-        GenreCounts
-      ORDER BY 
-        story_count DESC
-      LIMIT 6
-    ),
-    RankedStories AS (
-      SELECT 
-        s.*,
-        ROW_NUMBER() OVER (PARTITION BY s."categoryName" ORDER BY s.reads DESC) AS rank
-      FROM 
-        story s
-      JOIN 
-        TopGenres tg ON s."categoryName" = tg.genre_name
-      WHERE 
-        s.published = true
-        AND s."isDeleted" = false
-    )
-    SELECT 
-      rs.id,
-      rs.title,
-      rs.slug,
-      rs.description,
-      rs.thumbnail,
-      rs.tags, 
-      rs."isMature",
-      rs."categoryName",
-      rs.reads,
-      (
-        SELECT json_agg(json_build_object(
-          'id', c.id,
-          'title', c.title,
-          'createdAt', c."createdAt",
-          'slug', c.slug,
-          "isPremium", c."isPremium" 
-        ))
-        FROM chapter c
-        WHERE c."storyId" = rs.id
-        AND c.published = true
-        AND c."isDeleted" = false
-      ) AS chapters,
-      json_build_object(
-        'name', p.name,
-        'profile', p.profile,
-        'username', p.username
-      ) AS author,
-      json_build_object(
-        'name', tg.genre_name,
-        'slug', tg.genre_slug
-      ) AS category,
-      CASE 
-        WHEN ${userId}::uuid IS NOT NULL THEN
-          EXISTS (
-            SELECT 1 
-            FROM reading_list rl 
-            JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
-            WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
-          )
-        ELSE NULL
-      END AS "readingList"
-    FROM 
-      RankedStories rs
-      JOIN profiles p ON rs."authorId" = p.id
-      JOIN TopGenres tg ON rs."categoryName" = tg.genre_name
-    WHERE 
-      rs.rank <= 5
-    ORDER BY 
-      tg.genre_name, rs.reads DESC
-    LIMIT ${input.limit}
-`) as (TCard & { readingList: boolean | null })[];
+          WITH GenreCounts AS (
+              SELECT 
+                g.name AS genre_name,
+                g.slug AS genre_slug,
+                COUNT(s.id) AS story_count
+              FROM 
+                genre g
+              JOIN 
+                story s ON g.name = s."categoryName"
+              WHERE 
+                s.published = true
+                AND s."isDeleted" = false
+              GROUP BY 
+                g.name, g.slug
+            ),
+            TopGenres AS (
+              SELECT 
+                genre_name,
+                genre_slug
+              FROM 
+                GenreCounts
+              ORDER BY 
+                story_count DESC
+              LIMIT 6
+            ),
+            RankedStories AS (
+              SELECT 
+                s.*,
+                ROW_NUMBER() OVER (PARTITION BY s."categoryName" ORDER BY s.reads DESC) AS rank
+              FROM 
+                story s
+              JOIN 
+                TopGenres tg ON s."categoryName" = tg.genre_name
+              WHERE 
+                s.published = true
+                AND s."isDeleted" = false
+            )
+            SELECT 
+              rs.id,
+              rs.title,
+              rs.slug,
+              rs.description,
+              rs.thumbnail,
+              rs.tags, 
+              rs."isMature",
+              rs."categoryName",
+              rs.reads,
+              (
+                SELECT json_agg(json_build_object(
+                  'id', c.id,
+                  'title', c.title,
+                  'createdAt', c."createdAt",
+                  'slug', c.slug,
+                  'isPremium', c."isPremium"
+                ))
+                FROM chapter c
+                WHERE c."storyId" = rs.id
+                AND c.published = true
+                AND c."isDeleted" = false
+              ) AS chapters,
+              json_build_object(
+                'name', p.name,
+                'profile', p.profile,
+                'username', p.username
+              ) AS author,
+              json_build_object(
+                'name', tg.genre_name,
+                'slug', tg.genre_slug
+              ) AS category,
+              CASE 
+                WHEN ${userId}::uuid IS NOT NULL THEN
+                  EXISTS (
+                    SELECT 1 
+                    FROM reading_list rl 
+                    JOIN "_ReadingListToStory" rls ON rl.id = rls."A" 
+                    WHERE rls."B" = rs.id AND rl."authorId" = ${userId}::uuid
+                  )
+                ELSE NULL
+              END AS "readingList"
+            FROM 
+              RankedStories rs
+              JOIN profiles p ON rs."authorId" = p.id
+              JOIN TopGenres tg ON rs."categoryName" = tg.genre_name
+            WHERE 
+              rs.rank <= 5
+            ORDER BY 
+              tg.genre_name, rs.reads DESC
+            LIMIT ${input.limit}
+        `) as (TCard & { readingList: boolean | null })[];
 
         const processedStories = topStoriesMultipleGenres.map((story) => ({
           ...story,
@@ -854,7 +852,7 @@ export const storyRouter = createTRPCRouter({
                 'id', c.id,
                 'title', c.title,
                 'createdAt', c."createdAt",
-                "isPremium", c."isPremium",
+                'isPremium', c."isPremium",
                 'slug', c.slug
               ))
               FROM chapter c
@@ -1119,7 +1117,7 @@ export const storyRouter = createTRPCRouter({
               'id', chapter.id,
               'title', chapter.title,
               'slug', chapter.slug,
-              "isPremium", chapter."isPremium",
+              'isPremium', chapter."isPremium",
               'createdAt', chapter."createdAt"
             )
           ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
@@ -1293,12 +1291,15 @@ export const storyRouter = createTRPCRouter({
           },
           select: {
             id: true,
+            title: true,
           },
         });
 
         const chapterId = await ctx.db.chapter.create({
           data: {
             storyId: story.id,
+            title: "Untitled Chapter 1",
+            slug: slugify("Untitled Chapter 1 - " + story.title, slugy),
           },
           select: {
             id: true,
@@ -1447,47 +1448,59 @@ export const storyRouter = createTRPCRouter({
     .input(
       z.object({
         storyId: z.string(),
-        // readingListSlug: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const readingListSlug = await ctx.db.readingList.findFirst({
+        const readingList = await ctx.db.readingList.findFirst({
           where: {
             stories: {
               some: {
                 id: input.storyId,
               },
             },
+            authorId: ctx.user.id,
           },
           select: {
             slug: true,
-          },
-        });
-
-        if (!readingListSlug) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Reading list not found",
-          });
-        }
-
-        await ctx.db.readingList.update({
-          where: {
-            slug: readingListSlug.slug,
-            authorId: ctx.user.id,
-          },
-          data: {
             stories: {
-              disconnect: {
+              where: {
                 id: input.storyId,
               },
             },
           },
         });
 
-        return true;
+        if (!readingList) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Reading list or story not found",
+          });
+        }
+
+        if (readingList.stories.length > 0) {
+          await ctx.db.readingList.update({
+            where: {
+              slug: readingList.slug,
+            },
+            data: {
+              stories: {
+                disconnect: {
+                  id: input.storyId,
+                },
+              },
+            },
+          });
+
+          return true;
+        } else {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Story not found in the reading list",
+          });
+        }
       } catch (err) {
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to remove story from reading list",

@@ -72,6 +72,9 @@ export const commentsRouter = createTRPCRouter({
             },
             createdAt: true,
           },
+          orderBy: {
+            createdAt: "desc",
+          },
         });
 
         const result = comments.map(({ _count, ...rest }) => ({

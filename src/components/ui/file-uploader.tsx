@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import * as React from "react";
-import Dropzone, { type DropzoneProps } from "react-dropzone";
+import Dropzone, { DropzoneProps } from "react-dropzone";
 
 import { Upload01Icon } from "hugeicons-react";
 import { Progress } from "~/components/ui/progress";
@@ -17,7 +17,7 @@ import { useToast } from "./use-toast";
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: File;
   onValueChange?: React.Dispatch<React.SetStateAction<File>>;
-  onUpload?: (files: File) => Promise<void>;
+  onUpload?: (files: File) => void;
   progresses: number | -1;
   accept?: DropzoneProps["accept"];
   maxSize?: DropzoneProps["maxSize"];

@@ -226,9 +226,9 @@ export const authRouter = createTRPCRouter({
             orderBy: {
               createdAt: "desc",
             },
+            take: input.limit,
           },
         },
-        take: input.limit,
       });
 
       // Process the result to add the readingList flag
@@ -310,7 +310,7 @@ export const authRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const newSlug = slugify(input.title, slugy);
+        const newSlug = slugify(input.title + input.readingListId, slugy);
 
         await ctx.db.readingList.update({
           where: {

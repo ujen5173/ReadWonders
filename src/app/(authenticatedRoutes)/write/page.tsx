@@ -1,12 +1,17 @@
+// !Bugs:
+// !1. hydration error
+// !2. Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
 
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
 import {
   Form,
@@ -100,7 +105,7 @@ const WriteStory = () => {
                   control={form.control}
                   name="thumbnail"
                   render={({ field }) => (
-                    <div className="h-[420px] w-[320px] space-y-6">
+                    <div className="h-[460px] w-[320px] space-y-6">
                       <FormItem className="h-full w-full">
                         <FormLabel>Upload Story Thumbnail</FormLabel>
                         <FormControl>
@@ -115,9 +120,9 @@ const WriteStory = () => {
                             imageLoad={imageLoad}
                             setImageLoad={setImageLoad}
                             // pass the onUpload function here for direct upload
-                            onUpload={(e) =>
-                              uploadFiles(e, setPreparingUpload, setImageLoad)
-                            }
+                            onUpload={(e) => {
+                              uploadFiles(e, setPreparingUpload, setImageLoad);
+                            }}
                             disabled={isUploading}
                           />
                         </FormControl>
@@ -140,8 +145,9 @@ const WriteStory = () => {
                       <FormControl>
                         <Input
                           placeholder="Untitled Story"
-                          {...field}
                           className="text-base"
+                          autoFocus
+                          {...field}
                         />
                       </FormControl>
                       <FormDescription>
@@ -172,7 +178,7 @@ const WriteStory = () => {
                   name="categoryName"
                   render={({ field }) => (
                     <FormItem className="mb-6">
-                      <FormLabel>CategoryName</FormLabel>
+                      <FormLabel>Category Name</FormLabel>
                       <FormControl>
                         <Select
                           {...field}
@@ -243,6 +249,11 @@ const WriteStory = () => {
                 />
 
                 <div className="flex items-center gap-2">
+                  <Link href="/" legacyBehavior>
+                    <a className={buttonVariants({ variant: "secondary" })}>
+                      Cancel
+                    </a>
+                  </Link>
                   <Button
                     disabled={isUploading || isLoading}
                     loading={isLoading}

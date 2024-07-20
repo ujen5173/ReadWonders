@@ -20,6 +20,9 @@ const config = {
   images: {
     remotePatterns: [
       {
+        hostname: "deeplor.s3.us-west-2.amazonaws.com",
+      },
+      {
         hostname: "i.pinimg.com",
       },
       {

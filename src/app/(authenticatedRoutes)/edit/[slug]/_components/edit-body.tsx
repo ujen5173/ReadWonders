@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Prisma } from "@prisma/client";
+import { Add01Icon, LockIcon } from "hugeicons-react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
-
-import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
 import {
   Form,
@@ -34,6 +36,7 @@ import { genres } from "~/data";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
+import { cn } from "~/utils/cn";
 import { formatDate } from "~/utils/helpers";
 
 const EditBody = ({
@@ -52,6 +55,7 @@ const EditBody = ({
       title: string | null;
       slug: string | null;
       isPremium: boolean;
+      published: boolean;
       createdAt: Date;
     }[];
     author: {
@@ -72,13 +76,28 @@ const EditBody = ({
 }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const { push, replace } = useRouter();
+
+  const {
+    mutateAsync: newChapterMutate,
+    isLoading: newChapterLoading,
+    isError: isNewChapterError,
+    error: newChapterError,
+  } = api.chapter.new.useMutation();
 
   const { uploadFiles, progresses, uploadedFile, isUploading } =
     useUploadFile("imageUploader");
 
   const { mutateAsync, isLoading, isError, error } =
     api.story.new.useMutation();
+
+  useEffect(() => {
+    if (isNewChapterError && newChapterError) {
+      toast({
+        title: newChapterError.message,
+      });
+    }
+  }, [newChapterError, isNewChapterError]);
 
   useEffect(() => {
     if (isError && error) {
@@ -302,8 +321,32 @@ const EditBody = ({
                   )}
                 />
 
-                <div className="mb-6">
-                  <h1 className="mb-4 text-lg font-semibold">Chapters</h1>
+                <div className="mb-6 border-t border-border pt-3">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h1 className="text-lg font-semibold">Chapters</h1>
+                    <Button
+                      onClick={async () => {
+                        const res = await newChapterMutate({
+                          story_id: details.id,
+                        });
+
+                        if (res) {
+                          toast({
+                            title: "New Chapter Created",
+                          });
+                          // router.push
+                          push(`/write/s/${res}`);
+                        }
+                      }}
+                      loading={newChapterLoading}
+                      type="button"
+                      className="text-xs"
+                      size="sm"
+                    >
+                      <Add01Icon className="size-3 stroke-[3]" />
+                      New Chapter
+                    </Button>
+                  </div>
 
                   <div className="space-y-4">
                     {details.chapters.map((chapter) => (
@@ -313,20 +356,27 @@ const EditBody = ({
                       >
                         <span>{chapter.title}</span>
                         <div className="flex items-center gap-2">
+                          {chapter.isPremium && <LockIcon className="size-2" />}
+                          {!chapter.published && (
+                            <Badge className="text-xs font-semibold">
+                              Draft
+                            </Badge>
+                          )}
                           <span className="text-sm">
                             {formatDate(chapter.createdAt)}
                           </span>
                           <div className="flex items-center gap-2">
-                            <Button
-                              variant="secondary"
-                              type={"button"}
-                              size={"sm"}
-                              onClick={() => {
-                                replace(`/edit/${chapter.slug}/chapter`);
-                              }}
+                            <Link
+                              href={`/edit/${chapter.slug}/chapter`}
+                              className={cn(
+                                buttonVariants({
+                                  variant: "secondary",
+                                  size: "sm",
+                                }),
+                              )}
                             >
                               Edit
-                            </Button>
+                            </Link>
                             <Button
                               variant="destructive"
                               type={"button"}

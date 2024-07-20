@@ -33,11 +33,15 @@ const EditChapterBody = ({
   slug,
 }: {
   chapter: {
-    nextChapter: {
-      id: string;
-      title: string;
-      slug: string;
-    } | null;
+    nextChapter:
+      | {
+          id: string;
+          slug: string | null;
+          title: string | null;
+          price: number;
+        }
+      | null
+      | undefined;
     story: {
       slug: string;
       id: string;
@@ -92,36 +96,23 @@ const EditChapterBody = ({
       title: chapter?.title ?? "",
       content: chapter?.content ?? "",
       thumbnail: chapter?.thumbnail ?? "",
+      scheduledAt: null,
+      premium: false,
+      coins: 0,
     },
   });
 
-  // const handleFileUpload = useCallback(async () => {
-  //   if (!uploadedFile || !chapter) return;
-  //   setFileData({ url: uploadedFile.url, name: uploadedFile.name });
-  //   const draftData = await loadDraft(chapter.storyId, chapter.id);
-
-  //   if (draftData) {
-  //     await autosaveContent({
-  //       draftKey: "cover_image",
-  //       value: { name: uploadedFile.name, url: uploadedFile.url },
-  //       story_id: chapter.storyId,
-  //       chapterId: chapter.id,
-  //     });
-  //   }
-  // }, [uploadedFile, chapter]);
-
-  // useEffect(() => {
-  //   handleFileUpload();
-  // }, [handleFileUpload]);
-
-  const [loading, setLoading] = useState<"PUBLISH" | "NEXT" | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { mutateAsync } = api.chapter.update.useMutation();
 
-  const onSubmit = async (type: "PUBLISH" | "NEXT" = "PUBLISH") => {
+  const onSubmit = async (
+    premium: boolean,
+    coins: number,
+    scheduledAt: Date | undefined,
+  ) => {
     try {
-      setLoading(type);
-
+      setLoading(true);
       if (!chapter) {
         toast({ title: "Chapter not found." });
 
@@ -141,18 +132,20 @@ const EditChapterBody = ({
         content: JSON.parse(draftData.content),
         thumbnail: uploadedFile?.url ?? null,
         id: chapter.id,
-        published: type === "PUBLISH",
+        published: scheduledAt ? false : true,
+        isPremium: premium,
+        coins,
+        scheduledAt,
       });
 
-      toast({ title: "Chapter updated successfully." });
-
-      router.push(`/chapter/${chapter.slug}`);
+      toast({ title: "Chapter Updated successfully" });
+      replace(`/works`);
     } catch (err) {
       toast({
         title: getErrorMessage(err),
       });
     } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -177,10 +170,7 @@ const EditChapterBody = ({
             Enter Writing Mode
           </Button>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(() => onSubmit("PUBLISH"))}
-              className="w-full"
-            >
+            <form onSubmit={undefined} className="w-full">
               <div className="mb-5">
                 <Label>Cover Image</Label>
                 <div className="h-[360px]">

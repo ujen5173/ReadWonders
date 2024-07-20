@@ -12,11 +12,8 @@ import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { type JSONContent } from "novel";
-import { Suspense } from "react";
 import ReadingListModel from "~/app/_components/reading-list-modal";
-import { LoadingColumn } from "~/components/Cardloading";
 import FollowButton from "~/components/follow-button";
-import StoriesArea from "~/components/sections/stories-area";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
@@ -32,7 +29,9 @@ import {
   StarIcon,
   TwitterIcon,
 } from "hugeicons-react";
-import { CoinButton } from "~/components/ui/coin-button";
+import { Suspense } from "react";
+import { LoadingColumn } from "~/components/Cardloading";
+import StoriesArea from "~/components/sections/stories-area";
 import {
   Select,
   SelectContent,
@@ -46,6 +45,7 @@ import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import ReadQuery from "./_components/read-query";
+import UnlockSection from "./_components/unlock-section";
 import UpVote from "./_components/up-vote";
 import Visibility from "./_components/visibility";
 
@@ -57,7 +57,7 @@ interface Props {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
-  const chapter = await api.chapter.getSingeChapter.query({
+  const { data: chapter } = await api.chapter.getSingleChapter.query({
     slug: params.slug,
   });
 
@@ -78,7 +78,8 @@ export async function generateMetadata({
 const Chapter = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
 
-  const chapterDetails = await api.chapter.getSingeChapter.query({ slug });
+  const { data: chapterDetails, hasPaid } =
+    await api.chapter.getSingleChapter.query({ slug });
   const similarStories = await api.story.similar.query({
     slug,
     limit: 6,
@@ -86,9 +87,11 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
   const user = await api.auth.authInfo.query();
 
+  console.log({ chapterDetails });
+
   if (!chapterDetails) return null;
 
-  if (chapterDetails.isPremium) {
+  if (!hasPaid) {
     return (
       <section className="w-full">
         <div className="mx-auto max-w-screen-xl px-4">
@@ -180,7 +183,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 alt={chapterDetails.title!}
                 width={1200}
                 height={480}
-                className="mb-8 h-96 w-full rounded-lg object-cover"
+                className="mb-8 h-[30rem] w-full rounded-lg object-cover"
               />
             )}
 
@@ -234,7 +237,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                       <BookOpen01Icon size={16} />
                       <p>Time</p>
                     </div>
-                    <p className="font-bold">
+                    <p className="text-center font-bold">
                       {formatReadingTime(chapterDetails.readingTime)}
                     </p>
                   </div>
@@ -257,16 +260,22 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 Unlock this story part or the entire story. Either way, your
                 Coins help writers earn money for the stories you love.
               </p>
-
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <CoinButton coins={844} variant="default">
-                  Unlock Entire Story
-                </CoinButton>
-                <CoinButton coins={5} variant="secondary">
-                  Unlock this part
-                </CoinButton>
+              <div className="mb-3">
+                <UnlockSection
+                  chapterId={chapterDetails.id}
+                  totalChapterPrice={chapterDetails.story.totalChapterPrice}
+                  price={chapterDetails.price}
+                />
               </div>
-              <p></p>
+
+              <p className="text-center text-foreground">
+                Total Premium Chapters:{" "}
+                {
+                  chapterDetails.story.chapters.filter(
+                    (chapter) => chapter.price > 0,
+                  ).length
+                }
+              </p>
             </div>
           </div>
         </div>

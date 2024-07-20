@@ -79,17 +79,17 @@ export const chapterRouter = createTRPCRouter({
       }
     }),
 
-  getSingeChapter: publicProcedure
-    .input(
-      z.object({
-        slug: z.string(),
-      }),
-    )
+  getSingleChapter: publicProcedure
+    .input(z.object({ slug: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { db, user } = ctx;
+      const { slug } = input;
+
       try {
-        const chapter = await ctx.db.chapter.findFirst({
-          where: { slug: input.slug },
+        const chapter = await db.chapter.findFirst({
+          where: { slug },
           include: {
+            unlockedBy: user ? { where: { id: user.id } } : false,
             story: {
               select: {
                 id: true,
@@ -98,20 +98,16 @@ export const chapterRouter = createTRPCRouter({
                 slug: true,
                 love: true,
                 reads: true,
+                totalChapterPrice: true,
                 tags: true,
                 author: {
                   select: {
-                    followers:
-                      ctx.user?.id !== undefined
-                        ? {
-                            select: {
-                              id: true,
-                            },
-                            where: {
-                              followingId: ctx.user?.id,
-                            },
-                          }
-                        : false,
+                    followers: user
+                      ? {
+                          select: { id: true },
+                          where: { followingId: user.id },
+                        }
+                      : false,
                     id: true,
                     name: true,
                     profile: true,
@@ -119,14 +115,8 @@ export const chapterRouter = createTRPCRouter({
                   },
                 },
                 chapters: {
-                  orderBy: {
-                    createdAt: "asc",
-                  },
-                  select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                  },
+                  orderBy: { createdAt: "asc" },
+                  select: { id: true, title: true, slug: true, price: true },
                 },
               },
             },
@@ -140,34 +130,25 @@ export const chapterRouter = createTRPCRouter({
           });
         }
 
-        // to get next chapter select next chapter after finding the current chapter
-        const nextChapter = chapter.story.chapters.reduce<{
-          id: string;
-          title: string;
-          slug: string;
-        } | null>((acc, curr, index) => {
-          if (
-            acc === null &&
-            curr.id === chapter.id &&
-            index < chapter.story.chapters.length - 1
-          ) {
-            return chapter.story.chapters[index + 1] as {
-              id: string;
-              title: string;
-              slug: string;
-            };
-          }
+        console.log({ chapter });
 
-          return acc;
-        }, null);
+        const chapterIndex = chapter.story.chapters.findIndex(
+          (c) => c.id === chapter.id,
+        );
+        const nextChapter =
+          chapterIndex < chapter.story.chapters.length - 1
+            ? chapter.story.chapters[chapterIndex + 1]
+            : null;
 
-        const result = {
-          ...chapter,
-          nextChapter: nextChapter,
+        return {
+          hasPaid:
+            chapter.story.author.id === user?.id
+              ? true
+              : (chapter.unlockedBy ?? []).length > 0,
+          data: { ...chapter, nextChapter },
         };
-
-        return result;
       } catch (err) {
+        console.error("Error fetching chapter:", err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch chapter",
@@ -186,10 +167,17 @@ export const chapterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { story_id, ...rest } = input;
+        // new with slug unique number
+        const newSlug: string = slugify(
+          "new-chapter-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+          slugy,
+        );
         const chapter = await ctx.db.chapter.create({
           data: {
             ...rest,
             storyId: story_id,
+            title: "New Chapter",
+            slug: newSlug,
           },
         });
 
@@ -237,12 +225,15 @@ export const chapterRouter = createTRPCRouter({
         title: z.string(),
         content: mainSchema,
         thumbnail: z.string().nullable(),
+        isPremium: z.boolean(),
+        scheduledAt: z.date().optional(),
+        coins: z.number().nullable().default(10),
         published: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { id, ...rest } = input;
+        const { id, isPremium, coins, ...rest } = input;
 
         const time = read(
           generateHTML(rest.content as JSONContent, [
@@ -273,7 +264,10 @@ export const chapterRouter = createTRPCRouter({
           data: {
             ...rest,
             slug: slugify(rest.title + "-" + story?.story.slug, slugy),
-            readingTime: time.minutes,
+            readingTime: time.time,
+            scheduledAt: input.scheduledAt,
+            price: isPremium ? coins! : 0,
+            isPremium,
             content: rest.content as JSONContent,
           },
           select: {
@@ -283,19 +277,32 @@ export const chapterRouter = createTRPCRouter({
           },
         });
 
+        const calculateReadingTime = await ctx.db.chapter.findMany({
+          where: { storyId: chapter.storyId },
+          select: { readingTime: true, price: true },
+        });
+
+        const totalReadingTime = calculateReadingTime.reduce(
+          (acc, curr) => acc + curr.readingTime,
+          0,
+        );
+
         await ctx.db.story.update({
           where: { id: chapter.storyId },
           data: {
-            readingTime: {
-              increment: time.minutes,
-            },
+            readingTime: totalReadingTime,
+            totalChapterPrice: calculateReadingTime.reduce(
+              (acc, curr) => acc + curr.price,
+              0,
+            ),
           },
         });
-        console.table("story update completed");
+
+        console.log("story update completed");
 
         return { slug: chapter.slug };
       } catch (err) {
-        console.table(error({ err }));
+        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update chapter",
@@ -418,6 +425,122 @@ export const chapterRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update chapter",
+        });
+      }
+    }),
+  unlockChapter: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        unlockType: z.enum(["single", "all"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const chapter = await ctx.db.chapter.findUnique({
+          where: { id: input.id },
+          include: {
+            story: true,
+            unlockedBy: {
+              where: { id: ctx.user.id },
+            },
+          },
+        });
+
+        if (!chapter) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Chapter not found",
+          });
+        }
+
+        if (chapter.story.authorId === ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You can't unlock your own chapter",
+          });
+        }
+
+        // Check if the user has already unlocked this chapter
+        if (chapter.unlockedBy.length > 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You have already unlocked this chapter",
+          });
+        }
+
+        let chaptersToUnlock: { coins: number; id: string }[];
+
+        if (input.unlockType === "single") {
+          chaptersToUnlock = [{ coins: chapter.price, id: input.id }];
+        } else {
+          // Unlock all chapters of the story
+          const allChapters = await ctx.db.chapter.findMany({
+            where: {
+              storyId: chapter.storyId,
+              NOT: {
+                unlockedBy: {
+                  some: { id: ctx.user.id },
+                },
+              },
+            },
+            select: { id: true, price: true },
+          });
+
+          chaptersToUnlock = allChapters.map((c) => ({
+            id: c.id,
+            coins: c.price,
+          }));
+        }
+
+        if (chaptersToUnlock.length === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "All chapters are already unlocked",
+          });
+        }
+
+        const calculateTotalCoins = chaptersToUnlock.reduce(
+          (acc, curr) => acc + curr.coins,
+          0,
+        );
+
+        // Check if user has enough coins
+        const userProfile = await ctx.db.profiles.findUnique({
+          where: { id: ctx.user.id },
+          select: { coins: true },
+        });
+
+        if (!userProfile || userProfile.coins < calculateTotalCoins) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Insufficient coins to unlock chapter(s)",
+          });
+        }
+
+        const unlock = await ctx.db.profiles.update({
+          where: { id: ctx.user.id },
+          data: {
+            unlockedChapters: {
+              connect: chaptersToUnlock.map((c) => ({ id: c.id })),
+            },
+            coins: {
+              decrement: calculateTotalCoins,
+            },
+          },
+        });
+
+        return unlock.id;
+      } catch (err) {
+        console.error("Error unlocking chapter:", err);
+
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to unlock chapter",
         });
       }
     }),

@@ -14,6 +14,19 @@ export const formSchema = z.object({
   thumbnail: z.instanceof(File).nullable(),
 });
 
+export const chapterFormSchema = z.object({
+  title: z.string().min(2, {
+    message: "Title must be at least 2 characters.",
+  }),
+  content: z.string().min(10, {
+    message: "Content must be at least 10 characters.",
+  }),
+  thumbnail: z.instanceof(File).nullable(),
+  scheduledAt: z.date().nullable(),
+  premium: z.boolean().default(false),
+  coins: z.number().default(0),
+});
+
 const JsonContentZod: z.ZodType<unknown> = z.lazy(() =>
   z
     .object({

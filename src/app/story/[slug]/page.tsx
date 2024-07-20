@@ -4,7 +4,6 @@ import {
   FavouriteIcon,
   LeftToRightListNumberIcon,
   Notebook01Icon,
-  SquareLock02Icon,
   ViewIcon,
 } from "hugeicons-react";
 import { type Metadata } from "next";
@@ -17,7 +16,8 @@ import { Button } from "~/components/ui/button";
 import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
-import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import { formatNumber, formatReadingTime } from "~/utils/helpers";
+import Chapters from "./_components/chapters";
 import Comments from "./_components/comments";
 import LikeStory from "./_components/like-story";
 import RatingButton from "./_components/rating-button";
@@ -131,7 +131,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
 
                 {storyDetails.author.id === user?.id ? (
                   <Link href={`/edit/${storyDetails.slug}`}>
-                    <Button className="w-full" variant="default">
+                    <Button className="w-full" variant="link">
                       <Edit01Icon className="size-4 stroke-2" />
                       Edit Story
                     </Button>
@@ -193,7 +193,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Time</p>
                   </div>
 
-                  <p className="font-bold ">
+                  <p className="font-bold">
                     {formatReadingTime(storyDetails.readingTime)}
                   </p>
                 </div>
@@ -217,56 +217,15 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               </div>
             </article>
 
-            <div>
-              <h4 className="mb-4 scroll-m-20 border-b px-4 pb-2 text-2xl font-bold  tracking-tight first:mt-0">
-                Chapters:
-              </h4>
-
-              {(storyDetails.chapters ?? []).length > 0 ? (
-                storyDetails.chapters.map((ch) =>
-                  user?.id !== storyDetails.author.id &&
-                  !ch.published ? null : (
-                    <Link
-                      key={ch.id}
-                      target="_blank"
-                      href={`/chapter/${ch.slug}`}
-                      className="w-full"
-                    >
-                      <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
-                        <p className="line-clamp-1 text-lg font-semibold text-slate-700">
-                          {ch.title}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          {ch.isPremium && (
-                            <span>
-                              <SquareLock02Icon size={16} />
-                            </span>
-                          )}
-                          {!ch.published && (
-                            <Badge className="bg-rose-500 text-xs font-bold  text-white">
-                              Draft
-                            </Badge>
-                          )}
-                          <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
-                            {formatDate(ch.createdAt)}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  ),
-                )
-              ) : (
-                <div className="py-12">
-                  <p className="text-center text-lg text-foreground">
-                    No chapters yet! <br />
-                    <span className="cursor-pointer text-primary underline">
-                      Follow this book
-                    </span>{" "}
-                    for updates on new chapters.
-                  </p>
-                </div>
-              )}
-            </div>
+            <Chapters
+              userId={user?.id}
+              storyDetails={{
+                id: storyDetails.id,
+                slug: storyDetails.slug,
+                author: { id: storyDetails.author.id },
+                chapters: storyDetails.chapters,
+              }}
+            />
 
             <div>
               <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-bold tracking-tight first:mt-0">

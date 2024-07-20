@@ -8,9 +8,7 @@ import { RootContextType, type TCard } from "~/types";
 
 const ReadingLists = ({
   data,
-  listSlug,
 }: {
-  listSlug: string;
   data: {
     id: string;
     title: string;
@@ -57,7 +55,6 @@ const ReadingLists = ({
           <div className="relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {list.map((story) => (
               <CoverCard
-                // readingList={true}
                 removeFromList={remove}
                 removing={loading}
                 details={story}
