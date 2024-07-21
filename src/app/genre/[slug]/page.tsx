@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import CoverCard from "~/components/cover-card";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
@@ -21,7 +21,7 @@ export async function generateMetadata({
 const Genre = async ({ params }: { params: { slug: string } }) => {
   const data = await api.genre.getSingleGenre.query({ slug: params.slug });
 
-  if (!data) redirect("/404");
+  if (!data) notFound();
 
   return (
     <section className="w-full">

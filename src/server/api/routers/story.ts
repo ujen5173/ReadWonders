@@ -10,8 +10,78 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import { TCardSelect } from "./../../constants/db";
 
 export const storyRouter = createTRPCRouter({
-  test: publicProcedure.query(() => {
-    return "Story router";
+  test: publicProcedure.query(async ({ ctx, input }) => {
+    // return "Story router";
+    try {
+      const story = await ctx.db.story.findUnique({
+        where: {
+          slug: "input.slug",
+          isDeleted: false,
+          published: true,
+        },
+        include: {
+          category: {
+            select: {
+              slug: true,
+            },
+          },
+          ratings: {
+            select: {
+              value: true,
+            },
+          },
+          chapters: {
+            where: {
+              isDeleted: false,
+            },
+            select: {
+              id: true,
+              title: true,
+              published: true,
+              slug: true,
+              createdAt: true,
+              isPremium: true,
+            },
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              profile: true,
+              followers:
+                ctx.user?.id !== undefined
+                  ? {
+                      select: {
+                        id: true,
+                      },
+                      where: {
+                        followingId: ctx.user?.id,
+                      },
+                    }
+                  : false,
+            },
+          },
+        },
+      });
+
+      if (!story) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Story not found",
+        });
+      }
+
+      return story;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch stories",
+      });
+    }
   }),
 
   getAll: publicProcedure
@@ -482,7 +552,6 @@ export const storyRouter = createTRPCRouter({
             chapters: {
               where: {
                 isDeleted: false,
-                published: true,
               },
               select: {
                 id: true,
@@ -521,16 +590,19 @@ export const storyRouter = createTRPCRouter({
         if (!story) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Story not found",
+            message: "Whoops! Plot Twist: No Story Here",
           });
         }
 
         return story;
-      } catch (err) {
-        console.log({ err });
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch story",
+          message: "Tech Glitch! Server's Taking a Nap",
         });
       }
     }),
@@ -622,7 +694,7 @@ export const storyRouter = createTRPCRouter({
         if (!readingList) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Reading list not found",
+            message: "Reading List 404: Pages Still Being Written",
           });
         }
 
@@ -638,9 +710,13 @@ export const storyRouter = createTRPCRouter({
 
         return processedStories;
       } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch reading list",
+          message: "Tech Glitch! Server's Taking a Nap",
         });
       }
     }),

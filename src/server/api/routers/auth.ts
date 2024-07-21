@@ -64,66 +64,84 @@ export const authRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id;
-      const userDetails = await ctx.db.profiles.findFirst({
-        where: {
-          username: input.username,
-        },
-        include: {
-          followers:
-            ctx.user?.id !== undefined
-              ? {
+      try {
+        const userDetails = await ctx.db.profiles.findFirst({
+          where: {
+            username: input.username,
+          },
+          include: {
+            followers:
+              ctx.user?.id !== undefined
+                ? {
+                    select: {
+                      id: true,
+                    },
+                    where: {
+                      followingId: ctx.user?.id,
+                    },
+                  }
+                : false,
+            story: {
+              take: limit,
+              include: {
+                readingLists: {
+                  where: {
+                    authorId: userId || "",
+                  },
                   select: {
                     id: true,
                   },
+                },
+                chapters: {
                   where: {
-                    followingId: ctx.user?.id,
+                    published: true,
+                    isDeleted: false,
                   },
-                }
-              : false,
-          story: {
-            take: limit,
-            include: {
-              readingLists: {
-                where: {
-                  authorId: userId || "",
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                    isPremium: true,
+                    createdAt: true,
+                  },
                 },
-                select: {
-                  id: true,
-                },
-              },
-              chapters: {
-                where: {
-                  published: true,
-                  isDeleted: false,
-                },
-                select: {
-                  id: true,
-                  title: true,
-                  slug: true,
-                  isPremium: true,
-                  createdAt: true,
-                },
-              },
-              author: {
-                select: {
-                  name: true,
-                  username: true,
-                  profile: true,
+                author: {
+                  select: {
+                    name: true,
+                    username: true,
+                    profile: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        });
 
-      return {
-        ...userDetails,
-        story:
-          userDetails?.story.map((story) => ({
-            ...story,
-            readingList: (story.readingLists ?? []).length > 0,
-          })) ?? [],
-      };
+        if (!userDetails) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Uh-oh! User Hasn't Logged Into Life Yet",
+          });
+        }
+
+        return {
+          ...userDetails,
+          story:
+            userDetails?.story.map((story) => ({
+              ...story,
+              readingList: (story.readingLists ?? []).length > 0,
+            })) ?? [],
+        };
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
+      }
     }),
 
   follow: privateProcedure

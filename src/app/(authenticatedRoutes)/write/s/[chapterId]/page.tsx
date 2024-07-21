@@ -129,7 +129,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
         return;
       }
 
-      await mutateAsync({
+      const res = await mutateAsync({
         title: form.getValues("title"),
         content: JSON.parse(draftData.content),
         thumbnail: uploadedFile?.url ?? null,
@@ -141,7 +141,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       });
 
       toast({ title: "Chapter published successfully" });
-      window.location.href = `/story/${chapter.storyId}`;
+      window.location.href = `/story/${res.slug}`;
     } catch (err) {
       toast({
         title: getErrorMessage(err),

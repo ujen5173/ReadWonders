@@ -3,7 +3,7 @@
 import { Edit01Icon, SquareLock02Icon } from "hugeicons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { toast } from "~/components/ui/use-toast";
@@ -33,6 +33,20 @@ const Chapters = ({
   const router = useRouter();
   const { mutateAsync, isLoading, isError, error } =
     api.chapter.new.useMutation();
+
+  const chapters = useMemo(
+    () =>
+      storyDetails.chapters.filter((ch) => {
+        if (ch.published === false && storyDetails.author.id === userId) {
+          return true;
+        } else if (ch.published === true) {
+          return true;
+        }
+
+        return false;
+      }),
+    [storyDetails, userId],
+  ).filter((ch) => ch.title && ch.slug);
 
   useEffect(() => {
     if (isError) {
@@ -70,38 +84,36 @@ const Chapters = ({
         )}
       </div>
 
-      {(storyDetails.chapters ?? []).length > 0 ? (
-        storyDetails.chapters.map((ch) =>
-          userId !== storyDetails.author.id && !ch.published ? null : (
-            <Link
-              key={ch.id}
-              target="_blank"
-              href={`/chapter/${ch.slug}`}
-              className="w-full"
-            >
-              <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
-                <p className="line-clamp-1 text-lg font-semibold text-slate-700">
-                  {ch.title}
+      {chapters.length ? (
+        chapters.map((ch) => (
+          <Link
+            key={ch.id}
+            target="_blank"
+            href={`/chapter/${ch.slug}`}
+            className="w-full"
+          >
+            <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
+              <p className="line-clamp-1 text-lg font-semibold text-slate-700">
+                {ch.title}
+              </p>
+              <div className="flex items-center gap-2">
+                {ch.isPremium && (
+                  <span>
+                    <SquareLock02Icon size={16} />
+                  </span>
+                )}
+                {!ch.published && (
+                  <Badge className="bg-rose-500 text-xs font-bold  text-white">
+                    Draft
+                  </Badge>
+                )}
+                <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
+                  {formatDate(ch.createdAt)}
                 </p>
-                <div className="flex items-center gap-2">
-                  {ch.isPremium && (
-                    <span>
-                      <SquareLock02Icon size={16} />
-                    </span>
-                  )}
-                  {!ch.published && (
-                    <Badge className="bg-rose-500 text-xs font-bold  text-white">
-                      Draft
-                    </Badge>
-                  )}
-                  <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
-                    {formatDate(ch.createdAt)}
-                  </p>
-                </div>
               </div>
-            </Link>
-          ),
-        )
+            </div>
+          </Link>
+        ))
       ) : (
         <div className="py-12">
           <p className="text-center text-lg text-foreground">

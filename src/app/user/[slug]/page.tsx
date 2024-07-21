@@ -25,17 +25,21 @@ interface Props {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
-  const user = await api.auth.userProfile.query({ username: params.slug });
+  try {
+    const user = await api.auth.userProfile.query({ username: params.slug });
 
-  if (!user) {
-    return;
+    if (!user) {
+      return constructMetadata();
+    }
+
+    return constructMetadata({
+      title: `${user.name} - ${siteConfig.name}`,
+      image: user.profile ? user.profile : `${getBaseUrl()}/og-image.jpg`,
+      url: `${getBaseUrl()}/user/${params.slug}`,
+    });
+  } catch (err) {
+    return constructMetadata();
   }
-
-  return constructMetadata({
-    title: `${user.name} - ${siteConfig.name}`,
-    image: user.profile ? user.profile : `${getBaseUrl()}/og-image.jpg`,
-    url: `${getBaseUrl()}/user/${params.slug}`,
-  });
 }
 
 const UserProfile = async ({ params }: { params: { slug: string } }) => {
@@ -44,8 +48,6 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
   });
 
   const user = await api.auth.authInfo.query();
-
-  if (!userDetails.id) return null;
 
   return (
     <>

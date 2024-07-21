@@ -137,7 +137,7 @@ export const chapterRouter = createTRPCRouter({
         if (!chapter) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Chapter not found",
+            message: "Nonexistent Chapter: The Tale That Wasn't Told",
           });
         }
 
@@ -159,10 +159,13 @@ export const chapterRouter = createTRPCRouter({
           data: { ...chapter, nextChapter },
         };
       } catch (err) {
-        console.error("Error fetching chapter:", err);
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch chapter",
+          message: "Tech Glitch! Server's Taking a Nap",
         });
       }
     }),

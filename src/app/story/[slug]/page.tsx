@@ -6,7 +6,7 @@ import {
   Notebook01Icon,
   ViewIcon,
 } from "hugeicons-react";
-import { type Metadata } from "next";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
@@ -32,23 +32,29 @@ interface Props {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
-  const story = await api.story.getSingle.query({ slug: params.slug });
+  try {
+    const story = await api.story.getSingle.query({ slug: params.slug });
 
-  if (!story) {
-    return;
+    if (!story) {
+      return constructMetadata();
+    }
+
+    return constructMetadata({
+      title: `${story.title} - ${siteConfig.name}`,
+      description: story.description,
+      image: story.thumbnail ? story.thumbnail : `${getBaseUrl()}/og-image.jpg`,
+      publishedTime: story.createdAt.toString(),
+      url: `${getBaseUrl()}/story/${params.slug}`,
+    });
+  } catch (err) {
+    return constructMetadata();
   }
-
-  return constructMetadata({
-    title: `${story.title} - ${siteConfig.name}`,
-    description: story.description,
-    image: story.thumbnail ? story.thumbnail : `${getBaseUrl()}/og-image.jpg`,
-    publishedTime: story.createdAt.toString(),
-    url: `${getBaseUrl()}/story/${params.slug}`,
-  });
 }
 
 const Story = async ({ params }: { params: { slug: string } }) => {
-  const storyDetails = await api.story.getSingle.query({ slug: params.slug });
+  const storyDetails = await api.story.getSingle.query({
+    slug: params.slug,
+  });
 
   const user = await api.auth.authInfo.query();
 

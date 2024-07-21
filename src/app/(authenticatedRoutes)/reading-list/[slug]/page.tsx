@@ -15,18 +15,22 @@ interface Props {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
-  const readinglist = await api.story.getReadingList.query({
-    slug: params.slug,
-  });
+  try {
+    const readinglist = await api.story.getReadingList.query({
+      slug: params.slug,
+    });
 
-  if (!readinglist) {
-    return;
+    if (!readinglist) {
+      return constructMetadata();
+    }
+
+    return constructMetadata({
+      title: `${readinglist.title} - ${siteConfig.name}`,
+      url: `${getBaseUrl()}/user/${params.slug}`,
+    });
+  } catch (err) {
+    return constructMetadata();
   }
-
-  return constructMetadata({
-    title: `${readinglist.title} - ${siteConfig.name}`,
-    url: `${getBaseUrl()}/user/${params.slug}`,
-  });
 }
 
 const ReadingList = async ({ params }: { params: { slug: string } }) => {

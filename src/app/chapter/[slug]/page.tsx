@@ -58,22 +58,26 @@ interface Props {
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
-  const { data: chapter } = await api.chapter.getSingleChapter.query({
-    slug: params.slug,
-  });
+  try {
+    const { data: chapter } = await api.chapter.getSingleChapter.query({
+      slug: params.slug,
+    });
 
-  if (!chapter) {
-    return;
+    if (!chapter) {
+      return constructMetadata();
+    }
+
+    return constructMetadata({
+      title: `${chapter.title} - ${siteConfig.name}`,
+      image: chapter.thumbnail
+        ? chapter.thumbnail
+        : `${getBaseUrl()}/og-image.jpg`,
+      publishedTime: chapter.createdAt.toString(),
+      url: `${getBaseUrl()}/chapter/${params.slug}`,
+    });
+  } catch (err) {
+    return constructMetadata();
   }
-
-  return constructMetadata({
-    title: `${chapter.title} - ${siteConfig.name}`,
-    image: chapter.thumbnail
-      ? chapter.thumbnail
-      : `${getBaseUrl()}/og-image.jpg`,
-    publishedTime: chapter.createdAt.toString(),
-    url: `${getBaseUrl()}/chapter/${params.slug}`,
-  });
 }
 
 const Chapter = async ({ params }: { params: { slug: string } }) => {
