@@ -64,6 +64,7 @@ export const authRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id;
+
       try {
         const userDetails = await ctx.db.profiles.findFirst({
           where: {
