@@ -363,6 +363,8 @@ model Follow {
   following   Profiles @relation("FollowToProfilesFollowing", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
   @@map("follows")
   @@schema("public")
 }

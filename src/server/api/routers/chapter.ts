@@ -141,8 +141,6 @@ export const chapterRouter = createTRPCRouter({
           });
         }
 
-        console.log({ chapter });
-
         const chapterIndex = chapter.story.chapters.findIndex(
           (c) => c.id === chapter.id,
         );
@@ -152,11 +150,14 @@ export const chapterRouter = createTRPCRouter({
             : null;
 
         return {
-          hasPaid:
-            chapter.story.author.id === user?.id
-              ? true
-              : (chapter.unlockedBy ?? []).length > 0,
-          data: { ...chapter, nextChapter },
+          hasPaid: chapter.isPremium
+            ? chapter.story.author.id === user?.id ||
+              (chapter.unlockedBy ?? []).length > 0
+            : true,
+          data: {
+            ...chapter,
+            nextChapter,
+          },
         };
       } catch (err) {
         if (err instanceof TRPCError) {

@@ -100,3 +100,24 @@ export type TComment = {
   childrenCount: number;
   createdAt: Date;
 };
+
+export type UserProfile = {
+  id: string;
+  username: string;
+  profile: string;
+  name: string;
+};
+
+export type FollowersData = {
+  followersCount: number;
+  followers: {
+    following: UserProfile;
+  }[];
+};
+
+export type FollowingData = {
+  followingCount: number;
+  following: {
+    follower: UserProfile;
+  }[];
+};

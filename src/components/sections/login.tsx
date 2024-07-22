@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { supabase } from "~/server/supabase/supabaseClient";
+import { getErrorMessage } from "~/utils/handle-errors";
 import { Icons } from "../Icons";
 import { Button } from "../ui/button";
 import {
@@ -17,9 +18,13 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { toast } from "../ui/use-toast";
 
 const Login = () => {
   const formSchema = z.object({
+    password: z.string().min(8, {
+      message: "Name must be at least 2 characters long",
+    }),
     email: z.string().email({
       message: "Invalid email address",
     }),
@@ -29,6 +34,7 @@ const Login = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      password: "",
     },
   });
 
@@ -36,20 +42,24 @@ const Login = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await supabase().auth.signInWithOtp({
       email: values.email,
-      options: {
-        shouldCreateUser: true,
-        emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
-      },
     });
   }
 
   const signInWithOauth = (provider: Provider) => {
-    void supabase().auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
-      },
-    });
+    supabase()
+      .auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
+        },
+      })
+      .then(() => {})
+      .catch((err) => {
+        console.log({ err });
+        toast({
+          title: getErrorMessage(err),
+        });
+      });
   };
 
   return (
@@ -86,22 +96,37 @@ const Login = () => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="readwonder@storyteller.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="readwonder@storyteller.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <Button type="submit">Submit</Button>
           </form>
         </Form>

@@ -9,12 +9,13 @@ import Image from "next/image";
 import Link from "next/link";
 import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
+import { ShareButton } from "~/components/Share";
 import CoverCard from "~/components/cover-card";
 import FollowButton from "~/components/follow-button";
 import { Button } from "~/components/ui/button";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
-import { formatNumber } from "~/utils/helpers";
+import { FollowDialog } from "./_components/follow-modal";
 
 interface Props {
   params: {
@@ -58,6 +59,7 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
               alt={userDetails.name!}
               src={userDetails.profile!}
               width={120}
+              draggable={false}
               height={120}
               className="size-16 rounded-full object-cover"
             />
@@ -72,24 +74,26 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
                 </span>
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-1 text-base font-medium text-slate-700 xxs:mt-0">
+              <div className="mt-6 flex flex-wrap items-center gap-2 text-base font-semibold text-slate-700 xxs:mt-0">
                 <div>
                   <span>{userDetails.story?.length} works</span>
                 </div>
+
                 <RecordIcon className="size-[6px] fill-slate-600" />
 
-                <div>
-                  <span>
-                    {formatNumber(userDetails.followingCount ?? 0)} following
-                  </span>
-                </div>
+                <FollowDialog
+                  username={userDetails.username!}
+                  defaultValue={userDetails.followersCount}
+                  type="followers"
+                />
+
                 <RecordIcon className="size-[6px] fill-slate-600" />
 
-                <div>
-                  <span>
-                    {formatNumber(userDetails.followersCount ?? 0)} followers
-                  </span>
-                </div>
+                <FollowDialog
+                  username={userDetails.username!}
+                  defaultValue={userDetails.followingCount}
+                  type="following"
+                />
               </div>
             </div>
           </div>
@@ -107,46 +111,58 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
           <div className="mt-6 flex flex-wrap items-center justify-between gap-8">
             <div className="flex flex-wrap items-center gap-2">
               {userDetails.twitter && (
-                <Button className="gap-1" variant="secondary">
-                  <NewTwitterIcon className="size-4" />
-                  <span>Twitter</span>
-                </Button>
+                <Link href={userDetails.twitter} target="_blank">
+                  <Button className="gap-1" variant="secondary">
+                    <NewTwitterIcon className="size-4" />
+                    <span>Twitter</span>
+                  </Button>
+                </Link>
               )}
               {userDetails.website && (
-                <Button className="gap-1" variant="secondary">
-                  <WebProgrammingIcon className="size-4" />
-                  <span>Website</span>
-                </Button>
+                <Link href={userDetails.website} target="_blank">
+                  <Button className="gap-1" variant="secondary">
+                    <WebProgrammingIcon className="size-4" />
+                    <span>Website</span>
+                  </Button>
+                </Link>
               )}
 
               {userDetails.goodreads && (
-                <Button className="gap-1" variant="secondary">
-                  <Icons.goodreads className="size-4" />
-                  <span>goodReads</span>
-                </Button>
+                <Link href={userDetails.goodreads} target="_blank">
+                  <Button className="gap-1" variant="secondary">
+                    <Icons.goodreads className="size-4" />
+                    <span>goodReads</span>
+                  </Button>
+                </Link>
               )}
               {userDetails.wattpad && (
-                <Button className="gap-1" variant="secondary">
-                  <Icons.wattpad className="size-4" />
-                  <span>Wattpad</span>
-                </Button>
+                <Link href={userDetails.wattpad} target="_blank">
+                  <Button className="gap-1" variant="secondary">
+                    <Icons.wattpad className="size-4" />
+                    <span>Wattpad</span>
+                  </Button>
+                </Link>
               )}
             </div>
 
-            {userDetails.id === user?.id ? (
-              <Link href="/settings">
-                <Button className="gap-2" variant="secondary">
-                  <Edit02Icon className="size-4" />
-                  <span>Edit Profile</span>
-                </Button>
-              </Link>
-            ) : (
-              <FollowButton
-                id={userDetails.id}
-                isAuth={!!user}
-                following={(userDetails.followers ?? []).length > 0}
-              />
-            )}
+            <div className="flex items-center gap-2">
+              <ShareButton />
+
+              {userDetails.id === user?.id ? (
+                <Link href="/settings">
+                  <Button className="gap-2" variant="default">
+                    <Edit02Icon className="size-4" />
+                    <span>Edit Profile</span>
+                  </Button>
+                </Link>
+              ) : (
+                <FollowButton
+                  id={userDetails.id}
+                  isAuth={!!user}
+                  following={(userDetails.followers ?? []).length > 0}
+                />
+              )}
+            </div>
           </div>
         </div>
 

@@ -1,0 +1,83 @@
+-- story --
+Generate 10 stories by following the schema given below:
+model Story {
+  id                String         @id @default(uuid()) @db.Uuid
+  title             String
+  slug              String         @unique
+  description       String
+  thumbnail         String
+  tags              String[]
+  reads             Int            @default(0)
+  readingTime       Int            @default(0)
+  averageRating     Float          @default(0)
+  ratingCount       Int            @default(0)
+  authorId          String         @db.Uuid
+  isDeleted         Boolean        @default(false)
+  isMature          Boolean        @default(false)
+  published         Boolean        @default(true)
+  categoryName      String?
+  totalChapterPrice Int            @default(0)
+  love              Int            @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt    
+}
+
+generate the id by using uuid
+use the below images url as thumbnail
+
+[
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028621.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022946.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030839.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023947.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0031534.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030754.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029887.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0027248.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0031527.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029730.jpg",
+]
+
+
+
+
+
+thumbnail:
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0024683.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022810.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022734.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0031423.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029083.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0026224.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029168.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0025954.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023501.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0024727.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0031284.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028471.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0024188.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0027993.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030957.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029028.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023036.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0007070.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022398.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030271.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030141.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029835.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022254.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0025570.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0014331.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0026897.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029147.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0022800.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0021243.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0028255.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0009147.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0025453.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0020043.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0027473.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0023143.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0030607.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0029779.jpg",
+"https://covers.bookcoverzone.com/slir/w450/png24-front/bookcover0026889.jpg"

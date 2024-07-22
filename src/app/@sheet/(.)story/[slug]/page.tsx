@@ -17,12 +17,7 @@ import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-} from "~/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "~/components/ui/sheet";
 import { contentFont } from "~/config/font";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { cn } from "~/utils/cn";
@@ -80,7 +75,10 @@ const Story = () => {
                   {activeBook?.title}
                 </h1>
 
-                <Link href={`/user/${activeBook?.author.username}`}>
+                <Link
+                  href={`/user/${activeBook?.author.username}`}
+                  onClick={() => setOpen(false)}
+                >
                   <p className="mb-2 text-base font-semibold text-slate-600">
                     By{" "}
                     <span className="text-primary underline">
@@ -88,16 +86,16 @@ const Story = () => {
                     </span>
                   </p>
                 </Link>
-
-                <Link href={`/genre/${activeBook?.categoryName}`}>
-                  <SheetClose>
-                    <Badge
-                      variant="secondary"
-                      className="border border-border/70"
-                    >
-                      {activeBook?.categoryName}
-                    </Badge>
-                  </SheetClose>
+                <Link
+                  href={`/genre/${activeBook?.categoryName}`}
+                  onClick={() => setOpen(false)}
+                >
+                  <Badge
+                    variant="secondary"
+                    className="border border-border/70"
+                  >
+                    {activeBook?.categoryName}
+                  </Badge>
                 </Link>
               </div>
             </div>

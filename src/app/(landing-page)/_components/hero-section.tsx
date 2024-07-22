@@ -15,14 +15,18 @@ import { merriweather } from "~/config/font";
 import { siteConfig } from "~/config/site";
 import { heroImagesFallback } from "~/data";
 import { cardHeight, cardWidth } from "~/server/constants";
-import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 import { chunkIntoN } from "~/utils/helpers";
 
-const HeroSection = () => {
-  const { data, isLoading } = api.helpers.images.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+const HeroSection = ({
+  data,
+}: {
+  data: {
+    slug: string;
+    thumbnail: string;
+    title: string;
+  }[];
+}) => {
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
 
   return (
@@ -78,70 +82,45 @@ const HeroSection = () => {
         </div>
 
         <div className="hidden max-h-[30rem] w-9/12 gap-2 overflow-hidden lg:flex">
-          {isLoading
-            ? Array(4)
-                .fill(0)
-                .map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-1 flex-col gap-2"
-                    style={{
-                      height: `calc(14rem* 4 + 0.5rem* 2)`,
-                    }}
-                  >
-                    {Array(6)
-                      .fill(0)
-                      .map((__, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            marginTop:
-                              i === 0 ? -((index + 1) * 2.5) + "rem" : 0,
-                          }}
-                          className="border/40 h-56 w-full animate-pulse rounded-lg border bg-slate-200"
-                        />
-                      ))}
-                  </div>
-                ))
-            : chunkIntoN(data ?? heroImagesFallback, 4).map((chunk, index) => {
-                return (
-                  <div key={index} className="flex flex-1 flex-col gap-2">
-                    {chunk.map((image, i) => (
-                      <TooltipProvider key={i} delayDuration={10}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              target="_blank"
-                              href={image.slug ? `/story/${image.slug}` : "#"}
-                            >
-                              <Image
-                                onMouseEnter={() => setHoveredImage(image.slug)}
-                                onMouseLeave={() => setHoveredImage(null)}
-                                key={i}
-                                src={image.thumbnail}
-                                alt="A person reading a story"
-                                className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`} 
+          {chunkIntoN(data ?? heroImagesFallback, 4).map((chunk, index) => {
+            return (
+              <div key={index} className="flex flex-1 flex-col gap-2">
+                {chunk.map((image, i) => (
+                  <TooltipProvider key={i} delayDuration={10}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          target="_blank"
+                          href={image.slug ? `/story/${image.slug}` : "#"}
+                        >
+                          <Image
+                            onMouseEnter={() => setHoveredImage(image.slug)}
+                            onMouseLeave={() => setHoveredImage(null)}
+                            key={i}
+                            src={image.thumbnail}
+                            alt="A person reading a story"
+                            className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`} 
                                     border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
-                                style={{
-                                  marginTop:
-                                    i === 0 ? -((index + 1) * 2.5) + "rem" : 0,
-                                }}
-                                width={cardWidth}
-                                height={cardHeight}
-                              />
-                            </Link>
-                          </TooltipTrigger>
-                          {image.title && (
-                            <TooltipContent className="border-transparent bg-primary text-slate-100">
-                              <p>{image.title}</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                    ))}
-                  </div>
-                );
-              })}
+                            style={{
+                              marginTop:
+                                i === 0 ? -((index + 1) * 2.5) + "rem" : 0,
+                            }}
+                            width={cardWidth}
+                            height={cardHeight}
+                          />
+                        </Link>
+                      </TooltipTrigger>
+                      {image.title && (
+                        <TooltipContent className="border-transparent bg-primary text-slate-100">
+                          <p>{image.title}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

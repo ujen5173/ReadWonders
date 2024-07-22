@@ -20,7 +20,16 @@ const config = {
   images: {
     remotePatterns: [
       {
+        hostname: "ui-avatars.com",
+      },
+      {
         hostname: "deeplor.s3.us-west-2.amazonaws.com",
+      },
+      {
+        hostname: "avatars.githubusercontent.com",
+      },
+      {
+        hostname: "i.redd.it",
       },
       {
         hostname: "i.pinimg.com",

@@ -22,16 +22,14 @@ import {
   ArrowDown01Icon,
   BookOpen01Icon,
   EyeIcon,
-  Facebook01Icon,
-  InstagramIcon,
   LeftToRightListNumberIcon,
-  Link02Icon,
   SquareLock02Icon,
   StarIcon,
-  TwitterIcon,
 } from "hugeicons-react";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LoadingColumn } from "~/components/Cardloading";
+import { ShareButton } from "~/components/Share";
 import StoriesArea from "~/components/sections/stories-area";
 import {
   Select,
@@ -92,9 +90,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
   const user = await api.auth.authInfo.query();
 
-  if (!chapterDetails) return null;
+  if (!chapterDetails) return notFound();
 
-  if (!hasPaid) {
+  if (chapterDetails.isPremium && !hasPaid) {
     return (
       <section className="w-full">
         <div className="mx-auto max-w-screen-xl px-4">
@@ -455,9 +453,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
 
-            <div className="mx-auto flex max-w-screen-lg flex-col items-center justify-stretch gap-8 py-8">
+            <div className="mx-auto flex max-w-screen-md flex-col items-center justify-stretch gap-8 py-8">
               <div
-                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-lg`}
+                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-xl leading-relaxed text-foreground`}
                 dangerouslySetInnerHTML={{
                   __html: generateHTML(chapterDetails.content as JSONContent, [
                     Placeholder,
@@ -479,7 +477,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
               {chapterDetails.nextChapter ? (
                 <Link href={`/chapter/${chapterDetails.nextChapter?.slug}`}>
-                  <Button className="mx-auto w-96">
+                  <Button className="mx-auto w-72">
                     Continue to next Chapter
                   </Button>
                 </Link>
@@ -507,20 +505,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <UpVote story={chapterDetails.story.id} />
                 </div>
 
-                <div className="flex items-center">
-                  <Button variant="ghost-link">
-                    <TwitterIcon size={16} />
-                  </Button>
-                  <Button variant="ghost-link">
-                    <InstagramIcon size={16} />
-                  </Button>
-                  <Button variant="ghost-link">
-                    <Facebook01Icon size={16} />
-                  </Button>
-                  <Button variant="ghost-link">
-                    <Link02Icon size={16} />
-                  </Button>
-                </div>
+                <ShareButton />
               </div>
 
               <div className="">

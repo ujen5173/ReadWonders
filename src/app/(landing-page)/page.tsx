@@ -1,12 +1,12 @@
 import FeaturedAndLatest from "./_components/featured-latest";
-import HeroSection from "./_components/hero-section";
+import HeroSectionWrapper from "./_components/hero-section-wrapper";
 import MostLoved from "./_components/most-loved";
 import TopPicks from "./_components/top-picks";
 
 const Home = async () => {
   return (
     <>
-      <HeroSection />
+      <HeroSectionWrapper />
       <TopPicks />
       <FeaturedAndLatest />
       <MostLoved />

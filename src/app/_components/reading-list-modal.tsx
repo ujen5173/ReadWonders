@@ -30,7 +30,12 @@ import { api } from "~/trpc/react";
 const ReadingListModel = ({ bookId }: { bookId: string }) => {
   const { user } = useUser();
 
-  const { data: readingList, refetch } = api.auth.readingListNames.useQuery();
+  const { data: readingList, refetch } = api.auth.readingListNames.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const { mutateAsync, isLoading } = api.story.addToReadingList.useMutation();
 

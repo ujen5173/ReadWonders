@@ -8,6 +8,7 @@ import {
 } from "~/server/api/trpc";
 import { limit, slugy } from "~/server/constants";
 import { TCardSelect } from "~/server/constants/db";
+import { FollowersData, FollowingData } from "~/types";
 
 export const authRouter = createTRPCRouter({
   authInfo: publicProcedure.query(async ({ ctx }) => {
@@ -85,14 +86,16 @@ export const authRouter = createTRPCRouter({
             story: {
               take: limit,
               include: {
-                readingLists: {
-                  where: {
-                    authorId: userId || "",
-                  },
-                  select: {
-                    id: true,
-                  },
-                },
+                readingLists: userId
+                  ? {
+                      where: {
+                        authorId: userId,
+                      },
+                      select: {
+                        id: true,
+                      },
+                    }
+                  : false,
                 chapters: {
                   where: {
                     published: true,
@@ -152,78 +155,89 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { authorId } = input;
-      const followerId = ctx.user.id;
+      try {
+        const { authorId } = input;
+        const followerId = ctx.user.id;
 
-      // Check if user is trying to follow themselves
-      if (followerId === authorId) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You cannot follow or unfollow yourself",
-        });
-      }
+        // Check if user is trying to follow themselves
+        if (followerId === authorId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You cannot follow or unfollow yourself",
+          });
+        }
 
-      // Check if the follow relationship already exists
-      const existingFollow = await ctx.db.follow.findUnique({
-        where: {
-          followerId_followingId: {
-            followerId: authorId,
-            followingId: followerId,
+        // Check if the follow relationship already exists
+        const existingFollow = await ctx.db.follow.findUnique({
+          where: {
+            followerId_followingId: {
+              followerId: authorId,
+              followingId: followerId,
+            },
           },
-        },
-      });
+        });
 
-      if (existingFollow) {
-        // Unfollow logic
-        const [deletedFollow, updatedFollower, updatedFollowing] =
-          await ctx.db.$transaction([
-            ctx.db.follow.delete({
-              where: {
-                id: existingFollow.id,
-              },
-            }),
-            ctx.db.profiles.update({
-              where: { id: followerId },
-              data: { followingCount: { decrement: 1 } },
-            }),
-            ctx.db.profiles.update({
-              where: { id: authorId },
-              data: { followersCount: { decrement: 1 } },
-            }),
-          ]);
+        if (existingFollow) {
+          // Unfollow logic
+          const [deletedFollow, updatedFollower, updatedFollowing] =
+            await ctx.db.$transaction([
+              ctx.db.follow.delete({
+                where: {
+                  id: existingFollow.id,
+                },
+              }),
+              ctx.db.profiles.update({
+                where: { id: followerId },
+                data: { followingCount: { decrement: 1 } },
+              }),
+              ctx.db.profiles.update({
+                where: { id: authorId },
+                data: { followersCount: { decrement: 1 } },
+              }),
+            ]);
 
-        return {
-          action: "unfollowed",
-          deletedFollow,
-          updatedFollower,
-          updatedFollowing,
-        };
-      } else {
-        // Follow logic
-        const [newFollow, updatedFollower, updatedFollowing] =
-          await ctx.db.$transaction([
-            ctx.db.follow.create({
-              data: {
-                followerId: authorId,
-                followingId: followerId,
-              },
-            }),
-            ctx.db.profiles.update({
-              where: { id: followerId },
-              data: { followingCount: { increment: 1 } },
-            }),
-            ctx.db.profiles.update({
-              where: { id: authorId },
-              data: { followersCount: { increment: 1 } },
-            }),
-          ]);
+          return {
+            action: "unfollowed",
+            deletedFollow,
+            updatedFollower,
+            updatedFollowing,
+          };
+        } else {
+          // Follow logic
+          const [newFollow, updatedFollower, updatedFollowing] =
+            await ctx.db.$transaction([
+              ctx.db.follow.create({
+                data: {
+                  followerId: authorId,
+                  followingId: followerId,
+                },
+              }),
+              ctx.db.profiles.update({
+                where: { id: followerId },
+                data: { followingCount: { increment: 1 } },
+              }),
+              ctx.db.profiles.update({
+                where: { id: authorId },
+                data: { followersCount: { increment: 1 } },
+              }),
+            ]);
 
-        return {
-          action: "followed",
-          newFollow,
-          updatedFollower,
-          updatedFollowing,
-        };
+          return {
+            action: "followed",
+            newFollow,
+            updatedFollower,
+            updatedFollowing,
+          };
+        }
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
       }
     }),
 
@@ -295,7 +309,14 @@ export const authRouter = createTRPCRouter({
 
         return readingLists;
       } catch (err) {
-        throw new Error("Error fetching reading lists");
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
       }
     }),
 
@@ -315,7 +336,14 @@ export const authRouter = createTRPCRouter({
 
         return true;
       } catch (err) {
-        throw new Error("Error deleting reading list");
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
       }
     }),
 
@@ -344,7 +372,14 @@ export const authRouter = createTRPCRouter({
 
         return true;
       } catch (err) {
-        throw new Error("Error deleting reading list");
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
       }
     }),
 
@@ -362,30 +397,41 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const usernameTaken = await ctx.db.profiles.findFirst({
-        where: {
-          username: input.username,
-          id: {
-            not: ctx.user.id,
+      try {
+        const usernameTaken = await ctx.db.profiles.findFirst({
+          where: {
+            username: input.username,
+            id: {
+              not: ctx.user.id,
+            },
           },
-        },
-      });
+        });
 
-      if (usernameTaken) {
+        if (usernameTaken) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Username is already taken",
+          });
+        }
+
+        const user = await ctx.db.profiles.update({
+          where: {
+            id: ctx.user.id,
+          },
+          data: input,
+        });
+
+        return user;
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Username is already taken",
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
         });
       }
-
-      const user = await ctx.db.profiles.update({
-        where: {
-          id: ctx.user.id,
-        },
-        data: input,
-      });
-
-      return user;
     }),
 
   readingListNames: privateProcedure.query(async ({ ctx }) => {
@@ -401,4 +447,78 @@ export const authRouter = createTRPCRouter({
 
     return readingListNames;
   }),
+
+  followData: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        limit: z.number().optional().default(limit),
+        type: z.enum(["followers", "following"]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const user = (await ctx.db.profiles.findFirst({
+          where: {
+            username: input.username,
+          },
+          select:
+            input.type === "followers"
+              ? {
+                  followersCount: true,
+                  followers: {
+                    take: input.limit,
+                    select: {
+                      following: {
+                        select: {
+                          id: true,
+                          username: true,
+                          profile: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                }
+              : {
+                  followingCount: true,
+                  following: {
+                    take: input.limit,
+                    select: {
+                      follower: {
+                        select: {
+                          id: true,
+                          username: true,
+                          profile: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+        })) as FollowersData | FollowingData | null;
+
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+
+        if (input.type === "followers") {
+          return (user as FollowersData).followers.map((e) => e.following);
+        } else {
+          return (user as FollowingData).following.map((e) => e.follower);
+        }
+      } catch (err) {
+        if (err instanceof TRPCError) {
+          throw err;
+        }
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
+      }
+    }),
 });

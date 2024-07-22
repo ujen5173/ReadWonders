@@ -10,6 +10,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ReadingListModel from "~/app/_components/reading-list-modal";
+import { ShareButton } from "~/components/Share";
 import FollowButton from "~/components/follow-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -97,6 +98,8 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 <Notebook01Icon className="size-4" />
                 Add notes
               </Button>
+
+              <ShareButton />
             </div>
           </div>
 
