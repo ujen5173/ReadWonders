@@ -46,31 +46,35 @@ export function FollowDialog({
               </div>
             </div>
           ))
-        ) : (data ?? []).length > 0 ? (
-          data!.map((user) => (
-            <div
-              key={user.username}
-              className="flex items-center justify-between py-2"
-            >
-              <div className="flex items-center">
-                <img
-                  src={user.profile}
-                  alt={user.name}
-                  className="size-12 rounded-full border border-border shadow-sm"
-                />
-                <div className="ml-2">
-                  <p className="text-lg font-medium">{user.name}</p>
-                  <p className="text-base text-gray-500">{user.username}</p>
-                </div>
-              </div>
-            </div>
-          ))
         ) : (
-          <p className="text-center text-lg text-foreground">
-            {type === "followers"
-              ? "No followers yet"
-              : "Not following anyone yet"}
-          </p>
+          <>
+            {(data ?? []).length > 0 ? (
+              data!.map((user) => (
+                <div
+                  key={user.username}
+                  className="flex items-center justify-between py-2"
+                >
+                  <div className="flex items-center">
+                    <img
+                      src={user.profile}
+                      alt={user.name}
+                      className="size-12 rounded-full border border-border shadow-sm"
+                    />
+                    <div className="ml-2">
+                      <p className="text-lg font-medium">{user.name}</p>
+                      <p className="text-base text-gray-500">{user.username}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-lg text-foreground">
+                {type === "followers"
+                  ? "No followers yet"
+                  : "Not following anyone yet"}
+              </p>
+            )}
+          </>
         )}
       </DialogContent>
     </Dialog>
