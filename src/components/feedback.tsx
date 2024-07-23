@@ -62,6 +62,7 @@ const FeedbackDialog = ({ children }: { children: ReactNode }) => {
       toast({ title: "An error occurred. Please try again later." });
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={(e) => setOpen(e)}>
       <DialogTrigger asChild>{children}</DialogTrigger>
