@@ -71,7 +71,6 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
         });
       }
     } catch (error) {
-      console.log({ error });
       toast({
         title: "Failed to add story to reading list",
       });
@@ -115,9 +114,11 @@ const ReadingListModel = ({ bookId }: { bookId: string }) => {
       <DialogContent className="bg-white sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl">Reading List</DialogTitle>
-          <DialogDescription className="text-base">
-            Select a reading list to add this story to or create a new list.
-          </DialogDescription>
+          {user && (
+            <DialogDescription className="text-base">
+              Select a reading list to add this story to or create a new list.
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         {user ? (

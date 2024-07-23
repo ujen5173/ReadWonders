@@ -42,7 +42,7 @@ const HeroSection = ({
             <br /> That Transport and Inspire
           </h1>
 
-          <p className="mb-5 text-sm text-slate-800 md:text-base">
+          <p className="mb-5 text-base text-slate-800 md:text-lg">
             {siteConfig.description}
           </p>
 
@@ -99,7 +99,7 @@ const HeroSection = ({
                             key={i}
                             src={image.thumbnail}
                             alt="A person reading a story"
-                            className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-50" : ""}`} 
+                            className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-60 blur-[1px]" : ""}`} 
                                     border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
                             style={{
                               marginTop:

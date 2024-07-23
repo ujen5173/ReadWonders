@@ -1,4 +1,4 @@
-import { RecordIcon } from "hugeicons-react";
+import { ArrowDown02Icon, RecordIcon } from "hugeicons-react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { getGenre, limit } from "~/server/constants";
@@ -13,7 +13,10 @@ const AllGenre = async () => {
   return (
     <section className="w-full">
       <div className="mx-auto w-full max-w-[1440px] border-b border-border px-4 pb-6 pt-12">
-        <h1 className="mb-6 text-2xl font-semibold xl:text-4xl">All Genres</h1>
+        <div className="mb-4 flex items-center gap-2">
+          <h1 className="text-2xl font-semibold text-primary">All Genres</h1>
+          <ArrowDown02Icon size={20} className="text-primary" />
+        </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {getGenre(genres).map((genre) => (
@@ -33,7 +36,7 @@ const AllGenre = async () => {
                 </div>
               )}
               <div className="flex gap-2">
-                <Link className="w-full" href={`/genre${genre.slug}`}>
+                <Link className="w-full" href={`/genre/${genre.slug}`}>
                   <Button
                     className="w-full"
                     variant={genre.stories === null ? "default" : "secondary"}

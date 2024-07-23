@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import slugify from "slugify";
 import { Context } from "~/app/_components/RootContext";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { Badge } from "~/components/ui/badge";
@@ -19,7 +20,7 @@ import { Button, buttonVariants } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader } from "~/components/ui/sheet";
 import { contentFont } from "~/config/font";
-import { cardHeight, cardWidth } from "~/server/constants";
+import { cardHeight, cardWidth, slugy } from "~/server/constants";
 import { cn } from "~/utils/cn";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 
@@ -87,7 +88,7 @@ const Story = () => {
                   </p>
                 </Link>
                 <Link
-                  href={`/genre/${activeBook?.categoryName}`}
+                  href={`/genre/${slugify((activeBook?.categoryName ?? "") as string, slugy)}`}
                   onClick={() => setOpen(false)}
                 >
                   <Badge
@@ -121,14 +122,14 @@ const Story = () => {
                         ? activeBook?.description
                         : activeBook?.description.slice(0, 500)}
                     </p>
-                    {
+                    {(activeBook?.description ?? "").length > 500 && (
                       <button
                         onClick={() => setShowMore(!showMore)}
                         className="mt-4 text-primary underline"
                       >
                         {showMore ? "Show more" : "Show less"}
                       </button>
-                    }
+                    )}
                   </article>
                 </div>
 
@@ -209,9 +210,9 @@ const Story = () => {
                     activeBook?.chapters.map((chapter) => (
                       <Link
                         key={chapter.id}
-                        target="_blank"
                         href={`/chapter/${chapter.slug}`}
                         className="w-full"
+                        onClick={() => setOpen(false)}
                       >
                         <div className="flex items-center justify-between rounded-md p-2 hover:bg-rose-400/40">
                           <p className="line-clamp-1 text-base text-slate-700">

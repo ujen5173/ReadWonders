@@ -58,7 +58,7 @@ const Chapters = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between border-t border-border px-4 pb-2 pt-4 first:mt-0">
+      <div className="mb-4 flex items-center justify-between border-t border-border pb-2 pt-4 first:mt-0 sm:px-4">
         <h4 className="scroll-m-20 text-2xl font-bold tracking-tight">
           Chapters:
         </h4>
@@ -86,12 +86,7 @@ const Chapters = ({
 
       {chapters.length ? (
         chapters.map((ch) => (
-          <Link
-            key={ch.id}
-            target="_blank"
-            href={`/chapter/${ch.slug}`}
-            className="w-full"
-          >
+          <Link key={ch.id} href={`/chapter/${ch.slug}`} className="w-full">
             <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
               <p className="line-clamp-1 text-lg font-semibold text-slate-700">
                 {ch.title}

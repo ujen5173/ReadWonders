@@ -26,10 +26,8 @@ const StoriesArea: FC<Props> = async ({
       <div>
         <div className="flex items-center justify-between gap-4">
           <div className="mb-4 flex items-center gap-2">
-            <h1 className="text-xl font-semibold text-primary sm:text-2xl">
-              {title}
-            </h1>
-            <ArrowDown02Icon size={18} className="text-primary" />
+            <h1 className="text-2xl font-semibold text-primary">{title}</h1>
+            <ArrowDown02Icon size={20} className="text-primary" />
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -30,17 +31,21 @@ const CommentCard = ({
 
   return (
     <div className="relative flex h-full gap-2">
-      <Image
-        src={comment.user.profile!}
-        alt={comment.user.profile!}
-        width={120}
-        draggable={false}
-        height={120}
-        className="size-10 rounded-full"
-      />
+      <Link href={`/user/${comment.user.username}`}>
+        <Image
+          src={comment.user.profile!}
+          alt={comment.user.profile!}
+          width={120}
+          draggable={false}
+          height={120}
+          className="size-10 rounded-full"
+        />
+      </Link>
       <div className="flex-1">
         <div className="mb-2 flex items-center gap-2">
-          <h1 className="text-base font-medium">{comment.user.username}</h1>
+          <Link href={`/user/${comment.user.username}`}>
+            <h1 className="text-base font-medium">{comment.user.username}</h1>
+          </Link>
           {comment.user.id === "12345-12345-12345" && (
             <Badge className="text-xs" variant="default">
               Author

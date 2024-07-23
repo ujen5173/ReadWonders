@@ -6,6 +6,7 @@ import Footer from "~/components/sections/footer";
 import Header from "~/components/sections/header";
 import { api } from "~/trpc/react";
 import type { RootContextType, TCard } from "~/types";
+import Info from "./Info";
 
 export const Context = createContext<RootContextType>({
   activeBook: null,
@@ -29,6 +30,7 @@ const RootContext = ({ children }: { children: ReactNode }) => {
 
   return (
     <Context.Provider value={{ removeFromList, activeBook, setActiveBook }}>
+      <Info />
       {!path.includes("/write/s/") && !path.includes("/edit") && <Header />}
       {children}
       {!path.includes("/write") && !path.includes("/edit") && <Footer />}

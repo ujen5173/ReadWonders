@@ -101,7 +101,7 @@ const Header = () => {
             <DialogTrigger className="hidden sm:block" asChild>
               <Button variant="link">Newsletter</Button>
             </DialogTrigger>
-            <DialogContent className="hidden sm:max-w-[425px] md:inline">
+            <DialogContent className="hidden sm:inline sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle className="text-2xl">
                   Subscribe to Newsletter
@@ -304,11 +304,7 @@ const MobileMenu = ({
           <li>
             <Dialog>
               <DialogTrigger className="" asChild>
-                <Button
-                  // onClick={() => setOpen(false)}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
+                <Button className="w-full justify-start" variant="link">
                   Newsletter
                 </Button>
               </DialogTrigger>

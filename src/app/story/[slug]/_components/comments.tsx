@@ -75,7 +75,7 @@ const Comments = ({ storyId }: { storyId: string }) => {
                 />
               ))
             ) : (
-              <p className="text-center text-lg text-foreground">
+              <p className="text-center text-base text-foreground sm:text-lg">
                 No comments yet, be the first to comment!
               </p>
             )}

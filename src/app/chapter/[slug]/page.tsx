@@ -44,6 +44,7 @@ import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import ReadQuery from "./_components/read-query";
+import Toc from "./_components/toc";
 import UnlockSection from "./_components/unlock-section";
 import UpVote from "./_components/up-vote";
 import Visibility from "./_components/visibility";
@@ -96,7 +97,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
     return (
       <section className="w-full">
         <div className="mx-auto max-w-screen-xl px-4">
-          <div className="flex flex-col items-center justify-between gap-6 border-b border-border py-2 pb-6 sm:flex-row sm:pb-2">
+          <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
             <div className="flex-1">
               <Select>
                 <SelectTrigger className="h-auto max-w-[450px] bg-white p-2 focus:outline-none focus:ring-0 focus:ring-offset-0">
@@ -157,7 +158,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="grid w-full grid-cols-2 gap-2 xs:w-auto">
               {user?.id === chapterDetails.story.author.id ? (
                 <>
                   <Visibility
@@ -302,62 +303,28 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
       chapterDetails.published ? (
         <section className="w-full">
           <div className="mx-auto max-w-screen-xl px-4">
-            <div className="flex flex-col items-center justify-between gap-6 border-b border-border py-2 pb-6 sm:flex-row sm:pb-2">
-              <div className="flex-1">
-                <Select>
-                  <SelectTrigger className="h-auto max-w-[450px] bg-white p-2 focus:outline-none focus:ring-0 focus:ring-offset-0">
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={chapterDetails.story.thumbnail}
-                        alt={chapterDetails.story.title}
-                        width={32}
-                        height={32}
-                        className="w-8 rounded-sm object-fill"
-                      />
-                      <div>
-                        <p className="text-left text-base font-semibold">
-                          {chapterDetails.story.title}
-                        </p>
-                        <p className="text-left text-sm text-gray-700">
-                          By {chapterDetails.story.author.username}
-                        </p>
-                      </div>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectGroup>
-                      <div className="border-b border-border px-4 py-2">
-                        <Link
-                          href={`/story/${chapterDetails.story.slug}`}
-                          key={chapterDetails.story.slug}
-                        >
-                          <h1 className="line-clamp-1 text-center text-base font-medium hover:underline">
-                            {chapterDetails.story.title}
-                          </h1>
-                        </Link>
-
-                        <SelectLabel className="px-4 text-center text-slate-500">
-                          Table of Contents
-                        </SelectLabel>
-                      </div>
-                      <div className="py-2">
-                        {chapterDetails.story.chapters.map((chapter) => (
-                          <Link
-                            href={`/chapter/${chapter.slug}`}
-                            key={chapter.slug}
-                          >
-                            <div className="focus:text-text-light focus:bg-accent relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-4 pr-2 text-sm outline-none hover:bg-slate-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
-                              {chapter.title}
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+            <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
+              <div className="w-full flex-1">
+                <Toc
+                  details={{
+                    story: {
+                      thumbnail: chapterDetails.story.thumbnail,
+                      title: chapterDetails.story.title,
+                      slug: chapterDetails.story.slug,
+                      author: {
+                        username: chapterDetails.story.author.username,
+                      },
+                      chapters: chapterDetails.story.chapters.map((ch) => ({
+                        slug: ch.slug,
+                        title: ch.title,
+                        isPremium: ch.isPremium,
+                      })),
+                    },
+                  }}
+                />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="grid w-full grid-cols-2 gap-2 xs:w-auto">
                 {user?.id === chapterDetails.story.author.id ? (
                   <>
                     <Visibility
@@ -394,14 +361,14 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 />
               )}
 
-              <div className="py-8">
+              <div className="py-0 sm:py-8">
                 <h1
                   className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl ${merriweather.className}`}
                 >
                   {chapterDetails.title}
                 </h1>
 
-                <div className="mb-2 flex items-center justify-center gap-2">
+                <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
@@ -453,9 +420,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
 
-            <div className="mx-auto flex max-w-screen-md flex-col items-center justify-stretch gap-8 py-8">
+            <div className="mx-auto flex max-w-screen-md flex-col items-center justify-stretch gap-8 py-4 sm:py-8">
               <div
-                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-xl leading-relaxed text-foreground`}
+                className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-lg leading-relaxed text-foreground md:text-xl`}
                 dangerouslySetInnerHTML={{
                   __html: generateHTML(chapterDetails.content as JSONContent, [
                     Placeholder,
@@ -500,22 +467,26 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 </div>
               )}
 
-              <div className="flex w-full flex-wrap items-center justify-center gap-6 sm:justify-between">
-                <div className="flex items-center gap-2">
-                  <UpVote story={chapterDetails.story.id} />
-                </div>
+              <div className="grid w-full grid-cols-2 gap-2 xs:w-auto">
+                <UpVote story={chapterDetails.story.id} />
 
                 <ShareButton />
               </div>
 
-              <div className="">
-                <h1 className="mb-4 text-xl font-semibold">Tags:</h1>
+              <div className="pb-4">
+                <h1 className="mb-4 text-center text-2xl font-bold">Tags:</h1>
                 <div className="flex flex-wrap gap-2">
-                  {chapterDetails.story.tags.map((tag) => (
-                    <Link href={`/tag/${tag}`} key={tag}>
-                      <Badge variant="secondary">{tag}</Badge>
-                    </Link>
-                  ))}
+                  {chapterDetails.story.tags.length > 0 ? (
+                    chapterDetails.story.tags.map((tag) => (
+                      <Link href={`/tag/${tag}`} key={tag}>
+                        <Badge variant="secondary">{tag}</Badge>
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="mx-auto text-center text-lg text-gray-500">
+                      No tags in this story
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

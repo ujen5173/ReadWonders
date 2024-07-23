@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import transporter from "~/app/lib/nodemailer";
 import { env } from "~/env.mjs";
@@ -17,42 +18,50 @@ const feedbackRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      await transporter.sendMail({
-        from: "ReadWonders Team",
-        to: env.TO,
-        subject: "New Feedback Received - ReadWonders",
-        html: `  
-          <div>
-            <div>
-              <div style="display: flex; align-items: center; margin-bottom: 16px; gap: 8px;">
-                <img src="https://readwonders.vercel.app/apple-touch-icon.png" style="width: 40px; height: 40px;" alt="ReadWonders Logo"/>
-                <h1 style="margin: 0">ReadWonders.</h1>
+      try {
+        transporter.sendMail({
+          from: "ReadWonders Team",
+          to: env.TO,
+          subject: "New Feedback Received - ReadWonders",
+          html: `  
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+              <div style="text-align: center;">
+                <img src="https://readwonders.vercel.app/apple-touch-icon.png" style="width: 50px; height: 50px;" alt="ReadWonders Logo"/>
+                <h1 style="margin: 0; color: #333;">ReadWonders</h1>
               </div>
-
-              <div>
-                <div>
-                  <span style="font-size: 1.5rem;font-weight: 600">Rating: ${
-                    input.rating.charAt(0).toUpperCase() + input.rating.slice(1)
-                  }</span>
-                </div>
-                <div>
-                  <span style="font-size: 1.5rem;font-weight: 600">Heard from: ${
-                    input.from.charAt(0).toUpperCase() + input.from.slice(1)
-                  }</span>
-                </div>
-                <div style="font-size: 1rem;">
-                  Response: <br />
-                  <p style="background-color: #1e293b; color: #f8fafc; margin: 5px 0; padding: 10px; border-radius: 7px;">${input.feedback}</p>
-                </div>
+              <div style="margin-top: 20px; padding: 10px; border-top: 1px solid #eee;">
+                <h2 style="font-size: 1.5rem; color: #333;">New Feedback Received</h2>
+                <p style="font-size: 1rem; color: #555;">Rating: <strong style="color: #007BFF;">${input.rating.charAt(0).toUpperCase() + input.rating.slice(1)}</strong></p>
+                <p style="font-size: 1rem; color: #555;">Heard from: <strong style="color: #007BFF;">${input.from.charAt(0).toUpperCase() + input.from.slice(1)}</strong></p>
+                ${
+                  input.feedback
+                    ? `
+                  <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                    <h3 style="font-size: 1.25rem; color: #333; margin-bottom: 10px;">Response:</h3>
+                    <p style="font-size: 1rem; color: #555;">${input.feedback}</p>
+                  </div>
+                `
+                    : ""
+                }
+              </div>
+              <div style="margin-top: 20px; text-align: center;">
+                <p style="font-size: 0.875rem; color: #777;">
+                  @${new Date().getFullYear()} ReadWonders. All rights reserved.
+                </p>
               </div>
             </div>
-          </div>  
         `,
-      });
+        });
 
-      return {
-        success: true,
-      };
+        return {
+          success: true,
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Oh No! Feedback Didn't Go Through",
+        });
+      }
     }),
 });
 

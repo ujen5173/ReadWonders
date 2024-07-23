@@ -14,7 +14,7 @@ const SearchArea = () => {
   const { data, isFetching, hasNextPage, fetchNextPage } =
     api.story.search.useInfiniteQuery(
       {
-        query: query.get("q") || "",
+        query: query.get("q") ?? "",
         limit: 7,
         filter: {
           len: query.get("length") ?? undefined,
@@ -24,9 +24,11 @@ const SearchArea = () => {
         },
       },
       {
+        keepPreviousData: true,
         refetchOnWindowFocus: false,
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
         retry: 0,
+        cacheTime: 1000 * 60 * 5, // 5 minutes
       },
     );
 

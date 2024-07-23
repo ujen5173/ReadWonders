@@ -16,7 +16,7 @@ const FollowButton = ({
   following: boolean;
 }) => {
   const [isFollowing, setIsFollowing] = useState(following);
-  const { mutate, isLoading } = api.auth.follow.useMutation();
+  const { mutate } = api.auth.follow.useMutation();
 
   return (
     <Button

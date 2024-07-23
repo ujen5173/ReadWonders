@@ -6,7 +6,9 @@ import {
   Share01Icon,
   TwitterIcon,
 } from "hugeicons-react";
+import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { env } from "~/env.mjs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { toast } from "./ui/use-toast";
 
 export function ShareButton() {
   return (
@@ -30,6 +33,9 @@ export function ShareButton() {
             className="gap-2 py-2"
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
+              toast({
+                title: "Copied to clipboard",
+              });
             }}
           >
             <Link01Icon className="size-5" />
@@ -37,8 +43,9 @@ export function ShareButton() {
               Permalink
             </span>
           </DropdownMenuItem>
-          <a
-            href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
+          <Link
+            href={(() =>
+              `https://twitter.com/intent/tweet?url=${window ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">
@@ -47,9 +54,10 @@ export function ShareButton() {
                 Twitter
               </span>
             </DropdownMenuItem>
-          </a>
-          <a
-            href={`https://reddit.com/submit?url=${window.location.href}`}
+          </Link>
+          <Link
+            href={(() =>
+              `https://reddit.com/submit?url=${window ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">
@@ -58,7 +66,7 @@ export function ShareButton() {
                 Reddit
               </span>
             </DropdownMenuItem>
-          </a>
+          </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

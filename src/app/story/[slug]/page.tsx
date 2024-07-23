@@ -62,7 +62,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
   return (
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] border-b border-border py-6">
-        <div className="z-10 flex w-full flex-col gap-6 p-4 md:flex-row md:gap-8 md:p-6 lg:p-8">
+        <div className="z-10 flex w-full flex-col gap-6 px-4 py-0 sm:p-4 md:flex-row md:gap-8 md:p-6 lg:p-8">
           <div className="relative mx-auto mb-6 flex w-full max-w-80 flex-col items-center gap-8 md:mb-0">
             <Image
               alt="Story cover"
@@ -70,7 +70,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
               width="440"
               height="860"
               src={storyDetails.thumbnail}
-              className="story-cover-thumbnail w-full overflow-hidden rounded-lg object-fill shadow-2xl"
+              className="story-cover-thumbnail h-[450px] w-full overflow-hidden rounded-lg object-fill shadow-2xl sm:h-auto"
             />
 
             <div className="mx-auto flex w-10/12 flex-col gap-4">
@@ -202,7 +202,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                     <p>Time</p>
                   </div>
 
-                  <p className="font-bold">
+                  <p className="text-center font-bold">
                     {formatReadingTime(storyDetails.readingTime)}
                   </p>
                 </div>
@@ -212,17 +212,25 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             <article
               className={`max-w-none whitespace-pre-line ${contentFont.className}`}
             >
-              <p className="mb-8 text-lg">{storyDetails.description}</p>
+              <p className="mb-8 text-lg font-medium">
+                {storyDetails.description}
+              </p>
 
               <div className="flex flex-wrap gap-2">
-                {storyDetails.tags.map((tag) => (
-                  <Badge
-                    className="border border-border bg-slate-100 text-sm font-normal text-slate-700 hover:bg-slate-200"
-                    key={tag}
-                  >
-                    {tag}
-                  </Badge>
-                ))}
+                {storyDetails.tags.length > 0 ? (
+                  storyDetails.tags.map((tag) => (
+                    <Badge
+                      className="border border-border bg-slate-100 text-sm font-normal text-slate-700 hover:bg-slate-200"
+                      key={tag}
+                    >
+                      {tag}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="mx-auto text-center text-base text-foreground">
+                    No tags available
+                  </p>
+                )}
               </div>
             </article>
 
@@ -237,7 +245,7 @@ const Story = async ({ params }: { params: { slug: string } }) => {
             />
 
             <div>
-              <h4 className="scroll-m-20 border-b px-4 pb-2 text-2xl font-bold tracking-tight first:mt-0">
+              <h4 className="scroll-m-20 border-b pb-2 text-2xl font-bold tracking-tight first:mt-0 sm:px-4">
                 Comments:
               </h4>
               <div className="px-4 py-6">
