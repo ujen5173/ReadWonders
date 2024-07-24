@@ -9,7 +9,7 @@ type Props = {
   description?: string;
   perRow?: 3 | 6;
   inRow?: boolean;
-  fetcher: () => Promise<
+  fetcher: (slug?: string) => Promise<
     (TCard & {
       readingList: boolean;
     })[]

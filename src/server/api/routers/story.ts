@@ -1199,6 +1199,7 @@ export const storyRouter = createTRPCRouter({
           ) FILTER (WHERE chapter.id IS NOT NULL AND chapter.published = true AND chapter."isDeleted" = false), '[]') AS chapters,
           json_build_object(
             'name', author.name,
+            'username', author.username,
             'profile', author.profile
           ) AS author,
           CASE 
@@ -1223,7 +1224,7 @@ export const storyRouter = createTRPCRouter({
         ${updatedCondition}
         ${cursorCondition}
         ${premiumCondition}
-        GROUP BY story.id, author.name, author.profile
+        GROUP BY story.id, author.name, author.profile, author.username
         ${
           input.filter?.premium === "true"
             ? Prisma.sql`

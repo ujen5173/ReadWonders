@@ -19,7 +19,6 @@ import { Button } from "~/components/ui/button";
 
 import TextAlign from "@tiptap/extension-text-align";
 import {
-  ArrowDown01Icon,
   BookOpen01Icon,
   EyeIcon,
   LeftToRightListNumberIcon,
@@ -41,6 +40,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { contentFont, merriweather } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
+import { fetchSimilar } from "~/storiesActions";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
 import ReadQuery from "./_components/read-query";
@@ -84,10 +84,6 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
   const { data: chapterDetails, hasPaid } =
     await api.chapter.getSingleChapter.query({ slug });
-  const similarStories = await api.story.similar.query({
-    slug,
-    limit: 6,
-  });
 
   const user = await api.auth.authInfo.query();
 
@@ -290,6 +286,11 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
       </section>
     );
   }
+
+  if (chapterDetails.content === null)
+    throw new Error(
+      "Whoops! It looks like this story is empty. Why not check out some other tales?",
+    );
 
   //? Authenticated author: Always show chapter content
   //? Authenticated non-author: Show only if chapter is published
@@ -494,30 +495,14 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
           <section className="w-full">
             <div className="mx-auto w-full max-w-[1440px] border-y border-border px-4 pb-0 pt-8 md:pb-6 md:pt-12">
-              {similarStories.length > 0 ? (
-                <Suspense fallback={<LoadingColumn />}>
-                  <StoriesArea
-                    title="You'll also like"
-                    perRow={6}
-                    stories={similarStories}
-                    inRow={false}
-                  />
-                </Suspense>
-              ) : (
-                <div className="">
-                  <div className="mb-4 flex items-center gap-2">
-                    <h1 className="text-xl font-semibold text-primary sm:text-2xl">
-                      You&rsquo;ll also like
-                    </h1>
-                    <ArrowDown01Icon size={18} className="text-primary" />
-                  </div>
-                  <div className="py-12">
-                    <p className="text-center text-lg font-semibold">
-                      Oops! No similar stories found
-                    </p>
-                  </div>
-                </div>
-              )}
+              <Suspense fallback={<LoadingColumn />}>
+                <StoriesArea
+                  title="You'll also like"
+                  perRow={6}
+                  fetcher={() => fetchSimilar(slug)}
+                  inRow={false}
+                />
+              </Suspense>
             </div>
           </section>
         </section>
