@@ -1,22 +1,12 @@
-import { ArrowDown02Icon } from "hugeicons-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
-import MostLoved from "~/app/(landing-page)/_components/most-loved";
-import Recommended from "~/app/(landing-page)/_components/recommended";
-import TopPicks from "~/app/(landing-page)/_components/top-picks";
-import { LoadingColumn, LoadingRow } from "~/components/Cardloading";
+import { LoadingColumn } from "~/components/Cardloading";
 import StoriesArea from "~/components/sections/stories-area";
-import { api } from "~/trpc/server";
+import { fetchCurrentReads } from "~/storiesActions";
 import { getServerUser } from "~/utils/auth";
-import ReadingListSection from "../reading-list/_components/reading-list-section";
 
 const Dashboard = async () => {
   const { user } = await getServerUser();
-
-  const stories = await api.auth.currentReads.query({
-    limit: 3,
-  });
 
   if (!user) {
     redirect("/auth/login");
@@ -34,37 +24,35 @@ const Dashboard = async () => {
         </div>
       </section>
 
-      {stories.length > 0 && (
-        <section className="w-full">
-          <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 border-b border-border px-4 py-8 xl:flex-row">
-            <Suspense fallback={<LoadingColumn />}>
-              <StoriesArea
-                stories={stories}
-                title="Current Reads"
-                perRow={3}
-                inRow={true}
-              />
-            </Suspense>
+      <section className="w-full">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 border-b border-border px-4 py-8 xl:flex-row">
+          <Suspense fallback={<LoadingColumn />}>
+            <StoriesArea
+              title="Current Reads"
+              fetcher={fetchCurrentReads}
+              perRow={3}
+              inRow={true}
+            />
+          </Suspense>
 
-            <section className="flex-1">
-              <div>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="mb-4 flex items-center gap-2">
-                    <h1 className="text-xl font-semibold text-primary sm:text-2xl">
-                      Reading List
-                    </h1>
-                    <ArrowDown02Icon size={18} className="text-primary" />
-                  </div>
+          {/* <section className="flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-primary sm:text-2xl">
+                    Reading List
+                  </h1>
+                  <ArrowDown02Icon size={18} className="text-primary" />
                 </div>
-
-                <ReadingListSection perRow={2} userId={user.id} />
               </div>
-            </section>
-          </div>
-        </section>
-      )}
 
-      <Suspense fallback={<LoadingRow />}>
+              <ReadingListSection perRow={2} userId={user.id} />
+            </div>
+          </section> */}
+        </div>
+      </section>
+
+      {/* <Suspense fallback={<LoadingRow />}>
         <Recommended />
       </Suspense>
 
@@ -78,7 +66,7 @@ const Dashboard = async () => {
 
       <Suspense fallback={<LoadingRow />}>
         <TopPicks />
-      </Suspense>
+      </Suspense> */}
     </>
   );
 };

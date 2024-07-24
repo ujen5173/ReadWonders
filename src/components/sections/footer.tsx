@@ -66,7 +66,6 @@ const Footer = () => {
                   {navItem.links.map((link) => (
                     <li key={link.name}>
                       <Link
-                        target="_blank"
                         href={link.href}
                         className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
                       >

@@ -24,6 +24,7 @@ export const env = createEnv({
     TO: z.string().min(1),
     USER: z.string().min(1),
     PASS: z.string().min(1),
+    POSTHOG_ANALYTICS_KEY: z.string().min(1),
   },
 
   /**
@@ -61,6 +62,8 @@ export const env = createEnv({
     TO: process.env.TO,
     USER: process.env.USER,
     PASS: process.env.PASS,
+
+    POSTHOG_ANALYTICS_KEY: process.env.POSTHOG_ANALYTICS_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

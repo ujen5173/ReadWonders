@@ -1,13 +1,9 @@
 import { Suspense } from "react";
 import { LoadingRow } from "~/components/Cardloading";
 import StoriesArea from "~/components/sections/stories-area";
-import { api } from "~/trpc/server";
+import { fetchTopPicks } from "~/storiesActions";
 
 const TopPicks = async () => {
-  const stories = await api.story.topPicks.query({
-    limit: 6,
-  });
-
   return (
     <section className="w-full">
       <div className="mx-auto max-w-[1440px] border-b border-border px-4 py-8">
@@ -15,7 +11,7 @@ const TopPicks = async () => {
           <StoriesArea
             title="Top Picks on different genres"
             perRow={6}
-            stories={stories}
+            fetcher={fetchTopPicks}
           />
         </Suspense>
       </div>

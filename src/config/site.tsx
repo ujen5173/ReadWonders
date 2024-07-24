@@ -70,6 +70,10 @@ export const siteConfig = {
           name: "Careers",
           href: "/careers",
         },
+        {
+          name: "Website Analytics",
+          href: "/stats",
+        },
       ] as { name: string; href: string }[],
     },
   ],

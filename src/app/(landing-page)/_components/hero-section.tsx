@@ -1,34 +1,13 @@
-"use client";
-
 import { BookBookmark02Icon, StarIcon } from "hugeicons-react";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
 import { merriweather } from "~/config/font";
 import { siteConfig } from "~/config/site";
-import { heroImagesFallback } from "~/data";
-import { cardHeight, cardWidth } from "~/server/constants";
 import { cn } from "~/utils/cn";
-import { chunkIntoN } from "~/utils/helpers";
+import ImagesRender from "./images-render";
 
-const HeroSection = ({
-  data,
-}: {
-  data: {
-    slug: string;
-    thumbnail: string;
-    title: string;
-  }[];
-}) => {
-  const [hoveredImage, setHoveredImage] = useState<string | null>(null);
-
+const HeroSection = async () => {
   return (
     <section className="w-full">
       <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-6 border-b border-border px-4 py-6 md:flex-row">
@@ -81,47 +60,9 @@ const HeroSection = ({
           </div>
         </div>
 
-        <div className="hidden max-h-[30rem] w-9/12 gap-2 overflow-hidden lg:flex">
-          {chunkIntoN(data ?? heroImagesFallback, 4).map((chunk, index) => {
-            return (
-              <div key={index} className="flex flex-1 flex-col gap-2">
-                {chunk.map((image, i) => (
-                  <TooltipProvider key={i} delayDuration={10}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Link
-                          target="_blank"
-                          href={image.slug ? `/story/${image.slug}` : "#"}
-                        >
-                          <Image
-                            onMouseEnter={() => setHoveredImage(image.slug)}
-                            onMouseLeave={() => setHoveredImage(null)}
-                            key={i}
-                            src={image.thumbnail}
-                            alt="A person reading a story"
-                            className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-60 blur-[1px]" : ""}`} 
-                                    border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
-                            style={{
-                              marginTop:
-                                i === 0 ? -((index + 1) * 2.5) + "rem" : 0,
-                            }}
-                            width={cardWidth}
-                            height={cardHeight}
-                          />
-                        </Link>
-                      </TooltipTrigger>
-                      {image.title && (
-                        <TooltipContent className="border-transparent bg-primary text-slate-100">
-                          <p>{image.title}</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-              </div>
-            );
-          })}
-        </div>
+        <Suspense fallback={<ImagesRender />}>
+          <ImagesRender />
+        </Suspense>
       </div>
     </section>
   );
