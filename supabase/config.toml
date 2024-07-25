@@ -1,4 +1,4 @@
-project_id = "ankjnfvcqwhmkxcisrys"
+project_id = "sdickmiimxsmikvrfavk"
 
 [api]
 port = 54321
@@ -24,7 +24,7 @@ file_size_limit = "50MiB"
 [auth]
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["https://localhost:3000"]
-jwt_expiry = 3153600000
+jwt_expiry = 604800
 enable_signup = true
 
 [auth.email]

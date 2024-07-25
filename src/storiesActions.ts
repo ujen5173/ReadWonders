@@ -1,4 +1,4 @@
-"use server";
+// "use server";
 
 import { api } from "./trpc/server";
 
@@ -32,4 +32,8 @@ export const fetchMostLoved = () => {
 
 export const fetchSimilar = (slug: string) => {
   return api.story.similar.query({ slug, limit: 6 });
+};
+
+export const fetchReadingList = (authorId: string) => {
+  return api.auth.readingLists.query({ authorId, limit: 6 });
 };

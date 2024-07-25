@@ -1,10 +1,11 @@
+import { notFound } from "next/navigation";
 import { api } from "~/trpc/server";
 import UserFormDetails from "../_components/user-form-details";
 
 const ProfileSettings = async () => {
   const userDetails = await api.auth.me.query();
 
-  if (!userDetails) return null;
+  if (!userDetails) return notFound();
 
   return (
     <div className="rounded-lg border border-border p-6 shadow-sm">

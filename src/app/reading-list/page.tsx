@@ -1,10 +1,16 @@
+"use client";
+
 import { ArrowDown01Icon } from "hugeicons-react";
-import { getServerUser } from "~/utils/auth";
+import { useContext } from "react";
+import {
+  AuthContext,
+  AuthContextType,
+} from "~/providers/AuthProvider/AuthProvider";
 import NewReadingModel from "./_components/new-reading-model";
 import ReadingListSection from "./_components/reading-list-section";
 
-const ReadingLists = async () => {
-  const user = await getServerUser();
+const ReadingLists = () => {
+  const user = useContext(AuthContext) as AuthContextType;
 
   return (
     <>

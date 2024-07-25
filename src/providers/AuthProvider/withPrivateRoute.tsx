@@ -1,19 +1,22 @@
-import { api } from "~/trpc/server";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useUser } from "~/providers/AuthProvider/AuthProvider";
 
 export const withPrivateRoute = <T extends object>(
   WrappedComponent: React.FunctionComponent<T>,
 ) => {
-  const ComponentWithPrivateRoute = async (props: T) => {
-    // const router = useRouter();
+  const ComponentWithPrivateRoute = (props: T) => {
+    const router = useRouter();
 
-    // const { user, isLoading } = useUser();
-    const user = await api.auth.authInfo.query();
+    const { user, isLoading } = useUser();
 
-    // useEffect(() => {
-    //   if (!user && !isLoading) {
-    //     router.push("/auth/login");
-    //   }
-    // }, [user, router, isLoading]);
+    useEffect(() => {
+      if (!user && !isLoading) {
+        router.push("/");
+      }
+    }, [user, router, isLoading]);
 
     if (!user) return null;
 

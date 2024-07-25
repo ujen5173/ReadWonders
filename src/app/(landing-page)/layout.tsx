@@ -1,8 +1,9 @@
+"use client";
 import { type ReactNode } from "react";
-import { PublicRoute } from "~/components/PublicRoute/PublicRoute";
+import { withPublicRoute } from "~/providers/AuthProvider/withPublicRoute";
 
 const LandingPageRootLayout = ({ children }: { children: ReactNode }) => {
-  return <PublicRoute>{children}</PublicRoute>;
+  return <>{children}</>;
 };
 
-export default LandingPageRootLayout;
+export default withPublicRoute(LandingPageRootLayout);

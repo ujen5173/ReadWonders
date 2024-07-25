@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { api } from "~/trpc/server";
 import EditChapterBody from "./_components/body";
 
@@ -8,7 +9,7 @@ const EditChapter = async ({ params }: { params: { slug: string } }) => {
     slug: slug,
   });
 
-  if (!data) return null;
+  if (!data) return notFound();
 
   return <EditChapterBody slug={slug} chapter={data} />;
 };

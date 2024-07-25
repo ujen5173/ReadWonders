@@ -4,9 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type Provider } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { env } from "~/env.mjs";
 import { supabase } from "~/server/supabase/supabaseClient";
-import { getErrorMessage } from "~/utils/handle-errors";
 import { Icons } from "../Icons";
 import { Button } from "../ui/button";
 import {
@@ -18,7 +16,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { toast } from "../ui/use-toast";
 
 const Login = () => {
   const formSchema = z.object({
@@ -46,20 +43,10 @@ const Login = () => {
   }
 
   const signInWithOauth = (provider: Provider) => {
-    supabase()
-      .auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/dashboard`,
-        },
-      })
-      .then(() => {})
-      .catch((err) => {
-        console.log({ err });
-        toast({
-          title: getErrorMessage(err),
-        });
-      });
+    supabase().auth.signInWithOAuth({
+      provider: provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
   };
 
   return (

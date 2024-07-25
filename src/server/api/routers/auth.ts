@@ -61,6 +61,7 @@ export const authRouter = createTRPCRouter({
     .input(
       z.object({
         username: z.string(),
+        identity: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -69,7 +70,11 @@ export const authRouter = createTRPCRouter({
       try {
         const userDetails = await ctx.db.profiles.findFirst({
           where: {
-            username: input.username,
+            ...(input.identity === "id"
+              ? { id: input.username }
+              : {
+                  username: input.username,
+                }),
           },
           include: {
             followers:
@@ -248,64 +253,73 @@ export const authRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const currentReads = await ctx.db.currentReads.findFirst({
-        where: {
-          userId: ctx.user?.id, // Make this optional to handle unauthenticated users
-        },
-        select: {
-          id: true,
-          stories: {
-            select: TCardSelect(ctx.user?.id),
-            orderBy: {
-              createdAt: "desc",
-            },
-            take: input.limit,
+      try {
+        const currentReads = await ctx.db.currentReads.findFirst({
+          where: {
+            userId: ctx.user?.id, // Make this optional to handle unauthenticated users
           },
-        },
-      });
+          select: {
+            id: true,
+            stories: {
+              select: TCardSelect(ctx.user?.id),
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: input.limit,
+            },
+          },
+        });
 
-      // Process the result to add the readingList flag
-      const processedStories =
-        currentReads?.stories.map((story) => ({
-          ...story,
-          readingList: (story.readingLists ?? []).length > 0,
-        })) ?? [];
+        console.log({ currentReads });
 
-      return processedStories;
+        // Process the result to add the readingList flag
+        const processedStories =
+          currentReads?.stories.map((story) => ({
+            ...story,
+            readingList: (story.readingLists ?? []).length > 0,
+          })) ?? [];
+
+        return processedStories;
+      } catch (err) {
+        console.log(err);
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Tech Glitch! Server's Taking a Nap",
+        });
+      }
     }),
 
   readingLists: publicProcedure
     .input(
       z.object({
         limit: z.number().default(6),
-        authorId: z.string(),
+        authorId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const readingLists = await ctx.db.readingList
-          .findMany({
-            take: input.limit,
-            where: {
-              authorId: input.authorId,
-            },
-            select: {
-              id: true,
-              authorId: false,
-              title: true,
-              slug: true,
-              description: true,
-              private: false,
-              createdAt: false,
-              stories: {
-                take: 3,
-                select: {
-                  thumbnail: true,
-                },
+        const id = input.authorId ?? ctx.user?.id;
+        const readingLists = await ctx.db.readingList.findMany({
+          take: input.limit,
+          where: {
+            authorId: id,
+          },
+          select: {
+            id: true,
+            authorId: false,
+            title: true,
+            slug: true,
+            description: true,
+            private: false,
+            createdAt: false,
+            stories: {
+              take: 3,
+              select: {
+                thumbnail: true,
               },
             },
-          })
-          .withAccelerateInfo();
+          },
+        });
 
         return readingLists;
       } catch (err) {

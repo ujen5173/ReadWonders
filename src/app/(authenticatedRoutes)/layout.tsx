@@ -1,12 +1,8 @@
-import { type Metadata } from "next";
 import { ReactNode } from "react";
-import { PrivateRoute } from "~/components/PrivateRoute/PrivateRoute";
-import { constructMetadata } from "~/config/site";
+import LayoutWrapper from "./LayoutWrapper";
 
-export const metadata: Metadata = constructMetadata({
-  title: "Dashboard - ReadWonders.",
-});
+const Layout = ({ children }: { children: ReactNode }) => {
+  return <LayoutWrapper>{children}</LayoutWrapper>;
+};
 
-export default function Layout({ children }: { children: ReactNode }) {
-  return <PrivateRoute>{children}</PrivateRoute>;
-}
+export default Layout;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
+import { User } from "@supabase/supabase-js";
 import {
   LibraryIcon,
   Logout02Icon,
@@ -15,8 +16,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import useKeyPress from "~/hooks/use-key-press";
+import { useUser } from "~/providers/AuthProvider/AuthProvider";
 import { supabase } from "~/server/supabase/supabaseClient";
-import { api } from "~/trpc/react";
 import { cn } from "~/utils/cn";
 import Logo from "../Logo";
 import {
@@ -36,6 +37,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Separator } from "../ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -47,7 +49,8 @@ import {
 import { toast } from "../ui/use-toast";
 
 const Header = () => {
-  const { data } = api.auth.getProfile.useQuery(undefined);
+  const { user } = useUser();
+  const userLoggedIn = !!user;
 
   const [open, setOpen] = useState(false);
 
@@ -82,12 +85,12 @@ const Header = () => {
               open={open}
               setOpen={setOpen}
               handleSubmit={handleSubmit}
-              user={data}
+              user={user}
             />
           </div>
           <Link
             className="mr-6 flex items-end gap-1"
-            href={data ? "/dashboard" : "/"}
+            href={userLoggedIn ? "/dashboard" : "/"}
           >
             <Logo />
           </Link>
@@ -149,14 +152,14 @@ const Header = () => {
             </div>
           </form>
 
-          {data ? (
+          {userLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="rounded">
                   <span className="sr-only">Open user menu</span>
                   <Image
-                    src={data.profile!}
-                    alt={data.name! + "Profile"}
+                    src={user.user_metadata.avatar_url!}
+                    alt={user.user_metadata.full_name! + "Profile"}
                     width={120}
                     height={120}
                     className="size-8 rounded-full object-cover"
@@ -167,12 +170,14 @@ const Header = () => {
               <DropdownMenuContent className="w-[250px] bg-white" align="end">
                 <DropdownMenuItem className="rounded-none border-b border-border p-0">
                   <Link
-                    href={`/user/${data.username!}`}
+                    href={`/user/${user.id!}?identity=id`}
                     className="mb-1 block w-full rounded-sm p-2 hover:bg-foreground/10"
                   >
                     <div className="py-[0.2rem]">
-                      <p className="text-sm font-semibold">{data.name!}</p>
-                      <p className="text-sm">{data.email!}</p>
+                      <p className="text-sm font-semibold">
+                        {user.user_metadata.full_name!}
+                      </p>
+                      <p className="text-sm">{user.user_metadata.email!}</p>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -212,8 +217,7 @@ const Header = () => {
                   onClick={async () => {
                     try {
                       await supabase().auth.signOut();
-
-                      window.location.href = "/";
+                      router.push("/");
                     } catch (err) {
                       toast({
                         title: "Error logging out",
@@ -247,16 +251,7 @@ const MobileMenu = ({
   open,
   setOpen,
 }: {
-  user:
-    | {
-        id: string;
-        name: string | null;
-        email: string | null;
-        profile: string | null;
-        username: string | null;
-      }
-    | null
-    | undefined;
+  user: User | null;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
     value: string | undefined,
@@ -265,6 +260,7 @@ const MobileMenu = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   return (
     <Sheet open={open} onOpenChange={(opn) => setOpen(opn)}>
@@ -276,7 +272,7 @@ const MobileMenu = ({
       <SheetContent side={"left"} className="flex flex-col">
         <SheetHeader>
           <SheetTitle>
-            <Link className="mr-6 text-left" href={user ? "/dashboard" : "/"}>
+            <Link className="mr-6 text-left" href={!!user ? "/dashboard" : "/"}>
               <Logo />
             </Link>
           </SheetTitle>
@@ -301,40 +297,59 @@ const MobileMenu = ({
               </SheetClose>
             </Link>
           </li>
-          <li>
-            <Dialog>
-              <DialogTrigger className="" asChild>
-                <Button className="w-full justify-start" variant="link">
-                  Newsletter
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl">
-                    Subscribe to Newsletter
-                  </DialogTitle>
-                  <DialogDescription className="text-sm">
-                    Never miss an update. Stay up to date with the latest
-                    stories.
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="space-y-2 py-2">
-                  <Label htmlFor="username" className="text-left">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    placeholder="newsletter@readwonders.com"
-                    className=""
-                  />
+          {!!user && (
+            <div>
+              <Separator className="my-4" />
+              <Link
+                href="/reading-list"
+                className="block rounded-none px-[2px] py-[3px]"
+              >
+                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-blue-500/30">
+                  <Notebook01Icon className="size-4" />
+                  <span>Reading List</span>
                 </div>
-                <DialogFooter>
-                  <Button type="submit">Subscribe</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </li>
+              </Link>
+
+              <Link
+                className="block rounded-none px-[2px] py-[3px]"
+                href={`/works`}
+              >
+                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-orange-500/30">
+                  <LibraryIcon className="size-4" />
+                  <span>Works</span>
+                </div>
+              </Link>
+
+              <Link
+                className="block rounded-none px-[2px] py-[3px]"
+                href={`/settings`}
+              >
+                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-green-500/30">
+                  <Settings01Icon className="size-4" />
+                  <span>Settings</span>
+                </div>
+              </Link>
+
+              <div
+                className="block rounded-none px-[2px] py-[3px]"
+                onClick={async () => {
+                  try {
+                    await supabase().auth.signOut();
+                    router.push("/");
+                  } catch (err) {
+                    toast({
+                      title: "Error logging out",
+                    });
+                  }
+                }}
+              >
+                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
+                  <Logout02Icon className="size-4" />
+                  <span>Logout</span>
+                </div>
+              </div>
+            </div>
+          )}
         </ul>
 
         <div className="flex flex-col gap-2">
@@ -360,6 +375,26 @@ const MobileMenu = ({
               <span>Write a story</span>
             </SheetClose>
           </Link>
+          {user && (
+            <Link href={`/user/${user.id}?identity=id`}>
+              <div className="flex items-center gap-2 rounded-md border border-border bg-white px-4 py-2">
+                <Image
+                  src={user.user_metadata.avatar_url!}
+                  alt={user.user_metadata.full_name! + "Profile"}
+                  width={120}
+                  height={120}
+                  className="size-10 rounded-full object-cover"
+                />
+
+                <div>
+                  <h1 className="text-lg font-semibold">
+                    {user.user_metadata.full_name!}
+                  </h1>
+                  <p>{user.user_metadata.email!}</p>
+                </div>
+              </div>
+            </Link>
+          )}
         </div>
       </SheetContent>
     </Sheet>

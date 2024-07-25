@@ -12,11 +12,13 @@ import { type Session, type User } from "@supabase/supabase-js";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { supabase } from "~/server/supabase/supabaseClient";
 
-export const AuthContext = createContext<{
+export type AuthContextType = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-}>({
+};
+
+export const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   isLoading: false,
@@ -62,7 +64,7 @@ export const AuthProvider = ({
       });
 
     const { data: authListener } = supabase().auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setUserSession(session);
         setUser(session?.user ?? null);
         setCookies(session);
@@ -93,7 +95,7 @@ export const useUser = () => {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error("User must be used within a AuthContextProvider.");
+    throw new Error("useUser must be used within a AuthContextProvider.");
   }
 
   return context;

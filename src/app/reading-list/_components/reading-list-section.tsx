@@ -84,7 +84,7 @@ const ReadingListSection = ({
       ) : (
         <>
           {readingLists &&
-            readingLists?.data.map((readingList) => (
+            readingLists.map((readingList) => (
               <ReadingListCard
                 key={readingList.id}
                 showActions={showActions}
@@ -95,19 +95,18 @@ const ReadingListSection = ({
             ))}
         </>
       )}
-      {Array(Math.abs(perRow - (readingLists?.data ?? []).length))
+      {Array(Math.abs(perRow - (readingLists ?? []).length))
         .fill(0)
         .map((_, i) => (
           <div className="mx-auto block flex-1" key={i} />
         ))}
 
-      {perRow === 2 &&
-        Math.abs(perRow - (readingLists?.data ?? []).length) === 0 && (
-          <>
-            <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
-            <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
-          </>
-        )}
+      {perRow === 2 && Math.abs(perRow - (readingLists ?? []).length) === 0 && (
+        <>
+          <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
+          <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
+        </>
+      )}
     </div>
   );
 };

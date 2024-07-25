@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { api } from "~/trpc/server";
 import EditBody from "./_components/edit-body";
 
@@ -6,7 +7,7 @@ const EditStory = async ({ params }: { params: { slug: string } }) => {
     slug: params.slug,
   });
 
-  if (!storyDetails) return null;
+  if (!storyDetails) return notFound();
 
   return <EditBody details={storyDetails} />;
 };

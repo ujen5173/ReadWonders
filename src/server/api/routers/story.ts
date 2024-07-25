@@ -1,10 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { User } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 import { limit, skip, slugy } from "~/server/constants";
-import { PrismaClientSingleton } from "~/server/db";
 import type { SearchByTitle, TCard } from "~/types";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import { TCardSelect } from "./../../constants/db";
@@ -93,33 +92,31 @@ export const storyRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const stories = await ctx.db.story
-          .findMany({
-            take: input.limit,
-            skip: input.skip,
-            include: {
-              chapters: {
-                where: {
-                  published: true,
-                  isDeleted: false,
-                },
-                select: {
-                  title: true,
-                  id: true,
-                  createdAt: true,
-                  slug: true,
-                },
+        const stories = await ctx.db.story.findMany({
+          take: input.limit,
+          skip: input.skip,
+          include: {
+            chapters: {
+              where: {
+                published: true,
+                isDeleted: false,
               },
-              author: {
-                select: {
-                  name: true,
-                  profile: true,
-                  username: true,
-                },
+              select: {
+                title: true,
+                id: true,
+                createdAt: true,
+                slug: true,
               },
             },
-          })
-          .withAccelerateInfo();
+            author: {
+              select: {
+                name: true,
+                profile: true,
+                username: true,
+              },
+            },
+          },
+        });
 
         return stories;
       } catch (err) {
@@ -1751,7 +1748,7 @@ export const storyRouter = createTRPCRouter({
 async function updateStoryRating(
   ctx: {
     user: User;
-    db: PrismaClientSingleton;
+    db: PrismaClient;
     headers: Headers;
   },
   storyId: string,

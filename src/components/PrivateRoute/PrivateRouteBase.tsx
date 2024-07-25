@@ -1,5 +1,4 @@
-// "use client";
-
+"use server";
 import { type PropsWithChildren } from "react";
 import { withPrivateRoute } from "~/providers/AuthProvider/withPrivateRoute";
 

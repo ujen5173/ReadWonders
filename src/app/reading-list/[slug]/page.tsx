@@ -1,7 +1,6 @@
-import { Share05Icon } from "hugeicons-react";
 import { type Metadata } from "next";
 import Image from "next/image";
-import { Button } from "~/components/ui/button";
+import { ShareButton } from "~/components/Share";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
 import ReadingLists from "./_components/reading-lists";
@@ -61,10 +60,7 @@ const ReadingList = async ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
 
-          <Button className="gap-2" variant={"secondary"}>
-            <Share05Icon size={16} />
-            Share
-          </Button>
+          <ShareButton />
         </div>
 
         <ReadingLists data={data} />

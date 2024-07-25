@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowDown02Icon } from "hugeicons-react";
 import { type FC } from "react";
 import { TCard } from "~/types";
@@ -9,22 +11,19 @@ type Props = {
   description?: string;
   perRow?: 3 | 6;
   inRow?: boolean;
-  fetcher: (slug?: string) => Promise<
-    (TCard & {
-      readingList: boolean;
-    })[]
-  >;
+  stories: (TCard & {
+    readingList: boolean;
+  })[];
 };
 
-const StoriesArea: FC<Props> = async ({
+const StoriesArea: FC<Props> = ({
   title,
   description,
   inRow = false,
   perRow = 3,
-  fetcher,
+  stories,
 }) => {
-  const stories = await fetcher();
-
+  console.log({ stories });
   return (
     <section className="flex-1">
       <div>
@@ -47,9 +46,7 @@ const StoriesArea: FC<Props> = async ({
           inRow ? "xl:grid-cols-3" : "xl:grid-cols-6",
         )}
       >
-        {stories.map((story) => (
-          <CoverCard key={story.id} details={story} />
-        ))}
+        {stories?.map((story) => <CoverCard key={story.id} details={story} />)}
         {Array(Math.abs(perRow - stories.length))
           .fill(0)
           .map((_, i) => (

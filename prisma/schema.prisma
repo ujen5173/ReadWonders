@@ -418,6 +418,7 @@ model Story {
   love              Int            @default(0)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+  isSample          Boolean?       @default(false)
   comments          Comment[]
   loves             Love[]
   ratings           Rating[]

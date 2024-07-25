@@ -45,7 +45,7 @@ export function ShareButton() {
           </DropdownMenuItem>
           <Link
             href={(() =>
-              `https://twitter.com/intent/tweet?url=${window ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
+              `https://twitter.com/intent/tweet?url=${window !== undefined ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export function ShareButton() {
           </Link>
           <Link
             href={(() =>
-              `https://reddit.com/submit?url=${window ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
+              `https://reddit.com/submit?url=${window !== undefined ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">

@@ -8,7 +8,7 @@ import {
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import ReadingListSection from "~/app/(authenticatedRoutes)/reading-list/_components/reading-list-section";
+import ReadingListSection from "~/app/reading-list/_components/reading-list-section";
 import { Icons } from "~/components/Icons";
 import { ShareButton } from "~/components/Share";
 import CoverCard from "~/components/cover-card";
@@ -45,9 +45,16 @@ export async function generateMetadata({
   }
 }
 
-const UserProfile = async ({ params }: { params: { slug: string } }) => {
+const UserProfile = async ({
+  params,
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+  params: { slug: string };
+}) => {
   const userDetails = await api.auth.userProfile.query({
     username: params.slug,
+    identity: searchParams?.identity ?? undefined,
   });
 
   const user = await api.auth.authInfo.query();
@@ -184,35 +191,33 @@ const UserProfile = async ({ params }: { params: { slug: string } }) => {
         </div>
 
         <div className="border-b border-border py-6">
-          <div className="border-b border-border py-6">
-            <section className="flex-1">
-              <div>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="mb-4 flex items-center gap-2">
-                    <h1 className="text-2xl font-semibold text-primary">
-                      {userDetails.name!}&apos;s Works
-                    </h1>
-                    <ArrowDown02Icon size={20} className="text-primary" />
-                  </div>
+          <section className="flex-1">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <h1 className="text-2xl font-semibold text-primary">
+                    {userDetails.name!}&apos;s Works
+                  </h1>
+                  <ArrowDown02Icon size={20} className="text-primary" />
                 </div>
               </div>
-              <main
-                className={cn(
-                  "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
-                  "xl:grid-cols-6",
-                )}
-              >
-                {userDetails.story.map((story) => (
-                  <CoverCard key={story.id} details={story} />
+            </div>
+            <main
+              className={cn(
+                "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+                "xl:grid-cols-6",
+              )}
+            >
+              {userDetails.story.map((story) => (
+                <CoverCard key={story.id} details={story} />
+              ))}
+              {Array(Math.abs(6 - userDetails.story.length))
+                .fill(0)
+                .map((_, i) => (
+                  <div className="mx-auto block flex-1" key={i} />
                 ))}
-                {Array(Math.abs(6 - userDetails.story.length))
-                  .fill(0)
-                  .map((_, i) => (
-                    <div className="mx-auto block flex-1" key={i} />
-                  ))}
-              </main>
-            </section>
-          </div>
+            </main>
+          </section>
         </div>
 
         <div className="py-6">

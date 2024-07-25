@@ -1,6 +1,5 @@
 import { type Metadata } from "next";
 import { type PropsWithChildren } from "react";
-import { PublicRoute } from "~/components/PublicRoute/PublicRoute";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 
 export const metadata: Metadata = constructMetadata({
@@ -10,7 +9,7 @@ export const metadata: Metadata = constructMetadata({
 });
 
 const Layout = async ({ children }: PropsWithChildren) => {
-  return <PublicRoute>{children}</PublicRoute>;
+  return <>{children}</>;
 };
 
 export default Layout;

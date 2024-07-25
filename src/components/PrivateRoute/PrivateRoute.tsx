@@ -1,15 +1,13 @@
 import { redirect } from "next/navigation";
 import { type PropsWithChildren } from "react";
-import { api } from "~/trpc/server";
+import { getServerUser } from "~/utils/auth";
 import { PrivateRouteBase } from "./PrivateRouteBase";
 
 export const PrivateRoute = async ({ children }: PropsWithChildren) => {
-  try {
-    const user = await api.auth.authInfo.query();
+  const user = await getServerUser();
 
-    if (!user) redirect("/auth/login");
-  } catch (err) {
-    redirect("/auth/login");
+  if (!user) {
+    redirect("/404");
   }
 
   return <PrivateRouteBase>{children}</PrivateRouteBase>;
