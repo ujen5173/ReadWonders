@@ -10,8 +10,8 @@ export const Spinner = ({ className, ...props }: HugeiconsProps) => (
 
 export const LoadingScreen = () => {
   return (
-    <div className="absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center">
-      <Spinner className="h-10 w-10 " />
+    <div className="flex h-[calc(100vh-26rem)] w-full flex-col items-center justify-center">
+      <Spinner className="h-10 w-10" />
     </div>
   );
 };

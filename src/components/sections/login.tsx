@@ -45,7 +45,9 @@ const Login = () => {
   const signInWithOauth = (provider: Provider) => {
     supabase().auth.signInWithOAuth({
       provider: provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
     });
   };
 

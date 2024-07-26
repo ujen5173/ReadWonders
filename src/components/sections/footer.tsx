@@ -8,6 +8,7 @@ import Logo from "../Logo";
 import FeedbackDialog from "../feedback";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Skeleton } from "../ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +17,7 @@ import {
 } from "../ui/tooltip";
 
 const Footer = () => {
-  const { data } = api.genre.getGenre.useQuery({
+  const { data, isLoading } = api.genre.getGenre.useQuery({
     limit: 5,
   });
 
@@ -45,16 +46,26 @@ const Footer = () => {
                 Stories Categories
               </h1>
               <ul>
-                {data?.map((genre) => (
-                  <li key={genre.id}>
-                    <Link
-                      href={`/genre/${genre.slug}`}
-                      className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
-                    >
-                      {genre.name}
-                    </Link>
-                  </li>
-                ))}
+                {isLoading ? (
+                  <>
+                    <Skeleton className="mb-2 h-5 w-36" />
+                    <Skeleton className="mb-2 h-5 w-36" />
+                    <Skeleton className="mb-2 h-5 w-36" />
+                    <Skeleton className="mb-2 h-5 w-36" />
+                    <Skeleton className="mb-2 h-5 w-36" />
+                  </>
+                ) : (
+                  data?.map((genre) => (
+                    <li key={genre.id}>
+                      <Link
+                        href={`/genre/${genre.slug}`}
+                        className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
+                      >
+                        {genre.name}
+                      </Link>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
             {siteConfig.navItemsFooter.map((navItem) => (

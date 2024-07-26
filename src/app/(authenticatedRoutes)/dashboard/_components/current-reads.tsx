@@ -1,10 +1,8 @@
-"use client";
-
 import StoriesArea from "~/components/sections/stories-area";
-import { api } from "~/trpc/react";
+import { fetchCurrentReads } from "~/storiesActions";
+import ReadingSection from "./reading-section";
 
-const CurrentReads = () => {
-  const fetchCurrentReads = () => api.auth.currentReads.useQuery({ limit: 3 });
+const CurrentReadsReadingList = () => {
   return (
     <section className="w-full">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 border-b border-border px-4 py-8 xl:flex-row">
@@ -14,9 +12,12 @@ const CurrentReads = () => {
           perRow={3}
           inRow={true}
         />
+        <div className="flex-1">
+          <ReadingSection />
+        </div>
       </div>
     </section>
   );
 };
 
-export default CurrentReads;
+export default CurrentReadsReadingList;

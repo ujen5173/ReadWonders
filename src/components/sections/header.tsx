@@ -49,7 +49,8 @@ import {
 import { toast } from "../ui/use-toast";
 
 const Header = () => {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
+
   const userLoggedIn = !!user;
 
   const [open, setOpen] = useState(false);

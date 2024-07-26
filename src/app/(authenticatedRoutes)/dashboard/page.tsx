@@ -1,27 +1,29 @@
+import { Suspense } from "react";
+import FeaturedAndLatest from "~/app/(landing-page)/_components/featured-latest";
+import MostLoved from "~/app/(landing-page)/_components/most-loved";
+import Recommended from "~/app/(landing-page)/_components/recommended";
+import TopPicks from "~/app/(landing-page)/_components/top-picks";
+import { LoadingRow } from "~/components/Cardloading";
+import CurrentReadsReadingList from "./_components/current-reads";
 import Greetings from "./_components/greetings";
-
-// make it client fetching...
-// remove suspense and all shit
-// authentication flow working fine, causes problem due to server rendered!!!
 
 const Dashboard = () => {
   return (
     <>
       <Greetings />
-      {/* <CurrentReads /> */}
-      {/* <Suspense fallback={<LoadingRow />}> */}
-      {/* <FeaturedAndLatest /> */}
-      {/* </Suspense> */}
-      {/* 
+      <CurrentReadsReadingList />
+      <Suspense fallback={<LoadingRow />}>
+        <FeaturedAndLatest />
+      </Suspense>
       <Suspense fallback={<LoadingRow />}>
         <Recommended />
-      </Suspense> */}
-      {/* <Suspense fallback={<LoadingRow />}> */}
-      {/* <MostLoved /> */}
-      {/* </Suspense> */}
-      {/* <Suspense fallback={<LoadingRow />}> */}
-      {/* <TopPicks /> */}
-      {/* </Suspense> */}
+      </Suspense>
+      <Suspense fallback={<LoadingRow />}>
+        <MostLoved />
+      </Suspense>
+      <Suspense fallback={<LoadingRow />}>
+        <TopPicks />
+      </Suspense>
     </>
   );
 };

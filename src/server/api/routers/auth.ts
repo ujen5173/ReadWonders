@@ -270,8 +270,6 @@ export const authRouter = createTRPCRouter({
           },
         });
 
-        console.log({ currentReads });
-
         // Process the result to add the readingList flag
         const processedStories =
           currentReads?.stories.map((story) => ({

@@ -13,8 +13,6 @@ export const withPublicRoute = <T extends object>(
     const router = useRouter();
     const { user, isLoading } = useUser();
 
-    console.log({ user, isLoading });
-
     const isUserDataLoaded = !isLoading;
 
     useEffect(() => {

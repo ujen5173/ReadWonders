@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -9,7 +10,6 @@ import {
 } from "react";
 
 import { type Session, type User } from "@supabase/supabase-js";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { supabase } from "~/server/supabase/supabaseClient";
 
 export type AuthContextType = {
@@ -53,29 +53,57 @@ export const AuthProvider = ({
   const [user, setUser] = useState<User | null>(initialUser);
   const [isLoading, setIsLoading] = useState(!initialUser);
 
+  const refreshToken = useCallback(async () => {
+    const { data, error } = await supabase().auth.refreshSession();
+
+    if (error) {
+      console.error("Error refreshing token:", error);
+
+      return;
+    }
+
+    setUserSession(data.session);
+    setUser(data.session?.user ?? null);
+    setCookies(data.session);
+  }, []);
+
   useEffect(() => {
-    void supabase()
-      .auth.getSession()
-      .then(({ data: { session } }) => {
-        setUserSession(session);
-        setUser(session?.user ?? null);
-        setCookies(session);
-        setIsLoading(false);
-      });
+    const updateSession = async () => {
+      const {
+        data: { session },
+      } = await supabase().auth.getSession();
+
+      setUserSession(session);
+      setUser(session?.user ?? null);
+      setCookies(session);
+      setIsLoading(false);
+    };
+
+    void updateSession();
 
     const { data: authListener } = supabase().auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
         setUserSession(session);
         setUser(session?.user ?? null);
         setCookies(session);
         setIsLoading(false);
+
+        if (event === "TOKEN_REFRESHED") {
+          await refreshToken();
+        }
       },
     );
 
+    // Set up a timer to refresh the token before it expires
+    const refreshInterval = setInterval(() => {
+      void refreshToken();
+    }, 3600000); // Refresh every hour (adjust as needed)
+
     return () => {
       authListener.subscription.unsubscribe();
+      clearInterval(refreshInterval);
     };
-  }, []);
+  }, [refreshToken]);
 
   const value = {
     session: userSession,
@@ -83,12 +111,7 @@ export const AuthProvider = ({
     isLoading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-      <ReactQueryDevtools />
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useUser = () => {

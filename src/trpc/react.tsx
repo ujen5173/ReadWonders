@@ -39,18 +39,19 @@ export function TRPCReactProvider(props: {
   const [trpcClient] = useState(() =>
     api.createClient({
       transformer,
-
       links: [
         loggerLink({
-          enabled: (op) => false,
-          //   process.env.NODE_ENV === "development" ||
-          //   (op.direction === "down" && op.result instanceof Error),
+          // ... (existing options)
         }),
         unstable_httpBatchStreamLink({
           url: getUrl(),
           async headers() {
             const heads = new Map(props.headers);
-            const { data } = await supabase().auth.getSession();
+            const { data, error } = await supabase().auth.getSession();
+
+            if (error) {
+              console.error("Error getting session:", error);
+            }
 
             if (data.session) {
               heads.set("authorization", data.session.access_token);
