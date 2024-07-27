@@ -41,4 +41,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 /working_code
-/todo.txt
+/todo.txt.env
