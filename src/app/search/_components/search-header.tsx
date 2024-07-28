@@ -3,7 +3,7 @@
 import { PopoverClose } from "@radix-ui/react-popover";
 import { PreferenceHorizontalIcon } from "hugeicons-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import {
@@ -22,36 +22,96 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { Switch } from "~/components/ui/switch";
 
+// Define types for filter values
+export type LengthFilter = "1-10" | "10-20" | "20-30" | "40+";
+export type UpdatedFilter = "anytime" | "today" | "week" | "month";
+export type BooleanFilter = boolean;
+
+// Define the shape of the filters state
+interface Filters {
+  length?: LengthFilter;
+  updated?: UpdatedFilter;
+  premium?: BooleanFilter;
+  mature?: BooleanFilter;
+}
+
+// Define valid filters constants
+export const validFilters = {
+  len: ["1-10", "10-20", "20-30", "40+"] as LengthFilter[],
+  updated: ["anytime", "today", "week", "month"] as UpdatedFilter[],
+};
+
 const SearchHeader = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [filters, setFilters] = useState({
-    length: searchParams.get("length") ?? "",
-    updated: searchParams.get("updated") ?? "",
-    premium: searchParams.get("premium") === "true",
-    mature: searchParams.get("mature") === "true",
+  const getValidLength = (param: string | null): LengthFilter | undefined => {
+    return validFilters.len.includes(param as LengthFilter)
+      ? (param as LengthFilter)
+      : undefined;
+  };
+
+  const getValidUpdated = (param: string | null): UpdatedFilter | undefined => {
+    return validFilters.updated.includes(param as UpdatedFilter)
+      ? (param as UpdatedFilter)
+      : undefined;
+  };
+
+  const [filters, setFilters] = useState<Filters>({
+    length: getValidLength(searchParams.get("length")) ?? "1-10",
+    updated: getValidUpdated(searchParams.get("updated")) ?? "anytime",
+    premium: searchParams.get("premium") === "true" ? true : false,
+    mature: searchParams.get("mature") === "true" ? true : false,
   });
 
-  const onApply = () => {
-    const params = new URLSearchParams();
+  // Effect to handle changes to searchParams or other side effects
+  useEffect(() => {
+    setFilters({
+      length: getValidLength(searchParams.get("length")) ?? "1-10",
+      updated: getValidUpdated(searchParams.get("updated")) ?? "anytime",
+      premium: searchParams.get("premium") === "true" ? true : false,
+      mature: searchParams.get("mature") === "true" ? true : false,
+    });
+  }, [searchParams]);
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value.toString());
+  const updateQueryParams = (
+    params: Record<string, string | boolean | undefined>,
+  ) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined) {
+        newParams.set(key, String(params[key]));
+      } else {
+        newParams.delete(key);
       }
+    });
+    router.push(`${pathname}?${newParams.toString()}`);
+  };
 
-      router.push(
-        pathname + "?" + "q=" + searchParams.get("q") + "&" + params.toString(),
-      );
-
-      return;
+  const onApply = () => {
+    updateQueryParams({
+      length: filters["length"],
+      updated: filters.updated,
+      premium: filters.premium,
+      mature: filters.mature,
     });
   };
 
   const onReset = () => {
-    router.push(pathname + "?" + "q=" + searchParams.get("q"));
+    setFilters({
+      length: undefined,
+      updated: undefined,
+      premium: false,
+      mature: false,
+    });
+    updateQueryParams({
+      length: undefined,
+      updated: undefined,
+      premium: undefined,
+      mature: undefined,
+    });
   };
 
   return (
@@ -73,7 +133,7 @@ const SearchHeader = () => {
         <PopoverContent className="w-80 bg-white">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <h4 className="text-xl font-medium leading-none">Add Filers</h4>
+              <h4 className="text-xl font-medium leading-none">Add Filters</h4>
               <p className="text-sm text-muted-foreground">
                 Filter your search results to find the perfect story
               </p>
@@ -82,12 +142,13 @@ const SearchHeader = () => {
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="length">Length</Label>
                 <Select
-                  value={searchParams.get("length") ?? undefined}
+                  value={filters["length"] ?? ""}
                   onValueChange={(value) => {
                     setFilters((prev) => ({
                       ...prev,
-                      length: value.toLowerCase().replace(" ", "-"),
+                      length: value as LengthFilter,
                     }));
+                    updateQueryParams({ length: value });
                   }}
                 >
                   <SelectTrigger className="col-span-2 bg-white">
@@ -106,12 +167,13 @@ const SearchHeader = () => {
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="updated">Updated</Label>
                 <Select
-                  value={searchParams.get("updated") ?? undefined}
+                  value={filters.updated ?? ""}
                   onValueChange={(value) => {
                     setFilters((prev) => ({
                       ...prev,
-                      updated: value.toLowerCase().replace(" ", "-"),
+                      updated: value as UpdatedFilter,
                     }));
+                    updateQueryParams({ updated: value });
                   }}
                 >
                   <SelectTrigger className="col-span-2 bg-white">
@@ -134,12 +196,13 @@ const SearchHeader = () => {
                   <Label htmlFor="premium">Premium</Label>
                   <Switch
                     id="premium"
-                    defaultChecked={searchParams.get("premium") === "true"}
+                    checked={filters.premium ?? false}
                     onCheckedChange={(value) => {
                       setFilters((prev) => ({
                         ...prev,
                         premium: value,
                       }));
+                      updateQueryParams({ premium: value });
                     }}
                   />
                 </div>
@@ -150,12 +213,13 @@ const SearchHeader = () => {
                   <Label htmlFor="mature">Mature</Label>
                   <Switch
                     id="mature"
-                    defaultChecked={searchParams.get("premium") === "true"}
+                    checked={filters.mature ?? false}
                     onCheckedChange={(value) => {
                       setFilters((prev) => ({
                         ...prev,
                         mature: value,
                       }));
+                      updateQueryParams({ mature: value });
                     }}
                   />
                 </div>

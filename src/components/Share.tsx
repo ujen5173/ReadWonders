@@ -7,6 +7,7 @@ import {
   TwitterIcon,
 } from "hugeicons-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env.mjs";
 import {
@@ -19,6 +20,8 @@ import {
 import { toast } from "./ui/use-toast";
 
 export function ShareButton() {
+  const path = usePathname();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,7 +48,7 @@ export function ShareButton() {
           </DropdownMenuItem>
           <Link
             href={(() =>
-              `https://twitter.com/intent/tweet?url=${window !== undefined ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
+              `https://twitter.com/intent/tweet?url=${env.NEXT_PUBLIC_APP_URL}${path}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">
@@ -57,7 +60,7 @@ export function ShareButton() {
           </Link>
           <Link
             href={(() =>
-              `https://reddit.com/submit?url=${window !== undefined ? window.location.href : env.NEXT_PUBLIC_APP_URL}`)()}
+              `https://reddit.com/submit?url=${env.NEXT_PUBLIC_APP_URL}${path}`)()}
             target="_blank"
           >
             <DropdownMenuItem className="flex items-center gap-2">

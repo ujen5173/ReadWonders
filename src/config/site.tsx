@@ -28,7 +28,7 @@ export function getBaseUrl() {
 export const siteConfig = {
   name: "ReadWonders",
   namelower: "readwonders",
-  title: "ReadWonders - Online Reading Platform",
+  title: "ReadWonders - Online Storytelling Platform",
   description:
     "A dynamic community platform where creators can craft and share their stories, express their emotions, and connect with a supportive audience.",
   tagline: "Empowering Voices, Inspiring Readers, One Chapter at a Time",
@@ -126,7 +126,6 @@ export function constructMetadata({
   ],
   noIndex = false,
   url = getBaseUrl(),
-  type = "website",
   publishedTime,
 }: {
   title?: string;
@@ -135,7 +134,6 @@ export function constructMetadata({
   icons?: Metadata["icons"];
   noIndex?: boolean;
   url?: string;
-  type?: "website" | "article";
   publishedTime?: string;
 } = {}): Metadata {
   return {
@@ -145,7 +143,6 @@ export function constructMetadata({
       title,
       description,
       url,
-      type,
       publishedTime,
       ...(image && {
         images: [

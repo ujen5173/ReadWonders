@@ -1,8 +1,10 @@
+"use client";
+
 import { ReactNode } from "react";
-import LayoutWrapper from "./LayoutWrapper";
+import { withPrivateRoute } from "~/providers/AuthProvider/withPrivateRoute";
 
 const Layout = ({ children }: { children: ReactNode }) => {
-  return <LayoutWrapper>{children}</LayoutWrapper>;
+  return <>{children}</>;
 };
 
-export default Layout;
+export default withPrivateRoute(Layout);

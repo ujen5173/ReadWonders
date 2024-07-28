@@ -12,42 +12,33 @@ import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { type JSONContent } from "novel";
-import ReadingListModel from "~/app/_components/reading-list-modal";
-import FollowButton from "~/components/follow-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
 import TextAlign from "@tiptap/extension-text-align";
 import {
   BookOpen01Icon,
-  EyeIcon,
   LeftToRightListNumberIcon,
   SquareLock02Icon,
   StarIcon,
+  ViewIcon,
 } from "hugeicons-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import NotFound from "~/app/not-found";
 import { LoadingColumn } from "~/components/Cardloading";
 import { ShareButton } from "~/components/Share";
 import StoriesArea from "~/components/sections/stories-area";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectTrigger,
-} from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
-import { contentFont, merriweather } from "~/config/font";
+import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { fetchSimilar } from "~/storiesActions";
 import { api } from "~/trpc/server";
 import { formatDate, formatNumber, formatReadingTime } from "~/utils/helpers";
+import ChapterHeader from "./_components/chapter-header";
 import ReadQuery from "./_components/read-query";
-import Toc from "./_components/toc";
 import UnlockSection from "./_components/unlock-section";
 import UpVote from "./_components/up-vote";
-import Visibility from "./_components/visibility";
 
 interface Props {
   params: {
@@ -92,8 +83,28 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
   if (chapterDetails.isPremium && !hasPaid) {
     return (
       <section className="w-full">
+        <ChapterHeader
+          chapterDetails={{
+            id: chapterDetails.id,
+            published: chapterDetails.published,
+            story: {
+              id: chapterDetails.story.id,
+              thumbnail: chapterDetails.story.thumbnail,
+              title: chapterDetails.story.title,
+              slug: chapterDetails.story.slug,
+              author: {
+                id: chapterDetails.story.author.id,
+                username: chapterDetails.story.author.username,
+                followers: chapterDetails.story.author.followers,
+              },
+              chapters: chapterDetails.story.chapters,
+              published: chapterDetails.published,
+            },
+          }}
+          user={user}
+        />
         <div className="mx-auto max-w-screen-xl px-4">
-          <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
+          {/* <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
             <div className="flex-1">
               <Select>
                 <SelectTrigger className="h-auto max-w-[450px] bg-white p-2 focus:outline-none focus:ring-0 focus:ring-offset-0">
@@ -178,7 +189,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 </>
               )}
             </div>
-          </div>
+          </div> */}
 
           <div className="py-6">
             {chapterDetails.thumbnail && (
@@ -193,7 +204,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
             <div className="py-8">
               <h1
-                className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl ${merriweather.className}`}
+                className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl`}
               >
                 {chapterDetails.title}
               </h1>
@@ -202,7 +213,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                 <div className="px-2">
                   <div className="flex flex-col items-center">
                     <div className="flex items-center gap-1">
-                      <EyeIcon size={16} />
+                      <ViewIcon size={16} className="mt-1 stroke-2" />
                       <p>Reads</p>
                     </div>
                     <p className="font-bold">
@@ -287,10 +298,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
     );
   }
 
-  if (chapterDetails.content === null)
-    throw new Error(
-      "Whoops! It looks like this story is empty. Why not check out some other tales?",
-    );
+  if (chapterDetails.content === null) notFound();
 
   //? Authenticated author: Always show chapter content
   //? Authenticated non-author: Show only if chapter is published
@@ -298,60 +306,34 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <>
+      <ChapterHeader
+        chapterDetails={{
+          id: chapterDetails.id,
+          published: chapterDetails.published,
+          story: {
+            id: chapterDetails.story.id,
+            thumbnail: chapterDetails.story.thumbnail,
+            title: chapterDetails.story.title,
+            slug: chapterDetails.story.slug,
+            author: {
+              id: chapterDetails.story.author.id,
+              username: chapterDetails.story.author.username,
+              followers: chapterDetails.story.author.followers,
+            },
+            chapters: chapterDetails.story.chapters,
+            published: chapterDetails.published,
+          },
+        }}
+        user={user}
+      />
+
       <ReadQuery id={chapterDetails.id} />
 
       {user?.id === chapterDetails.story.author.id ||
       chapterDetails.published ? (
         <section className="w-full">
           <div className="mx-auto max-w-screen-xl px-4">
-            <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
-              <div className="w-full flex-1">
-                <Toc
-                  details={{
-                    story: {
-                      thumbnail: chapterDetails.story.thumbnail,
-                      title: chapterDetails.story.title,
-                      slug: chapterDetails.story.slug,
-                      author: {
-                        username: chapterDetails.story.author.username,
-                      },
-                      chapters: chapterDetails.story.chapters.map((ch) => ({
-                        slug: ch.slug,
-                        title: ch.title,
-                        isPremium: ch.isPremium,
-                      })),
-                    },
-                  }}
-                />
-              </div>
-
-              <div className="grid w-full grid-cols-2 gap-2 xs:w-auto">
-                {user?.id === chapterDetails.story.author.id ? (
-                  <>
-                    <Visibility
-                      id={chapterDetails.id}
-                      published={chapterDetails.published}
-                    />
-                    <Link href={`/edit/${chapterDetails.story.slug}/chapter`}>
-                      <Button variant={"default"}>Edit Story</Button>
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <ReadingListModel bookId={chapterDetails.story!.id} />
-                    <FollowButton
-                      id={chapterDetails.story.author.id}
-                      isAuth={!!user}
-                      following={
-                        (chapterDetails.story.author.followers ?? []).length > 0
-                      }
-                    />
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="border-b border-border py-6">
+            <div className="py-6">
               {chapterDetails.thumbnail && (
                 <Image
                   src={chapterDetails.thumbnail!}
@@ -364,7 +346,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
 
               <div className="py-0 sm:py-8">
                 <h1
-                  className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl ${merriweather.className}`}
+                  className={`mb-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-5xl`}
                 >
                   {chapterDetails.title}
                 </h1>
@@ -373,7 +355,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
                   <div className="px-2">
                     <div className="flex flex-col items-center">
                       <div className="flex items-center gap-1">
-                        <EyeIcon size={16} />
+                        <ViewIcon size={16} />
                         <p>Reads</p>
                       </div>
                       <p className="font-bold">
@@ -421,7 +403,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
               </div>
             </div>
 
-            <div className="mx-auto flex max-w-screen-md flex-col items-center justify-stretch gap-8 py-4 sm:py-8">
+            <div className="mx-auto flex max-w-screen-md flex-col items-center justify-stretch gap-8 border-t border-border py-4 sm:py-8">
               <div
                 className={`${contentFont.className} w-full max-w-none space-y-4 whitespace-pre-line text-lg leading-relaxed text-foreground md:text-xl`}
                 dangerouslySetInnerHTML={{
@@ -506,7 +488,9 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
             </div>
           </section>
         </section>
-      ) : null}
+      ) : (
+        <NotFound />
+      )}
     </>
   );
 };

@@ -1,7 +1,3 @@
-// !Bugs:
-// !1. hydration error
-// !2. Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";

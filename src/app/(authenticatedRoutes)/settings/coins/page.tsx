@@ -1,12 +1,39 @@
 "use client";
 
 import { CoinsDollarIcon } from "hugeicons-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 
 const BuyCoins = () => {
   const [coinsAmount, setCoinsAmount] = useState<number>(50);
+
+  const { originalPrice, discountedPrice, discount } = useMemo(() => {
+    const basePrice = 1.45;
+    const discountStartAmount = 100; // Discount starts at 100 coins
+    const maxDiscount = 0.3; // Maximum 30% discount
+    const discountRate = 0.0012; // Discount increases by 0.02% per coin after discountStartAmount
+
+    let discountPercentage = 0;
+
+    if (coinsAmount > discountStartAmount) {
+      discountPercentage = Math.min(
+        (coinsAmount - discountStartAmount) * discountRate,
+        maxDiscount,
+      );
+    }
+
+    const originalTotal = Math.ceil(coinsAmount * basePrice);
+    const discountedTotal = Math.ceil(
+      coinsAmount * basePrice * (1 - discountPercentage),
+    );
+
+    return {
+      originalPrice: originalTotal,
+      discountedPrice: discountedTotal,
+      discount: discountPercentage * 100, // Convert to percentage for display
+    };
+  }, [coinsAmount]);
 
   return (
     <div className="rounded-lg border border-border p-6 shadow-sm">
@@ -15,7 +42,8 @@ const BuyCoins = () => {
           Buy Coins
         </h1>
         <p className="text-base text-foreground">
-          The more coins you buy, the cheaper they are
+          The more coins you purchase, the more you save! Discounts start at 100
+          coins. Support our community of storytellers.
         </p>
       </div>
 
@@ -44,11 +72,15 @@ const BuyCoins = () => {
             type="number"
             step={5}
           />
-          <span>
-            for{" "}
-            <span className="font-semibold">
-              ${Math.ceil(Number(coinsAmount) * 2.45)}
+          <span className="flex gap-2 text-base">
+            <span className={discount > 0 ? "text-gray-500 line-through" : ""}>
+              ${originalPrice}
             </span>
+            {discount > 0 && (
+              <span className="font-semibold text-green-600">
+                ${discountedPrice}
+              </span>
+            )}
           </span>
         </div>
 

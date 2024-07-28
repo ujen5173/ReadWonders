@@ -200,7 +200,6 @@ export const columns: ColumnDef<WorkDetails>[] = [
                 title="Delete Story"
                 description="Are you sure you want to delete this story?"
                 onConfirm={() => {}}
-                trigger="Delete"
                 variant="destructive"
               />
             </DropdownMenuItem>

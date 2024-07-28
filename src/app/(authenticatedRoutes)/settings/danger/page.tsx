@@ -1,4 +1,6 @@
-import { Button } from "~/components/ui/button";
+"use client";
+
+import DeleteDialog from "~/app/_components/delete-dialog";
 
 const DangerPage = () => {
   return (
@@ -13,7 +15,11 @@ const DangerPage = () => {
         </p>
       </div>
 
-      <Button variant="destructive">Delete Account</Button>
+      <DeleteDialog
+        title="Delete Account"
+        description="This action is irreversible. All stories, comments, and followers will be permanently removed."
+        onConfirm={() => {}}
+      />
     </div>
   );
 };

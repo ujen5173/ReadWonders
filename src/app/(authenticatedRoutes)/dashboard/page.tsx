@@ -4,8 +4,16 @@ import MostLoved from "~/app/(landing-page)/_components/most-loved";
 import Recommended from "~/app/(landing-page)/_components/recommended";
 import TopPicks from "~/app/(landing-page)/_components/top-picks";
 import { LoadingRow } from "~/components/Cardloading";
+import { constructMetadata } from "~/config/site";
 import CurrentReadsReadingList from "./_components/current-reads";
 import Greetings from "./_components/greetings";
+
+export async function generateMetadata() {
+  return constructMetadata({
+    title: "Dashboard - ReadWonders",
+    description: "Welcome to your dashboard",
+  });
+}
 
 const Dashboard = () => {
   return (

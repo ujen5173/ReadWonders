@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
@@ -27,7 +26,6 @@ import { autosaveContent, loadDraft } from "~/utils/storage";
 
 const NewStory = ({ params }: { params: { chapterId: string } }) => {
   const { chapterId } = params;
-  const router = useRouter();
 
   const { data: chapter } = api.chapter.getSingeChapterById.useQuery(
     {
@@ -141,7 +139,7 @@ const NewStory = ({ params }: { params: { chapterId: string } }) => {
       });
 
       toast({ title: "Chapter published successfully" });
-      window.location.href = `/story/${res.slug}`;
+      window.location.href = `/chapter/${res.slug}`;
     } catch (err) {
       toast({
         title: getErrorMessage(err),

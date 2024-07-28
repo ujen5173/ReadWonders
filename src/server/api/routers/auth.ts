@@ -404,8 +404,10 @@ export const authRouter = createTRPCRouter({
         bio: z.string().nullable(),
         tagline: z.string().nullable(),
         profile: z.string().nullable(),
-        website: z.string().url().optional().nullable(),
         twitter: z.string().optional().nullable(),
+        wattpad: z.string().optional().nullable(),
+        website: z.string().url().optional().nullable(),
+        goodreads: z.string().url().optional().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

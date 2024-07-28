@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useContext, type FC } from "react";
 import { Context } from "~/app/_components/RootContext";
 import ReadingListModel from "~/app/_components/reading-list-modal";
-import { suezOne } from "~/config/font";
+import { merriweather } from "~/config/font";
 import { cardHeight, cardWidth } from "~/server/constants";
 import { type TCard } from "~/types";
 import { cn } from "~/utils/cn";
@@ -46,11 +46,14 @@ const CoverCard: FC<{
         <a className="relative block">
           {details.isMature && (
             <div className="absolute right-2 top-2 z-50">
-              <Badge className={cn(`bg-primary text-xs`, suezOne.className)}>
+              <Badge
+                className={cn(`bg-primary text-xs`, merriweather.className)}
+              >
                 18+
               </Badge>
             </div>
           )}
+
           <Image
             className="cover-card-img mb-2 rounded-lg object-fill"
             src={details.thumbnail}
@@ -61,6 +64,7 @@ const CoverCard: FC<{
               aspectRatio: "1/1.5",
             }}
           />
+
           <div className="w-full">
             <h1 className="line-clamp-1 text-base font-medium text-slate-800 xxs:text-lg">
               {details.title}
@@ -74,7 +78,7 @@ const CoverCard: FC<{
       </Link>
 
       <div className="absolute inset-0 hidden flex-col sm:flex">
-        <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition group-hover:opacity-100">
+        <div className="mb-2 flex flex-1 flex-col justify-between rounded-md border border-border/70 bg-white p-4 opacity-0 transition duration-300 hover:shadow-md group-hover:opacity-100">
           <div className="h-6">
             {details.categoryName && (
               <Link

@@ -4,20 +4,12 @@ import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 
 import { User } from "@supabase/supabase-js";
-import {
-  LibraryIcon,
-  Logout02Icon,
-  Menu01Icon,
-  Notebook01Icon,
-  PlusSignIcon,
-  Settings01Icon,
-} from "hugeicons-react";
-import Image from "next/image";
+import { Menu01Icon, PlusSignIcon } from "hugeicons-react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
+import UserMenu from "~/app/_components/user-menu";
 import useKeyPress from "~/hooks/use-key-press";
 import { useUser } from "~/providers/AuthProvider/AuthProvider";
-import { supabase } from "~/server/supabase/supabaseClient";
 import { cn } from "~/utils/cn";
 import Logo from "../Logo";
 import {
@@ -29,15 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -46,7 +31,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { toast } from "../ui/use-toast";
 
 const Header = () => {
   const { user, isLoading } = useUser();
@@ -154,85 +138,7 @@ const Header = () => {
           </form>
 
           {userLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="rounded">
-                  <span className="sr-only">Open user menu</span>
-                  <Image
-                    src={user.user_metadata.avatar_url!}
-                    alt={user.user_metadata.full_name! + "Profile"}
-                    width={120}
-                    height={120}
-                    className="size-8 rounded-full object-cover"
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-[250px] bg-white" align="end">
-                <DropdownMenuItem className="rounded-none border-b border-border p-0">
-                  <Link
-                    href={`/user/${user.id!}?identity=id`}
-                    className="mb-1 block w-full rounded-sm p-2 hover:bg-foreground/10"
-                  >
-                    <div className="py-[0.2rem]">
-                      <p className="text-sm font-semibold">
-                        {user.user_metadata.full_name!}
-                      </p>
-                      <p className="text-sm">{user.user_metadata.email!}</p>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-
-                <Link
-                  href="/reading-list"
-                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
-                >
-                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-blue-500/30">
-                    <Notebook01Icon className="size-4" />
-                    <span>Reading List</span>
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link
-                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
-                  href={`/works`}
-                >
-                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-orange-500/30">
-                    <LibraryIcon className="size-4" />
-                    <span>Works</span>
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link
-                  className="block rounded-none border-b border-border px-[2px] py-[3px]"
-                  href={`/settings`}
-                >
-                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-green-500/30">
-                    <Settings01Icon className="size-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                </Link>
-
-                <div
-                  className="block rounded-none px-[2px] py-[3px]"
-                  onClick={async () => {
-                    try {
-                      await supabase().auth.signOut();
-                      router.push("/");
-                    } catch (err) {
-                      toast({
-                        title: "Error logging out",
-                      });
-                    }
-                  }}
-                >
-                  <DropdownMenuItem className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
-                    <Logout02Icon className="size-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <UserMenu user={user} />
           ) : (
             <Link href="/auth/login">
               <Button>Login</Button>
@@ -261,7 +167,6 @@ const MobileMenu = ({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   return (
     <Sheet open={open} onOpenChange={(opn) => setOpen(opn)}>
@@ -298,59 +203,6 @@ const MobileMenu = ({
               </SheetClose>
             </Link>
           </li>
-          {!!user && (
-            <div>
-              <Separator className="my-4" />
-              <Link
-                href="/reading-list"
-                className="block rounded-none px-[2px] py-[3px]"
-              >
-                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-blue-500/30">
-                  <Notebook01Icon className="size-4" />
-                  <span>Reading List</span>
-                </div>
-              </Link>
-
-              <Link
-                className="block rounded-none px-[2px] py-[3px]"
-                href={`/works`}
-              >
-                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-orange-500/30">
-                  <LibraryIcon className="size-4" />
-                  <span>Works</span>
-                </div>
-              </Link>
-
-              <Link
-                className="block rounded-none px-[2px] py-[3px]"
-                href={`/settings`}
-              >
-                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-green-500/30">
-                  <Settings01Icon className="size-4" />
-                  <span>Settings</span>
-                </div>
-              </Link>
-
-              <div
-                className="block rounded-none px-[2px] py-[3px]"
-                onClick={async () => {
-                  try {
-                    await supabase().auth.signOut();
-                    router.push("/");
-                  } catch (err) {
-                    toast({
-                      title: "Error logging out",
-                    });
-                  }
-                }}
-              >
-                <div className="inline-flex w-full items-center gap-2 rounded-sm p-2 transition hover:bg-destructive hover:text-destructive-foreground">
-                  <Logout02Icon className="size-4" />
-                  <span>Logout</span>
-                </div>
-              </div>
-            </div>
-          )}
         </ul>
 
         <div className="flex flex-col gap-2">
@@ -376,26 +228,6 @@ const MobileMenu = ({
               <span>Write a story</span>
             </SheetClose>
           </Link>
-          {user && (
-            <Link href={`/user/${user.id}?identity=id`}>
-              <div className="flex items-center gap-2 rounded-md border border-border bg-white px-4 py-2">
-                <Image
-                  src={user.user_metadata.avatar_url!}
-                  alt={user.user_metadata.full_name! + "Profile"}
-                  width={120}
-                  height={120}
-                  className="size-10 rounded-full object-cover"
-                />
-
-                <div>
-                  <h1 className="text-lg font-semibold">
-                    {user.user_metadata.full_name!}
-                  </h1>
-                  <p>{user.user_metadata.email!}</p>
-                </div>
-              </div>
-            </Link>
-          )}
         </div>
       </SheetContent>
     </Sheet>

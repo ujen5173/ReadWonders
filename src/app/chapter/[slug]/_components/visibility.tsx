@@ -17,7 +17,7 @@ const Visibility = ({ id, published }: { id: string; published: boolean }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button loading={isLoading} disabled={isLoading} variant={"secondary"}>
-          Change Visisbility
+          Change Visibility
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-full bg-white p-0">

@@ -63,6 +63,8 @@ const UserFormDetails = ({
       tagline: details.tagline ?? "",
       website: details.website ?? "",
       twitter: details.twitter ?? "",
+      goodreads: details.goodreads ?? "",
+      wattpad: details.wattpad ?? "",
     },
   });
 
@@ -288,7 +290,7 @@ const UserFormDetails = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="ujen5173"
+                      placeholder="john doe"
                       value={form.getValues("wattpad") ?? ""}
                       className="text-base"
                     />
@@ -309,6 +311,7 @@ const UserFormDetails = ({
                       placeholder="goodreads.com/author/show/john-doe"
                       value={form.getValues("goodreads") ?? ""}
                       className="text-base"
+                      type="url"
                     />
                   </FormControl>
                   <FormMessage />

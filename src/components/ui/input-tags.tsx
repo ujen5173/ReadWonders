@@ -35,39 +35,36 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
 
     return (
       <>
-        <div className="flex">
-          <form
-            className="flex flex-1"
-            onSubmit={(e) => {
-              e.preventDefault();
-              addPendingDataPoint();
-            }}
-          >
-            <Input
-              value={pendingDataPoint}
-              onChange={(e) => setPendingDataPoint(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  if (value.length < 17) {
-                    addPendingDataPoint();
-                  }
+        <div className="flex flex-1">
+          <Input
+            value={pendingDataPoint}
+            onChange={(e) => setPendingDataPoint(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (value.length < 17) {
+                  addPendingDataPoint();
                 }
-              }}
-              disabled={value.length >= 17}
-              className="rounded-r-none text-base outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              {...props}
-              ref={ref}
-            />
+              }
+            }}
+            disabled={value.length >= 17}
+            className="rounded-r-none text-base outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            {...props}
+            ref={ref}
+          />
 
-            <Button
-              type="submit"
-              variant="outline"
-              className="rounded-l-none border border-l-0"
-            >
-              Add
-            </Button>
-          </form>
+          <Button
+            type="button"
+            onClick={() => {
+              if (value.length < 17) {
+                addPendingDataPoint();
+              }
+            }}
+            variant="outline"
+            className="rounded-l-none border border-l-0"
+          >
+            Add
+          </Button>
         </div>
         <div className="flex min-h-[2.5rem] flex-wrap items-center gap-2 overflow-y-auto rounded-md border bg-white p-2">
           {value.length > 0 ? (

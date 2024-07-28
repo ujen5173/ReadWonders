@@ -3,6 +3,7 @@
 import { SquareLock02Icon } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Select,
@@ -32,17 +33,18 @@ const Toc = ({
   };
 }) => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Select open={open} onOpenChange={(e) => setOpen(e)}>
-      <SelectTrigger className="h-auto w-full bg-white p-2 focus:outline-none focus:ring-0 focus:ring-offset-0 md:max-w-[450px]">
+      <SelectTrigger className="h-auto w-full bg-white p-1 focus:outline-none focus:ring-0 focus:ring-offset-0 md:max-w-[450px]">
         <div className="flex items-center gap-2">
           <Image
             src={details.story.thumbnail}
             alt={details.story.title}
             width={32}
             height={32}
-            className="w-8 rounded-sm object-fill"
+            className="w-9 rounded-sm object-fill"
           />
           <div>
             <p className="text-left text-base font-semibold">
@@ -60,7 +62,8 @@ const Toc = ({
             <h1
               key={details.story.slug}
               onClick={() => {
-                window.location.href = `/story/${details.story.slug}`;
+                // window.location.href = `/story/${details.story.slug}`;
+                router.push(`/story/${details.story.slug}`);
               }}
               className="line-clamp-1 cursor-pointer text-center text-base font-medium hover:underline"
             >

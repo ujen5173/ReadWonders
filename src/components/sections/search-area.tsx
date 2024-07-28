@@ -9,18 +9,28 @@ import { cn } from "~/utils/cn";
 import CoverCard from "../cover-card";
 import { Skeleton } from "../ui/skeleton";
 
+const validFilters = {
+  len: ["1-10", "10-20", "20-30", "40+"],
+  updated: ["anytime", "today", "week", "month"],
+};
+
 const SearchArea = () => {
   const query = useSearchParams();
+
   const { data, isFetching, hasNextPage, fetchNextPage } =
     api.story.search.useInfiniteQuery(
       {
         query: query.get("q") ?? "",
         limit: 7,
         filter: {
-          len: query.get("length") ?? undefined,
-          mature: query.get("mature") ?? undefined,
-          updated: query.get("updated") ?? undefined,
-          premium: query.get("premium") ?? undefined,
+          len: query
+            .getAll("len")
+            .filter((e) => validFilters.len.includes(e ?? "1-10"))[0],
+          updated: query
+            .getAll("updated")
+            .filter((e) => validFilters.updated.includes(e ?? "anytime"))[0],
+          mature: !!(query.get("mature") === "true"),
+          premium: !!(query.get("premium") === "true"),
         },
       },
       {

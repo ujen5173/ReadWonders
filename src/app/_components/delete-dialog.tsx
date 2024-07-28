@@ -14,16 +14,14 @@ const DeleteDialog = ({
   title,
   description,
   onConfirm,
-  trigger,
   style,
-  variant,
+  variant = "default",
 }: {
   title: string;
   description: string;
   onConfirm: () => void;
-  trigger: string;
-  style: string;
-  variant:
+  style?: string;
+  variant?:
     | "default"
     | "destructive"
     | "outline"
@@ -36,7 +34,7 @@ const DeleteDialog = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button variant={variant} className={style}>
-          {trigger}
+          {title}
         </Button>
       </DialogTrigger>
       <DialogContent>

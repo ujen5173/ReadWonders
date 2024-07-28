@@ -41,25 +41,33 @@ const StoriesArea: FC<Props> = async ({
           </p>
         )}
       </div>
-      <main
-        className={cn(
-          "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
-          inRow ? "xl:grid-cols-3" : "xl:grid-cols-6",
-        )}
-      >
-        {stories?.map((story) => <CoverCard key={story.id} details={story} />)}
-        {Array(Math.abs(perRow - stories.length))
-          .fill(0)
-          .map((_, i) => (
-            <div className="mx-auto block flex-1" key={i} />
+      {stories.length > 0 ? (
+        <main
+          className={cn(
+            "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+            inRow ? "xl:grid-cols-3" : "xl:grid-cols-6",
+          )}
+        >
+          {stories?.map((story) => (
+            <CoverCard key={story.id} details={story} />
           ))}
-        {perRow === 3 && Math.abs(perRow - stories.length) === 0 && (
-          <>
-            <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
-            <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
-          </>
-        )}
-      </main>
+          {Array(Math.abs(perRow - stories.length))
+            .fill(0)
+            .map((_, i) => (
+              <div className="mx-auto block flex-1" key={i} />
+            ))}
+          {perRow === 3 && Math.abs(perRow - stories.length) === 0 && (
+            <>
+              <div className="mx-auto hidden flex-1 md:block lg:hidden"></div>
+              <div className="mx-auto hidden flex-1 md:block xl:hidden"></div>
+            </>
+          )}
+        </main>
+      ) : (
+        <p className="text-center text-lg font-medium text-text-secondary">
+          No stories found.
+        </p>
+      )}
     </section>
   );
 };

@@ -73,7 +73,6 @@ const ReadingListCard = ({
                   "This action cannot be undone. This will permanently delete the reading list."
                 }
                 onConfirm={() => onDeleteConfirm(readingList.id)}
-                trigger={"Delete"}
                 variant={"ghost"}
                 style="w-full outline-none focus-visible:ring-0 focus-visible:ring-offset-0 justify-start rounded-none transition hover:bg-primary hover:text-white"
               />

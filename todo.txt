@@ -1,0 +1,16 @@
+-- Completed --
+    No completed items
+
+----------------------------------------------------------------------
+
+-- Recheck Required --
+⚪ REDESIGN THE CHAPTER PAGE (not sure if new design is better)
+
+----------------------------------------------------------------------
+-- Pending --
+🟠 Payment gateway
+🟠 Notes
+🟠 Comments in chapter paragraph
+🟠 Chapter order
+🟠 Chapter chunks and infinite query (Prefer mongodb for chapter storage)
+🟠 Tags page

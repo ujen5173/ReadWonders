@@ -1,14 +1,10 @@
-"use client";
-
 import { Idea01Icon, SentIcon } from "hugeicons-react";
 import Link from "next/link";
 import { siteConfig } from "~/config/site";
-import { api } from "~/trpc/react";
 import Logo from "../Logo";
 import FeedbackDialog from "../feedback";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Skeleton } from "../ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -16,11 +12,35 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 
-const Footer = () => {
-  const { data, isLoading } = api.genre.getGenre.useQuery({
-    limit: 5,
-  });
+const data = [
+  {
+    id: "1",
+    name: "Adventure",
+    slug: "adventure",
+  },
+  {
+    id: "2",
+    name: "Fanfiction",
+    slug: "fanfiction",
+  },
+  {
+    id: "3",
+    name: "Fantasy",
+    slug: "fantasy",
+  },
+  {
+    id: "4",
+    name: "Historical Fiction",
+    slug: "historical-fiction",
+  },
+  {
+    id: "5",
+    name: "Horror",
+    slug: "horror",
+  },
+];
 
+const Footer = () => {
   return (
     <footer className="w-full">
       <div className="mx-auto max-w-[1440px]">
@@ -46,26 +66,16 @@ const Footer = () => {
                 Stories Categories
               </h1>
               <ul>
-                {isLoading ? (
-                  <>
-                    <Skeleton className="mb-2 h-5 w-36" />
-                    <Skeleton className="mb-2 h-5 w-36" />
-                    <Skeleton className="mb-2 h-5 w-36" />
-                    <Skeleton className="mb-2 h-5 w-36" />
-                    <Skeleton className="mb-2 h-5 w-36" />
-                  </>
-                ) : (
-                  data?.map((genre) => (
-                    <li key={genre.id}>
-                      <Link
-                        href={`/genre/${genre.slug}`}
-                        className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
-                      >
-                        {genre.name}
-                      </Link>
-                    </li>
-                  ))
-                )}
+                {data.map((genre) => (
+                  <li key={genre.id}>
+                    <Link
+                      href={`/genre/${genre.slug}`}
+                      className="text-text-light inline-block py-1 text-sm hover:text-slate-800 hover:underline"
+                    >
+                      {genre.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             {siteConfig.navItemsFooter.map((navItem) => (

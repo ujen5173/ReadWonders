@@ -1,6 +1,14 @@
 import { notFound } from "next/navigation";
+import { constructMetadata } from "~/config/site";
 import { api } from "~/trpc/server";
 import UserFormDetails from "../_components/user-form-details";
+
+export async function generateMetadata() {
+  return constructMetadata({
+    title: "Profile Settings - ReadWonders",
+    description: "Edit your profile data and settings",
+  });
+}
 
 const ProfileSettings = async () => {
   const userDetails = await api.auth.me.query();

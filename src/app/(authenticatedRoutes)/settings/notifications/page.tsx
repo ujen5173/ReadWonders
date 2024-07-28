@@ -1,5 +1,13 @@
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { constructMetadata } from "~/config/site";
+
+export async function generateMetadata() {
+  return constructMetadata({
+    title: "Notifications - ReadWonders",
+    description: "Manage your notifications here",
+  });
+}
 
 const NotifictionPage = () => {
   return (

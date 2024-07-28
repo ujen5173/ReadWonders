@@ -7,7 +7,7 @@
     "build": "next build",
     "db:push": "prisma db push",
     "dev": "next dev",
-    "prod:dev": "env-cmd -f .env.production next dev",
+    "prod:dev": "next dev",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint && pnpm check-types",

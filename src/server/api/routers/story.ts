@@ -1070,10 +1070,10 @@ export const storyRouter = createTRPCRouter({
         cursor: z.string().optional(),
         filter: z
           .object({
-            len: z.string().optional(),
-            mature: z.string().optional(),
-            updated: z.string().optional(),
-            premium: z.string().optional(),
+            len: z.string().optional().default("1-10"),
+            mature: z.boolean().optional().default(false),
+            updated: z.string().optional().default("anytime"),
+            premium: z.boolean().optional().default(false),
           })
           .optional(),
       }),
@@ -1121,7 +1121,7 @@ export const storyRouter = createTRPCRouter({
 
         const matureCondition = input.filter?.mature
           ? Prisma.sql`
-            AND story."isMature" = ${input.filter.mature === "true"}
+            AND story."isMature" = ${input.filter.mature}
           `
           : Prisma.empty;
 
@@ -1133,7 +1133,7 @@ export const storyRouter = createTRPCRouter({
             WHERE chapter."storyId" = story.id
             AND chapter.published = true
             AND chapter."isDeleted" = false
-            AND chapter."isPremium" = ${input.filter.premium === "true"}
+            AND chapter."isPremium" = ${input.filter.premium}
           )
         `
           : Prisma.empty;
@@ -1223,7 +1223,7 @@ export const storyRouter = createTRPCRouter({
         ${premiumCondition}
         GROUP BY story.id, author.name, author.profile, author.username
         ${
-          input.filter?.premium === "true"
+          input.filter?.premium
             ? Prisma.sql`
               HAVING COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) > 0
             `
@@ -1231,7 +1231,7 @@ export const storyRouter = createTRPCRouter({
         }
         ORDER BY 
           ${
-            input.filter?.premium === "true"
+            input.filter?.premium
               ? Prisma.sql`COUNT(CASE WHEN chapter."isPremium" = true THEN 1 END) DESC,`
               : Prisma.empty
           }
