@@ -36,6 +36,8 @@ export const storyRouter = createTRPCRouter({
             select: {
               id: true,
               title: true,
+              sn: true,
+
               published: true,
               slug: true,
               createdAt: true,
@@ -102,10 +104,11 @@ export const storyRouter = createTRPCRouter({
                 isDeleted: false,
               },
               select: {
-                title: true,
                 id: true,
-                createdAt: true,
+                title: true,
                 slug: true,
+                sn: true,
+                createdAt: true,
               },
             },
             author: {
@@ -397,6 +400,7 @@ export const storyRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 slug: true,
+                sn: true,
                 isPremium: true,
                 createdAt: true,
               },
@@ -480,6 +484,7 @@ export const storyRouter = createTRPCRouter({
                   'title', c.title,
                   'createdAt', c."createdAt",
                   'slug', c.slug,
+                  'sn', c.sn,
                   'isPremium', c."isPremium"
                 ))
                 FROM chapter c
@@ -541,11 +546,14 @@ export const storyRouter = createTRPCRouter({
                 slug: true,
               },
             },
-            ratings: {
-              select: {
-                value: true,
-              },
-            },
+            ratings: ctx.user?.id
+              ? {
+                  where: { userId: ctx.user.id },
+                  select: {
+                    value: true,
+                  },
+                }
+              : false,
             chapters: {
               where: {
                 isDeleted: false,
@@ -554,6 +562,7 @@ export const storyRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 published: true,
+                sn: true,
                 slug: true,
                 createdAt: true,
                 isPremium: true,
@@ -591,7 +600,10 @@ export const storyRouter = createTRPCRouter({
           });
         }
 
-        return story;
+        return {
+          ...story,
+          ratings: story.ratings[0]?.value ?? 0,
+        };
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
@@ -623,6 +635,7 @@ export const storyRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 slug: true,
+                sn: true,
                 isPremium: true,
                 createdAt: true,
                 published: true,
@@ -810,6 +823,7 @@ export const storyRouter = createTRPCRouter({
                   'title', c.title,
                   'createdAt', c."createdAt",
                   'slug', c.slug,
+                  'sn', c.sn,
                   'isPremium', c."isPremium"
                 ))
                 FROM chapter c
@@ -926,7 +940,8 @@ export const storyRouter = createTRPCRouter({
                 'title', c.title,
                 'createdAt', c."createdAt",
                 'isPremium', c."isPremium",
-                'slug', c.slug
+                'slug', c.slug,
+                'sn', c.sn
               ))
               FROM chapter c
               WHERE c."storyId" = rs.id
@@ -1189,6 +1204,7 @@ export const storyRouter = createTRPCRouter({
             json_build_object(
               'id', chapter.id,
               'title', chapter.title,
+              'sn', chapter.sn,
               'slug', chapter.slug,
               'isPremium', chapter."isPremium",
               'createdAt', chapter."createdAt"

@@ -22,6 +22,7 @@ const RatingButton = ({
   ratingDetails: {
     ratingCount: number;
     ratingAverage: number;
+    userRating: number;
   };
   storyId: string;
 }) => {
@@ -72,6 +73,7 @@ const RatingButton = ({
                       setDetails({
                         ratingCount: newRating.ratingCount,
                         ratingAverage: newRating.averageRating,
+                        userRating: index + 1,
                       });
                     }}
                     onMouseEnter={() => setHover(index + 1)}
@@ -105,7 +107,10 @@ const RatingButton = ({
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Total rating: {formatNumber(details.ratingCount)}</p>
+          <p>
+            Rating Count: {formatNumber(details.ratingCount)}.
+            {details.userRating > 0 && `Your rating: ${details.userRating}`}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

@@ -104,6 +104,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
           user={user}
         />
         <div className="mx-auto max-w-screen-xl px-4">
+          {/* Past Chapter Header Code 👇 */}
           {/* <div className="flex flex-col items-center justify-between gap-4 border-b border-border py-2 pb-6 sm:flex-row sm:gap-6 sm:pb-2">
             <div className="flex-1">
               <Select>

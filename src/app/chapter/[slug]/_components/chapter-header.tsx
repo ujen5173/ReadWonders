@@ -31,6 +31,7 @@ const ChapterHeader = ({
         slug: string | null;
         title: string | null;
         isPremium: boolean;
+        sn: number;
         price: number;
       }[];
       published: boolean;

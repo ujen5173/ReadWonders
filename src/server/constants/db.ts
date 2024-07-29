@@ -28,6 +28,7 @@ export const TCardSelect = (userId: string | undefined) => ({
       id: true,
       title: true,
       isPremium: true,
+      sn: true,
       slug: true,
       createdAt: true,
     },

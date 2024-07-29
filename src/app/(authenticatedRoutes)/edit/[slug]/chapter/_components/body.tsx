@@ -30,7 +30,6 @@ import { autosaveContent, loadDraft } from "~/utils/storage";
 
 const EditChapterBody = ({
   chapter,
-  slug,
 }: {
   chapter: {
     nextChapter:
@@ -51,9 +50,9 @@ const EditChapterBody = ({
       tags: string[];
       love: number;
       chapters: {
-        slug: string | null;
         id: string;
         title: string | null;
+        slug: string | null;
       }[];
       author: {
         id: string;
@@ -73,7 +72,6 @@ const EditChapterBody = ({
     storyId: string;
     published: boolean;
   };
-  slug: string;
 }) => {
   const router = useRouter();
   const { replace } = router;

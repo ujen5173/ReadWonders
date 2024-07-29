@@ -481,6 +481,7 @@ model Chapter {
   thumbnail   String?
   reads       Int        @default(0)
   readingTime Int        @default(0)
+  sn          Int        @default(0)
   scheduledAt DateTime?
   isDeleted   Boolean    @default(false)
   isPremium   Boolean    @default(false)

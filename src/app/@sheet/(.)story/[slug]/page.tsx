@@ -207,30 +207,32 @@ const Story = () => {
                   </h1>
 
                   {(activeBook?.chapters ?? []).length > 0 ? (
-                    activeBook?.chapters.map((chapter) => (
-                      <Link
-                        key={chapter.id}
-                        href={`/chapter/${chapter.slug}`}
-                        className="w-full"
-                        onClick={() => setOpen(false)}
-                      >
-                        <div className="flex items-center justify-between rounded-md p-2 hover:bg-rose-400/40">
-                          <p className="line-clamp-1 text-base text-slate-700">
-                            {chapter.title}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            {chapter.isPremium && (
-                              <span>
-                                <SquareLock02Icon size={16} />
-                              </span>
-                            )}
-                            <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
-                              {formatDate(chapter.createdAt)}
+                    activeBook?.chapters
+                      .sort((a, b) => a.sn - b.sn)
+                      .map((chapter) => (
+                        <Link
+                          key={chapter.id}
+                          href={`/chapter/${chapter.slug}`}
+                          className="w-full"
+                          onClick={() => setOpen(false)}
+                        >
+                          <div className="flex items-center justify-between rounded-md p-2 hover:bg-rose-400/40">
+                            <p className="line-clamp-1 text-base text-slate-700">
+                              {chapter.title}
                             </p>
+                            <div className="flex items-center gap-2">
+                              {chapter.isPremium && (
+                                <span>
+                                  <SquareLock02Icon size={16} />
+                                </span>
+                              )}
+                              <p className="xs:text-md whitespace-nowrap text-sm text-slate-500">
+                                {formatDate(chapter.createdAt)}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </Link>
-                    ))
+                        </Link>
+                      ))
                   ) : (
                     <p className="text-center text-base text-slate-600 sm:text-lg">
                       No chapters written yet. <br /> Follow the author to get

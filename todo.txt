@@ -1,16 +1,17 @@
 -- Completed --
-    No completed items
+🟢 Chapter order
 
 ----------------------------------------------------------------------
-
 -- Recheck Required --
 ⚪ REDESIGN THE CHAPTER PAGE (not sure if new design is better)
 
 ----------------------------------------------------------------------
 -- Pending --
-🟠 Payment gateway
+🟠 Analytics
+🟠 Ask for intrested genre page after signup. Based on this recommendations will be shown.
 🟠 Notes
 🟠 Comments in chapter paragraph
-🟠 Chapter order
 🟠 Chapter chunks and infinite query (Prefer mongodb for chapter storage)
+🟠 Payment gateway
 🟠 Tags page
+🟠 Improve code quality (refactor) (very very important)

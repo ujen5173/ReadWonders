@@ -11,7 +11,7 @@ const EditChapter = async ({ params }: { params: { slug: string } }) => {
 
   if (!data) return notFound();
 
-  return <EditChapterBody slug={slug} chapter={data} />;
+  return <EditChapterBody chapter={data} />;
 };
 
 export default EditChapter;

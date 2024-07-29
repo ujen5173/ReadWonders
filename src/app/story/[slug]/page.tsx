@@ -14,6 +14,12 @@ import { ShareButton } from "~/components/Share";
 import FollowButton from "~/components/follow-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { contentFont } from "~/config/font";
 import { constructMetadata, getBaseUrl, siteConfig } from "~/config/site";
 import { api } from "~/trpc/server";
@@ -88,16 +94,27 @@ const Story = async ({ params }: { params: { slug: string } }) => {
                 ratingDetails={{
                   ratingCount: storyDetails.ratingCount,
                   ratingAverage: storyDetails.averageRating,
+                  userRating: storyDetails.ratings,
                 }}
                 storyId={storyDetails.id}
               />
 
               <ReadingListModel bookId={storyDetails.id} />
-
-              <Button className="w-full" variant="secondary">
-                <Notebook01Icon className="size-4" />
-                Add notes
-              </Button>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Button disabled className="w-full" variant="secondary">
+                        <Notebook01Icon className="size-4" />
+                        Add notes
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Notes Comming Soon!</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               <ShareButton />
             </div>

@@ -124,6 +124,7 @@ export const chapterRouter = createTRPCRouter({
                   select: {
                     id: true,
                     title: true,
+                    sn: true,
                     slug: true,
                     price: true,
                     isPremium: true,
@@ -182,17 +183,24 @@ export const chapterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { story_id, ...rest } = input;
-        // new with slug unique number
+
+        const story = await ctx.db.story.findFirst({
+          where: { id: story_id },
+          select: { _count: { select: { chapters: true } } },
+        });
+
         const newSlug: string = slugify(
           "new-chapter-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
           slugy,
         );
+
         const chapter = await ctx.db.chapter.create({
           data: {
             ...rest,
             storyId: story_id,
             title: "New Chapter",
             slug: newSlug,
+            sn: (story?._count.chapters ?? -1) + 1,
           },
         });
 
@@ -317,14 +325,69 @@ export const chapterRouter = createTRPCRouter({
           },
         });
 
-        console.log("story update completed");
-
         return { slug: chapter.slug };
       } catch (err) {
-        console.log({ err });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update chapter",
+        });
+      }
+    }),
+
+  updateChapterIndex: privateProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string(),
+          sn: z.number(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const chapters = await ctx.db.chapter.findMany({
+          where: {
+            id: {
+              in: input.map((c) => c.id),
+            },
+          },
+          select: {
+            id: true,
+            sn: true,
+          },
+        });
+
+        const sortedChapters = input.map((c) => {
+          const chapter = chapters.find((ch) => ch.id === c.id);
+
+          if (!chapter) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Chapter not found",
+            });
+          }
+
+          return {
+            id: c.id,
+            sn: c.sn,
+          };
+        });
+
+        const updatedChapters = await ctx.db.$transaction(
+          sortedChapters.map((c) =>
+            ctx.db.chapter.update({
+              where: { id: c.id },
+              data: { sn: c.sn },
+            }),
+          ),
+        );
+
+        return updatedChapters;
+      } catch (err) {
+        console.log(error({ err }));
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update chapter index",
         });
       }
     }),

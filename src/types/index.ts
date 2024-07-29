@@ -32,18 +32,25 @@ export type TCard = {
   isMature: boolean;
   readingTime: number;
   reads: number;
-  chapters: {
-    id: string;
-    title: string | null;
-    isPremium: boolean;
-    slug: string | null;
-    createdAt: Date;
-  }[];
+  chapters: ChapterCard[];
   author: {
     name: string | null;
     username: string | null;
     profile: string | null;
   };
+};
+
+export type ChapterCardWithPublish = ChapterCard & {
+  published: boolean;
+};
+
+export type ChapterCard = {
+  id: string;
+  title: string | null;
+  slug: string | null;
+  isPremium: boolean;
+  sn: number;
+  createdAt: Date;
 };
 
 export type WorkDetails = {

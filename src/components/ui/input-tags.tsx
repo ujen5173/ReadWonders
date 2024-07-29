@@ -47,6 +47,7 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
                 }
               }
             }}
+            placeholder="Add tags to improve search results"
             disabled={value.length >= 17}
             className="rounded-r-none text-base outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...props}
@@ -66,6 +67,7 @@ export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(
             Add
           </Button>
         </div>
+
         <div className="flex min-h-[2.5rem] flex-wrap items-center gap-2 overflow-y-auto rounded-md border bg-white p-2">
           {value.length > 0 ? (
             value.map((item, idx) => (

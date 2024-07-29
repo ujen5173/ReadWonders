@@ -1,15 +1,38 @@
 "use client";
 
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { Edit01Icon, SquareLock02Icon } from "hugeicons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { toast } from "~/components/ui/use-toast";
 import { api } from "~/trpc/react";
 import { getErrorMessage } from "~/utils/handle-errors";
 import { formatDate } from "~/utils/helpers";
+
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import { ChapterCardWithPublish } from "~/types";
+import DragItem from "./drag-item";
 
 const Chapters = ({
   userId,
@@ -20,14 +43,7 @@ const Chapters = ({
     id: string;
     slug: string;
     author: { id: string };
-    chapters: {
-      id: string;
-      title: string | null;
-      slug: string | null;
-      isPremium: boolean;
-      published: boolean;
-      createdAt: Date;
-    }[];
+    chapters: ChapterCardWithPublish[];
   };
 }) => {
   const router = useRouter();
@@ -56,6 +72,68 @@ const Chapters = ({
     }
   }, [isError, error]);
 
+  // DND
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const [chs, setChs] = useState(chapters.sort((a, b) => a.sn - b.sn));
+  const [hasDraged, setHasDraged] = useState(false);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over?.id) {
+      setHasDraged(true);
+      setChs((prevItems) => {
+        const oldIndex = prevItems.findIndex((item) => item.id === active.id);
+        const newIndex = prevItems.findIndex((item) => item.id === over.id);
+
+        const updatedItems = arrayMove(prevItems, oldIndex, newIndex);
+
+        // Update the sn for all items based on their new positions
+        return updatedItems.map((item, index) => ({
+          ...item,
+          sn: index,
+        }));
+      });
+    }
+  }
+
+  const {
+    mutate: chapterIndexMutation,
+    isLoading: chapterIndexLoading,
+    isError: isChapterIndexError,
+    error: chapterIndexError,
+    isSuccess,
+  } = api.chapter.updateChapterIndex.useMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Chapters order updated successfully",
+      });
+    }
+
+    if (isChapterIndexError) {
+      toast({
+        title: getErrorMessage(chapterIndexError),
+      });
+    }
+  }, [isSuccess, isChapterIndexError, chapterIndexError]);
+
+  function handleChapterIndexChange() {
+    const result = chs.map((ch) => ({
+      id: ch.id,
+      sn: ch.sn,
+    }));
+
+    chapterIndexMutation(result);
+  }
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between border-t border-border pb-2 pt-4 first:mt-0 sm:px-4">
@@ -63,61 +141,107 @@ const Chapters = ({
           Chapters:
         </h4>
         {userId === storyDetails.author.id && (
-          <Button
-            type={"button"}
-            loading={isLoading}
-            onClick={async () => {
-              const res = await mutateAsync({
-                story_id: storyDetails.id,
-              });
+          <>
+            <Button
+              type={"button"}
+              loading={isLoading}
+              onClick={async () => {
+                const res = await mutateAsync({
+                  story_id: storyDetails.id,
+                });
 
-              if (res) {
-                router.push(`/write/s/${res}`);
-              }
-            }}
-            size="sm"
-            variant="default"
-          >
-            <Edit01Icon className="size-4 stroke-2" />
-            Publish New Chapter
-          </Button>
+                if (res) {
+                  router.push(`/write/s/${res}`);
+                }
+              }}
+              size="sm"
+              variant="default"
+            >
+              <Edit01Icon className="size-4 stroke-2" />
+              Publish New Chapter
+            </Button>
+          </>
         )}
       </div>
-
-      {chapters.length ? (
-        chapters.map((ch) => (
-          <Link key={ch.id} href={`/chapter/${ch.slug}`} className="w-full">
-            <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
-              <p className="line-clamp-1 text-lg font-semibold text-slate-700">
-                {ch.title}
-              </p>
-              <div className="flex items-center gap-2">
-                {ch.isPremium && (
-                  <span>
-                    <SquareLock02Icon size={16} />
-                  </span>
-                )}
-                {!ch.published && (
-                  <Badge className="bg-rose-500 text-xs font-bold  text-white">
-                    Draft
-                  </Badge>
-                )}
-                <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
-                  {formatDate(ch.createdAt)}
-                </p>
+      {/* Draggable Component */}
+      {userId === storyDetails.author.id ? (
+        <div>
+          {chs.length ? (
+            <>
+              <div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                >
+                  <SortableContext
+                    items={chs}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {chs.map((item) => (
+                      <DragItem key={item.id} item={item} />
+                    ))}
+                  </SortableContext>
+                </DndContext>
               </div>
+              <div className="mt-4 flex justify-end">
+                <Button
+                  type="button"
+                  variant={"secondary"}
+                  disabled={!hasDraged || chapterIndexLoading}
+                  loading={chapterIndexLoading}
+                  onClick={handleChapterIndexChange}
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="py-12">
+              <p className="text-center text-lg text-foreground">
+                No chapters yet! <br />
+                Start Writing and Publish your first chapter now.
+              </p>
             </div>
-          </Link>
-        ))
+          )}
+        </div>
       ) : (
-        <div className="py-12">
-          <p className="text-center text-lg text-foreground">
-            No chapters yet! <br />
-            <span className="cursor-pointer text-primary underline">
-              Follow this book
-            </span>{" "}
-            for updates on new chapters.
-          </p>
+        // Non Draggable chapters component for non-authors
+        <div>
+          {chapters.length ? (
+            chapters.map((ch) => (
+              <Link key={ch.id} href={`/chapter/${ch.slug}`} className="w-full">
+                <div className="flex items-center justify-between rounded-md px-4 py-2 hover:bg-rose-200/60">
+                  <p className="line-clamp-1 text-lg font-semibold text-slate-700">
+                    {ch.title}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {ch.isPremium && (
+                      <span>
+                        <SquareLock02Icon size={16} />
+                      </span>
+                    )}
+                    {!ch.published && (
+                      <Badge className="bg-rose-500 text-xs font-bold  text-white">
+                        Draft
+                      </Badge>
+                    )}
+                    <p className="xs:text-md whitespace-nowrap text-sm font-semibold text-slate-500">
+                      {formatDate(ch.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="py-12">
+              <p className="text-center text-lg text-foreground">
+                No chapters yet! <br />
+                Start Writing and Publish your first chapter now.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -11,10 +11,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, type FC } from "react";
+import slugify from "slugify";
 import { Context } from "~/app/_components/RootContext";
 import ReadingListModel from "~/app/_components/reading-list-modal";
 import { merriweather } from "~/config/font";
-import { cardHeight, cardWidth } from "~/server/constants";
+import { cardHeight, cardWidth, slugy } from "~/server/constants";
 import { type TCard } from "~/types";
 import { cn } from "~/utils/cn";
 import { formatNumber } from "~/utils/helpers";
@@ -82,7 +83,7 @@ const CoverCard: FC<{
           <div className="h-6">
             {details.categoryName && (
               <Link
-                href={`/genre/${details.categoryName.toLowerCase()}`}
+                href={`/genre/${slugify(details.categoryName, slugy)}`}
                 passHref
               >
                 <Badge className="border border-border" variant="secondary">

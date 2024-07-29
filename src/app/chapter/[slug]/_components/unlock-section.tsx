@@ -44,7 +44,6 @@ const UnlockSection = ({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-4">
-      {/* // TODO: For entire story unlocking add the all chapter pricing in the schema */}
       <CoinButton
         loading={loading}
         disabled={loading}

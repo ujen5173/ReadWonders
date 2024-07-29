@@ -1,15 +1,28 @@
 "use client";
 
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Prisma } from "@prisma/client";
-import { Add01Icon, LockIcon } from "hugeicons-react";
-import Link from "next/link";
+import { Add01Icon } from "hugeicons-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
-import { Badge } from "~/components/ui/badge";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { FileUploader } from "~/components/ui/file-uploader";
 import {
   Form,
@@ -36,8 +49,14 @@ import { genres } from "~/data";
 import { useUploadFile } from "~/hooks/use-upload-thing";
 import { api } from "~/trpc/react";
 import { formSchema } from "~/types/zod";
-import { cn } from "~/utils/cn";
-import { formatDate } from "~/utils/helpers";
+
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import { ChapterCardWithPublish } from "~/types";
+import { getErrorMessage } from "~/utils/handle-errors";
+import EditChapterDragItem from "./chapter-drag-item";
 
 const EditBody = ({
   details,
@@ -50,14 +69,7 @@ const EditBody = ({
     isMature: boolean;
     tags: string[];
     thumbnail: string;
-    chapters: {
-      id: string;
-      title: string | null;
-      slug: string | null;
-      isPremium: boolean;
-      published: boolean;
-      createdAt: Date;
-    }[];
+    chapters: ChapterCardWithPublish[];
     author: {
       author: {
         rawUserMetaData: Prisma.JsonValue;
@@ -149,6 +161,69 @@ const EditBody = ({
 
   const [preparingUpload, setPreparingUpload] = useState(false);
   const [imageLoad, setImageLoad] = useState(true);
+
+  // DND
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const [chs, setChs] = useState(details.chapters.sort((a, b) => a.sn - b.sn));
+  const [hasDraged, setHasDraged] = useState(false);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    setHasDraged(true);
+
+    if (over && active.id !== over.id) {
+      setChs((prevItems) => {
+        const oldIndex = prevItems.findIndex((item) => item.id === active.id);
+        const newIndex = prevItems.findIndex((item) => item.id === over.id);
+
+        const updatedItems = arrayMove(prevItems, oldIndex, newIndex);
+
+        // Update the sn for all items based on their new positions
+        return updatedItems.map((item, index) => ({
+          ...item,
+          sn: index,
+        }));
+      });
+    }
+  }
+
+  const {
+    mutate: chapterIndexMutation,
+    isLoading: chapterIndexLoading,
+    isError: isChapterIndexError,
+    error: chapterIndexError,
+    isSuccess,
+  } = api.chapter.updateChapterIndex.useMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Chapters order updated successfully",
+      });
+    }
+
+    if (isChapterIndexError) {
+      toast({
+        title: getErrorMessage(chapterIndexError),
+      });
+    }
+  }, [isSuccess, isChapterIndexError, chapterIndexError]);
+
+  function handleChapterIndexChange() {
+    const chapters = chs.map((ch) => ({
+      id: ch.id,
+      sn: ch.sn,
+    }));
+
+    chapterIndexMutation(chapters);
+  }
 
   return (
     <section className="w-full">
@@ -321,6 +396,16 @@ const EditBody = ({
                   )}
                 />
 
+                <div className="mb-4 flex items-center gap-2">
+                  <Button
+                    disabled={isUploading || isLoading}
+                    loading={isLoading}
+                    type="submit"
+                  >
+                    Update
+                  </Button>
+                </div>
+
                 <div className="mb-6 border-t border-border pt-3">
                   <div className="mb-4 flex items-center justify-between">
                     <h1 className="text-lg font-semibold">Chapters</h1>
@@ -349,56 +434,38 @@ const EditBody = ({
                   </div>
 
                   <div className="space-y-4">
-                    {details.chapters.map((chapter) => (
-                      <div
-                        key={chapter.id}
-                        className="flex items-center justify-between"
+                    <div>
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        modifiers={[
+                          restrictToVerticalAxis,
+                          restrictToParentElement,
+                        ]}
                       >
-                        <span>{chapter.title}</span>
-                        <div className="flex items-center gap-2">
-                          {chapter.isPremium && <LockIcon className="size-2" />}
-                          {!chapter.published && (
-                            <Badge className="text-xs font-semibold">
-                              Draft
-                            </Badge>
-                          )}
-                          <span className="text-sm">
-                            {formatDate(chapter.createdAt)}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/edit/${chapter.slug}/chapter`}
-                              className={cn(
-                                buttonVariants({
-                                  variant: "secondary",
-                                  size: "sm",
-                                }),
-                              )}
-                            >
-                              Edit
-                            </Link>
-                            <Button
-                              variant="destructive"
-                              type={"button"}
-                              size={"sm"}
-                              onClick={() => {}}
-                            >
-                              Delete
-                            </Button>
+                        <SortableContext
+                          items={chs}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-2">
+                            {chs.map((item) => (
+                              <EditChapterDragItem key={item.id} item={item} />
+                            ))}
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        </SortableContext>
+                      </DndContext>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleChapterIndexChange}
+                      disabled={!hasDraged || chapterIndexLoading}
+                      loading={chapterIndexLoading}
+                      variant="secondary"
+                    >
+                      Save Chapter Order
+                    </Button>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    disabled={isUploading || isLoading}
-                    loading={isLoading}
-                    type="submit"
-                  >
-                    Update
-                  </Button>
                 </div>
               </main>
             </div>

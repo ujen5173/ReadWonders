@@ -28,7 +28,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
@@ -185,32 +184,34 @@ export const columns: ColumnDef<WorkDetails>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent className="bg-white" align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem className="gap-2">
-              <Button
-                onClick={() => {
-                  window.location.href = `/story/${row.getValue("slug")}`;
-                }}
-                variant={"secondary"}
-                className={cn("w-full")}
-              >
-                Edit
-              </Button>
-              <DeleteDialog
-                style="w-full"
-                title="Delete Story"
-                description="Are you sure you want to delete this story?"
-                onConfirm={() => {}}
-                variant="destructive"
-              />
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link
-                href="/"
-                className={cn("w-full", buttonVariants({ variant: "blue" }))}
-              >
-                View Analytics
-              </Link>
-            </DropdownMenuItem>
+            <div className="space-y-2 p-2">
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    window.location.href = `/story/${row.getValue("slug")}`;
+                  }}
+                  variant={"secondary"}
+                  className={cn("w-full")}
+                >
+                  Edit
+                </Button>
+                <DeleteDialog
+                  style="w-full"
+                  title="Delete"
+                  description="Are you sure you want to delete this story?"
+                  onConfirm={() => {}}
+                  variant="destructive"
+                />
+              </div>
+              <div>
+                <Link
+                  href="/"
+                  className={cn("w-full", buttonVariants({ variant: "blue" }))}
+                >
+                  View Analytics
+                </Link>
+              </div>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       );
