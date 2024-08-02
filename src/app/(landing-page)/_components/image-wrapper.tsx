@@ -36,7 +36,7 @@ const ImagesWrapper = ({
                     onMouseLeave={() => setHoveredImage(null)}
                     key={i}
                     src={image.thumbnail}
-                    alt="A person reading a story"
+                    alt={image.title ?? "Image"}
                     className={`${hoveredImage === image.slug ? "" : `${hoveredImage !== null ? "opacity-60 blur-[1px]" : ""}`} 
                                     border/40 rounded-lg border object-cover transition-all duration-500 ease-in-out`}
                     style={{

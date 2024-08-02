@@ -6,12 +6,15 @@
 ⚪ REDESIGN THE CHAPTER PAGE (not sure if new design is better)
 
 ----------------------------------------------------------------------
+-- In Progress --
+🟡 Payment gateway 
+
+----------------------------------------------------------------------
 -- Pending --
 🟠 Analytics
 🟠 Ask for intrested genre page after signup. Based on this recommendations will be shown.
 🟠 Notes
 🟠 Comments in chapter paragraph
 🟠 Chapter chunks and infinite query (Prefer mongodb for chapter storage)
-🟠 Payment gateway
 🟠 Tags page
 🟠 Improve code quality (refactor) (very very important)

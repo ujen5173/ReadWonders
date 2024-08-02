@@ -163,11 +163,9 @@ export function constructMetadata({
     },
     icons,
     metadataBase: new URL(getBaseUrl()),
-    ...(noIndex && {
-      robots: {
-        index: false,
-        follow: false,
-      },
-    }),
+    robots: {
+      index: !noIndex,
+      follow: !noIndex,
+    },
   };
 }

@@ -24,6 +24,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = constructMetadata();
+console.log(constructMetadata());
 
 async function RootLayout({
   sheet,

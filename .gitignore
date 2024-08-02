@@ -43,3 +43,5 @@ yarn-error.log*
 *.tsbuildinfo
 /working_code
 /todo.txt.env
+/data
+/plan.txt
