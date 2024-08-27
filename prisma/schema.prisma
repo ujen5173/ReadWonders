@@ -1,0 +1,256 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model Account {
+    id                       String  @id @default(uuid()) @db.Uuid // Updated to UUID
+    userId                   String  @db.Uuid // Updated to UUID
+    type                     String
+    provider                 String
+    providerAccountId        String
+    refresh_token            String? // @db.Text
+    access_token             String? // @db.Text
+    expires_at               Int?
+    token_type               String?
+    scope                    String?
+    id_token                 String? // @db.Text
+    session_state            String?
+    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    refresh_token_expires_in Int?
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(uuid())
+    sessionToken String   @unique
+    userId       String   @db.Uuid // Updated to UUID
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id                       String                 @id @default(uuid()) @db.Uuid // Updated to UUID
+    name                     String
+    email                    String                 @unique
+    emailVerified            DateTime?
+    accounts                 Account[]
+    sessions                 Session[]
+    username                 String                 @unique
+    profile                  String?
+    bio                      String?
+    tagline                  String?
+    hasPremium               Boolean                @default(false)
+    coins                    Int                    @default(0)
+    followingCount           Int                    @default(0)
+    followersCount           Int                    @default(0)
+    website                  String?
+    twitter                  String?
+    wattpad                  String?
+    goodreads                String?
+    createdAt                DateTime               @default(now()) @db.Timestamptz(6)
+    isSubscribed             Boolean                @default(false)
+    stripeCustomerId         String?
+    stripeSubscriptionId     String?
+    stripeSubscriptionStatus stripeSubscriptionEnum @default(unpaid)
+    currentReads             CurrentReads[]
+    readingLists             ReadingList[]
+    story                    Story[]
+    lovedChapters            Love[]
+    following                Follow[]               @relation("FollowToUserFollowing")
+    followers                Follow[]               @relation("FollowToUserFollower")
+    rating                   Rating[]
+    comments                 Comment[]
+    unlockedChapters         Chapter[]              @relation("UnlockedChaptersToUser")
+    Discussion               Discussion[]
+}
+
+model Follow {
+    id          String   @id @default(uuid()) @db.Uuid
+    followerId  String   @db.Uuid // Updated to UUID
+    followingId String   @db.Uuid // Updated to UUID
+    createdAt   DateTime @default(now()) @db.Timestamptz(6)
+    follower    User     @relation("FollowToUserFollower", fields: [followerId], references: [id], onDelete: Cascade)
+    following   User     @relation("FollowToUserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+    @@unique([followerId, followingId])
+    @@index([followerId])
+    @@index([followingId])
+    @@map("follows")
+}
+
+model CurrentReads {
+    id        String   @id @default(uuid()) @db.Uuid
+    userId    String   @unique @db.Uuid // Updated to UUID
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id])
+    stories   Story[]  @relation("CurrentReadsToStory")
+
+    @@index([userId])
+    @@map("current_reads")
+}
+
+model ReadingList {
+    id          String   @id @default(uuid()) @db.Uuid
+    authorId    String   @db.Uuid // Updated to UUID
+    title       String
+    description String?
+    private     Boolean  @default(false)
+    slug        String   @unique
+    createdAt   DateTime @default(now())
+    author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    stories     Story[]  @relation("ReadingListToStory")
+
+    @@index([authorId])
+    @@index([slug])
+    @@map("reading_list")
+}
+
+model Story {
+    id                String         @id @default(uuid()) @db.Uuid
+    title             String
+    slug              String         @unique
+    description       String
+    thumbnail         String
+    tags              String[]
+    reads             Int            @default(0)
+    readingTime       Int            @default(0)
+    averageRating     Float          @default(0)
+    ratingCount       Int            @default(0)
+    authorId          String         @db.Uuid // Updated to UUID
+    isDeleted         Boolean        @default(false)
+    isMature          Boolean        @default(false)
+    published         Boolean        @default(true)
+    categoryName      String?
+    totalChapterPrice Int            @default(0)
+    love              Int            @default(0)
+    createdAt         DateTime       @default(now())
+    updatedAt         DateTime       @updatedAt
+    isSample          Boolean?       @default(false)
+    comments          Comment[]
+    loves             Love[]
+    ratings           Rating[]
+    chapters          Chapter[]
+    discussions       Discussion[]
+    author            User           @relation(fields: [authorId], references: [id])
+    category          Genre?         @relation(fields: [categoryName], references: [name])
+    currentReads      CurrentReads[] @relation("CurrentReadsToStory")
+    readingLists      ReadingList[]  @relation("ReadingListToStory")
+
+    @@index([authorId], map: "story_author_id_idx")
+    @@index([slug])
+    @@index([title])
+    @@index([thumbnail])
+    @@index([tags])
+    @@map("story")
+}
+
+model Comment {
+    id        String    @id @default(uuid()) @db.Uuid
+    content   String
+    userId    String    @db.Uuid // Updated to UUID
+    storyId   String    @db.Uuid // Updated to UUID
+    parentId  String?   @db.Uuid // Updated to UUID
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    user      User      @relation(fields: [userId], references: [id])
+    story     Story     @relation(fields: [storyId], references: [id])
+    parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+    children  Comment[] @relation("CommentToComment")
+
+    @@index([userId])
+    @@index([storyId])
+    @@index([parentId])
+    @@index([createdAt])
+    @@map("comment")
+}
+
+model Rating {
+    id      String @id @default(uuid()) @db.Uuid
+    value   Int    @db.SmallInt
+    userId  String @db.Uuid // Updated to UUID
+    storyId String @db.Uuid // Updated to UUID
+    user    User   @relation(fields: [userId], references: [id])
+    story   Story  @relation(fields: [storyId], references: [id])
+
+    @@unique([userId, storyId])
+    @@index([storyId])
+    @@map("rating")
+}
+
+model Chapter {
+    id          String    @id @default(uuid()) @db.Uuid
+    title       String
+    slug        String
+    content     Json?
+    thumbnail   String?
+    reads       Int       @default(0)
+    readingTime Int       @default(0)
+    sn          Int       @default(0)
+    scheduledAt DateTime?
+    isDeleted   Boolean   @default(false)
+    isPremium   Boolean   @default(false)
+    storyId     String    @db.Uuid // Updated to UUID
+    published   Boolean   @default(false)
+    price       Int       @default(0)
+    story       Story     @relation(fields: [storyId], references: [id])
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    unlockedBy  User[]    @relation("UnlockedChaptersToUser")
+
+    @@index([storyId, slug], map: "chapter_story_id_slug_idx")
+    @@map("chapter")
+}
+
+model Love {
+    id      String @id @default(uuid()) @db.Uuid
+    storyId String @db.Uuid // Updated to UUID
+    userId  String @db.Uuid // Updated to UUID
+    story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([storyId, userId])
+    @@index([userId])
+    @@map("love")
+}
+
+model Genre {
+    id          String   @id @default(uuid()) @db.Uuid
+    name        String   @unique
+    slug        String   @unique
+    description String?
+    createdAt   DateTime @default(now())
+    story       Story[]
+
+    @@map("genre")
+}
+
+model Discussion {
+    id      String @id @default(uuid()) @db.Uuid
+    userId  String @db.Uuid // Updated to UUID
+    storyId String @db.Uuid // Updated to UUID
+    content String
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([storyId])
+    @@map("discussion")
+}
+
+enum stripeSubscriptionEnum {
+    incomplete
+    incomplete_expired
+    trialing
+    active
+    past_due
+    canceled
+    unpaid
+    paused
+}
