@@ -19,6 +19,7 @@ export const env = createEnv({
 
     UPLOADTHING_SECRET: z.string().min(1),
     UPLOADTHING_APP_ID: z.string().min(1),
+    NEXTAUTH_SECRET: z.string().min(1),
 
     TO: z.string().min(1),
     USER: z.string().min(1),
@@ -58,6 +59,8 @@ export const env = createEnv({
     TO: process.env.TO,
     USER: process.env.USER,
     PASS: process.env.PASS,
+
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 
     POSTHOG_ANALYTICS_KEY: process.env.POSTHOG_ANALYTICS_KEY,
 
