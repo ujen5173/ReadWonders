@@ -120,7 +120,7 @@ const UserMenu = ({
           onClick={async () => {
             try {
               await signOut();
-              router.push("/");
+              window.location.href = "/";
             } catch (err) {
               toast({
                 title: "Error logging out",

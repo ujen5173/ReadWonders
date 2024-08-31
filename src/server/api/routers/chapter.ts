@@ -60,10 +60,6 @@ export const chapterRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        console.log({
-          slug: input.slug,
-          session: ctx.session.user.id,
-        });
         const chapter = await ctx.db.chapter.findFirst({
           where: {
             slug: input.slug,
@@ -119,11 +115,6 @@ export const chapterRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const { id, isPremium, coins, ...rest } = input;
-        console.log("STARTED UPLOAD...");
-        // const time = read(
-        //   generateHTML(rest.content as JSONContent, editorExtensions),
-        // );
-
         const time = read(JSON.stringify(rest.content));
 
         const story = await ctx.db.chapter.findFirst({
@@ -247,17 +238,6 @@ export const chapterRouter = createTRPCRouter({
           chapterIndex < chapter.story.chapters.length - 1
             ? chapter.story.chapters[chapterIndex + 1]
             : null;
-
-        console.log({
-          hasPaid: chapter.isPremium
-            ? chapter.story.author.id === user?.id ||
-              (chapter.unlockedBy ?? []).length > 0
-            : true,
-          data: {
-            ...chapter,
-            nextChapter,
-          },
-        });
 
         return {
           hasPaid: chapter.isPremium

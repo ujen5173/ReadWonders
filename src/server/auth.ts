@@ -37,20 +37,36 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
   },
+  session: {
+    strategy: "jwt",
+  },
   secret: env.NEXTAUTH_SECRET,
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        profile: user.profile,
-        emailVerified: user.emailVerified,
-        username: user.username,
-      },
-    }),
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.profile = user.profile;
+        token.username = user.username;
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          id: token.id,
+          name: token.name,
+          email: token.email,
+          profile: token.profile,
+          emailVerified: token.emailVerified,
+          username: token.username,
+        },
+      };
+    },
   },
+
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
     GoogleProvider({
@@ -78,9 +94,16 @@ export const authOptions: NextAuthOptions = {
         const generateUniqueUsername = (desiredUsername: string): string => {
           let username = desiredUsername;
           let suffix = 1;
-          while (isUsernameExists(username)) {
+          const maxAttempts = 10; // Add a maximum number of attempts
+          let attempts = 0;
+          while (isUsernameExists(username) && attempts < maxAttempts) {
             username = `${desiredUsername}${generateRandomNumber()}${suffix}`;
             suffix++;
+            attempts++;
+          }
+          if (attempts === maxAttempts) {
+            // Handle the case when a unique username couldn't be generated
+            username = `${desiredUsername}_${Date.now()}`;
           }
           return username;
         };

@@ -122,13 +122,6 @@ const EditBody = ({
 
       if (!id) return;
 
-      console.log({
-        ...rest,
-        thumbnail: uploadedFile?.url ?? details.thumbnail,
-        edit: id,
-        categoryName: values.categoryName ?? undefined,
-      });
-
       const res = await mutateAsync({
         ...rest,
         thumbnail: uploadedFile?.url ?? details.thumbnail,

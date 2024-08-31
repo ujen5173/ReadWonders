@@ -40,7 +40,9 @@ const Login = () => {
   }
 
   const signInWithOauth = async (provider: Provider) => {
-    await signIn(provider);
+    await signIn(provider, {
+      callbackUrl: "/dashboard",
+    });
   };
 
   return (
