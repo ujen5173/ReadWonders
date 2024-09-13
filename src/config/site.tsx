@@ -141,6 +141,7 @@ export function constructMetadata({
   return {
     title,
     description,
+    verification: siteConfig.verification,
     openGraph: {
       title,
       description,
