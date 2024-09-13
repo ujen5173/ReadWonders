@@ -9,34 +9,37 @@ datasource db {
 }
 
 model Account {
-    id                       String  @id @default(uuid()) @db.Uuid // Updated to UUID
-    userId                   String  @db.Uuid // Updated to UUID
+    id                       String  @id @default(uuid()) @db.Uuid
+    userId                   String  @db.Uuid
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
+    refresh_token            String?
+    access_token             String?
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.Text
+    id_token                 String?
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
     id           String   @id @default(uuid())
     sessionToken String   @unique
-    userId       String   @db.Uuid // Updated to UUID
+    userId       String   @db.Uuid
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model User {
-    id                       String                 @id @default(uuid()) @db.Uuid // Updated to UUID
+    id                       String                 @id @default(uuid()) @db.Uuid
     name                     String
     email                    String                 @unique
     emailVerified            DateTime?
@@ -69,12 +72,15 @@ model User {
     comments                 Comment[]
     unlockedChapters         Chapter[]              @relation("UnlockedChaptersToUser")
     Discussion               Discussion[]
+
+    @@index([email])
+    @@index([username])
 }
 
 model Follow {
     id          String   @id @default(uuid()) @db.Uuid
-    followerId  String   @db.Uuid // Updated to UUID
-    followingId String   @db.Uuid // Updated to UUID
+    followerId  String   @db.Uuid
+    followingId String   @db.Uuid
     createdAt   DateTime @default(now()) @db.Timestamptz(6)
     follower    User     @relation("FollowToUserFollower", fields: [followerId], references: [id], onDelete: Cascade)
     following   User     @relation("FollowToUserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
@@ -87,9 +93,9 @@ model Follow {
 
 model CurrentReads {
     id        String   @id @default(uuid()) @db.Uuid
-    userId    String   @unique @db.Uuid // Updated to UUID
+    userId    String   @unique @db.Uuid
     createdAt DateTime @default(now())
-    user      User     @relation(fields: [userId], references: [id])
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     stories   Story[]  @relation("CurrentReadsToStory")
 
     @@index([userId])
@@ -98,7 +104,7 @@ model CurrentReads {
 
 model ReadingList {
     id          String   @id @default(uuid()) @db.Uuid
-    authorId    String   @db.Uuid // Updated to UUID
+    authorId    String   @db.Uuid
     title       String
     description String?
     private     Boolean  @default(false)
@@ -123,7 +129,7 @@ model Story {
     readingTime       Int            @default(0)
     averageRating     Float          @default(0)
     ratingCount       Int            @default(0)
-    authorId          String         @db.Uuid // Updated to UUID
+    authorId          String         @db.Uuid
     isDeleted         Boolean        @default(false)
     isMature          Boolean        @default(false)
     published         Boolean        @default(true)
@@ -138,15 +144,15 @@ model Story {
     ratings           Rating[]
     chapters          Chapter[]
     discussions       Discussion[]
-    author            User           @relation(fields: [authorId], references: [id])
+    author            User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
     category          Genre?         @relation(fields: [categoryName], references: [name])
     currentReads      CurrentReads[] @relation("CurrentReadsToStory")
     readingLists      ReadingList[]  @relation("ReadingListToStory")
 
-    @@index([authorId], map: "story_author_id_idx")
+    @@index([authorId])
     @@index([slug])
     @@index([title])
-    @@index([thumbnail])
+    @@index([categoryName])
     @@index([tags])
     @@map("story")
 }
@@ -154,14 +160,14 @@ model Story {
 model Comment {
     id        String    @id @default(uuid()) @db.Uuid
     content   String
-    userId    String    @db.Uuid // Updated to UUID
-    storyId   String    @db.Uuid // Updated to UUID
-    parentId  String?   @db.Uuid // Updated to UUID
+    userId    String    @db.Uuid
+    storyId   String    @db.Uuid
+    parentId  String?   @db.Uuid
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    user      User      @relation(fields: [userId], references: [id])
-    story     Story     @relation(fields: [storyId], references: [id])
-    parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    story     Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
+    parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
     children  Comment[] @relation("CommentToComment")
 
     @@index([userId])
@@ -174,10 +180,10 @@ model Comment {
 model Rating {
     id      String @id @default(uuid()) @db.Uuid
     value   Int    @db.SmallInt
-    userId  String @db.Uuid // Updated to UUID
-    storyId String @db.Uuid // Updated to UUID
-    user    User   @relation(fields: [userId], references: [id])
-    story   Story  @relation(fields: [storyId], references: [id])
+    userId  String @db.Uuid
+    storyId String @db.Uuid
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
 
     @@unique([userId, storyId])
     @@index([storyId])
@@ -196,22 +202,23 @@ model Chapter {
     scheduledAt DateTime?
     isDeleted   Boolean   @default(false)
     isPremium   Boolean   @default(false)
-    storyId     String    @db.Uuid // Updated to UUID
+    storyId     String    @db.Uuid
     published   Boolean   @default(false)
     price       Int       @default(0)
-    story       Story     @relation(fields: [storyId], references: [id])
+    story       Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @updatedAt
     unlockedBy  User[]    @relation("UnlockedChaptersToUser")
 
-    @@index([storyId, slug], map: "chapter_story_id_slug_idx")
+    @@index([storyId, slug])
+    @@index([storyId, sn])
     @@map("chapter")
 }
 
 model Love {
     id      String @id @default(uuid()) @db.Uuid
-    storyId String @db.Uuid // Updated to UUID
-    userId  String @db.Uuid // Updated to UUID
+    storyId String @db.Uuid
+    userId  String @db.Uuid
     story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)
     user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -228,13 +235,14 @@ model Genre {
     createdAt   DateTime @default(now())
     story       Story[]
 
+    @@index([slug])
     @@map("genre")
 }
 
 model Discussion {
     id      String @id @default(uuid()) @db.Uuid
-    userId  String @db.Uuid // Updated to UUID
-    storyId String @db.Uuid // Updated to UUID
+    userId  String @db.Uuid
+    storyId String @db.Uuid
     content String
     user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     story   Story  @relation(fields: [storyId], references: [id], onDelete: Cascade)

@@ -99,8 +99,10 @@ export const siteConfig = {
       href: links.linkedin,
     },
   ],
+  verification: {
+    google: "7I8etOlMn025RLfRGGDr9Xz59ht_vzxdiaGsnxu-g_0",
+  },
 };
-
 export function constructMetadata({
   title = siteConfig.title,
   description = siteConfig.description,

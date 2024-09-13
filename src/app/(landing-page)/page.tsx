@@ -1,4 +1,3 @@
-import FAQs from "~/components/shared/faq";
 import FeaturedAndLatest from "./_components/featured-latest";
 import HeroSection from "./_components/hero-section";
 import MostLoved from "./_components/most-loved";
@@ -11,7 +10,6 @@ const Home = async () => {
       <TopPicks />
       <FeaturedAndLatest />
       <MostLoved />
-      <FAQs />
     </>
   );
 };

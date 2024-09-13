@@ -1,6 +1,6 @@
 "use client";
 
-import { StarIcon } from "hugeicons-react";
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Spinner } from "~/components/shared/Loading";
 import { Button } from "~/components/ui/button";
@@ -60,39 +60,41 @@ const RatingButton = ({
             className="flex items-center gap-3"
           >
             <div className="flex items-center gap-[2px]">
-              {Array(5).map((_, index) => {
-                return (
-                  <div
-                    key={index + 1}
-                    onClick={async () => {
-                      const newRating = await mutateAsync({
-                        rating: index + 1,
-                        storyId,
-                      });
+              {Array(5)
+                .fill(null)
+                .map((_, index) => {
+                  return (
+                    <div
+                      key={index + 1}
+                      onClick={async () => {
+                        const newRating = await mutateAsync({
+                          rating: index + 1,
+                          storyId,
+                        });
 
-                      setRating(newRating.averageRating);
-                      setDetails({
-                        ratingCount: newRating.ratingCount,
-                        ratingAverage: newRating.averageRating,
-                        userRating: index + 1,
-                      });
-                    }}
-                    onMouseEnter={() => setHover(index + 1)}
-                    onMouseLeave={() => setHover(rating)}
-                  >
-                    <StarIcon
-                      size={20}
-                      className={cn(
-                        "transition-colors duration-200 ease-in-out",
-                        hover >= index + 1 || rating >= index + 1
-                          ? "fill-amber-400 text-transparent"
-                          : "fill-gray-300 text-transparent",
-                      )}
-                      stroke="currentColor"
-                    />
-                  </div>
-                );
-              })}
+                        setRating(newRating.averageRating);
+                        setDetails({
+                          ratingCount: newRating.ratingCount,
+                          ratingAverage: newRating.averageRating,
+                          userRating: index + 1,
+                        });
+                      }}
+                      onMouseEnter={() => setHover(index + 1)}
+                      onMouseLeave={() => setHover(rating)}
+                    >
+                      <Star
+                        size={20}
+                        className={cn(
+                          "transition-colors duration-200 ease-in-out",
+                          hover >= index + 1 || rating >= index + 1
+                            ? "fill-amber-400 text-transparent"
+                            : "fill-gray-300 text-transparent",
+                        )}
+                        stroke="currentColor"
+                      />
+                    </div>
+                  );
+                })}
             </div>
 
             <p className="text-foreground">

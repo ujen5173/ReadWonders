@@ -175,7 +175,11 @@ export const chapterRouter = createTRPCRouter({
 
       try {
         const chapter = await db.chapter.findFirst({
-          where: { slug },
+          where: {
+            slug: {
+              equals: slug,
+            },
+          },
           include: {
             unlockedBy: user ? { where: { id: user.id } } : false,
             story: {

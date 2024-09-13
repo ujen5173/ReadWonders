@@ -27,6 +27,7 @@ interface Props {
     slug: string;
   };
 }
+
 export async function generateMetadata({
   params,
 }: Props): Promise<Metadata | undefined> {
@@ -158,7 +159,7 @@ const Chapter = async ({ params }: { params: { slug: string } }) => {
         </div>
         <div className="relative border-y border-border bg-slate-100 px-4 py-12">
           <div className="borer absolute -top-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-slate-200/80 p-2">
-            <Lock size={15} className="text-accent" />
+            <Lock size={15} className="text-slate-700" />
           </div>
           <div className="mx-auto w-full max-w-screen-xl px-4 py-8">
             <div className="mx-auto w-7/12 flex-1">
