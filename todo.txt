@@ -18,3 +18,5 @@
 🟠 Chapter chunks and infinite query (Prefer mongodb for chapter storage)
 🟠 Tags page
 🟠 Improve code quality (refactor) (very very important)
+
+🟠 Setup Local database.

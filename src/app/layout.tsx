@@ -43,7 +43,7 @@ async function RootLayout({
         <head />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <body className={cn("min-h-screen antialiased", indexFont.className)}>
-          <NextTopLoader height={5} color={"#e11d48"} />
+          <NextTopLoader height={5} color="#e11d48" />
           <div className="fixed -z-10 h-screen w-full bg-gradient-to-br from-primary/20 via-white to-primary/10"></div>
           <div
             className="fixed -z-10 h-screen w-full opacity-30"

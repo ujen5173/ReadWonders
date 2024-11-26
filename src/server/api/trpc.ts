@@ -2,6 +2,7 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { stripe } from "~/app/lib/stripe/client";
 import { db } from "~/server/db";
 import { getUserAsAdmin } from "../supabase/supabaseClient";
 
@@ -14,6 +15,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     ...opts,
     db,
+    stripe,
     user,
   };
 };

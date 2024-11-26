@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { withPrivateRoute } from "~/providers/AuthProvider/withPrivateRoute";
 
 const Layout = ({ children }: { children: ReactNode }) => {

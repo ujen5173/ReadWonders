@@ -7,6 +7,7 @@ import { feedbackRouter } from "./routers/feedback";
 import { genreRouter } from "./routers/genre";
 import { helpersRouter } from "./routers/helpers";
 import { storyRouter } from "./routers/story";
+import { stripeRouter } from "./routers/stripe";
 
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   feedback: feedbackRouter,
   genre: genreRouter,
   comments: commentsRouter,
+  stripe: stripeRouter,
 });
 
 export type AppRouter = typeof appRouter;

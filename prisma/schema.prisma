@@ -321,32 +321,36 @@ model Users {
 }
 
 model Profiles {
-  id               String         @id @default(uuid()) @db.Uuid
-  username         String         @unique
-  name             String
-  profile          String?
-  bio              String?
-  tagline          String?
-  email            String
-  hasPremium       Boolean        @default(false)
-  coins            Int            @default(0)
-  followingCount   Int            @default(0)
-  followersCount   Int            @default(0)
-  website          String?
-  twitter          String?
-  wattpad          String?
-  goodreads        String?
-  createdAt        DateTime       @default(now()) @db.Timestamptz(6)
-  currentReads     CurrentReads[]
-  author           Users          @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  readingLists     ReadingList[]
-  story            Story[]
-  lovedChapters    Love[]
-  following        Follow[]       @relation("FollowToProfilesFollowing")
-  followers        Follow[]       @relation("FollowToProfilesFollower")
-  rating           Rating[]
-  comments         Comment[]
-  unlockedChapters Chapter[]      @relation("UnlockedChaptersToProfiles")
+  id                       String                 @id @default(uuid()) @db.Uuid
+  username                 String                 @unique
+  name                     String
+  profile                  String?
+  bio                      String?
+  tagline                  String?
+  email                    String
+  hasPremium               Boolean                @default(false)
+  coins                    Int                    @default(0)
+  followingCount           Int                    @default(0)
+  followersCount           Int                    @default(0)
+  website                  String?
+  twitter                  String?
+  wattpad                  String?
+  goodreads                String?
+  createdAt                DateTime               @default(now()) @db.Timestamptz(6)
+  isSubscribed             Boolean                @default(false)
+  stripeCustomerId         String?
+  stripeSubscriptionId     String?
+  stripeSubscriptionStatus stripeSubscriptionEnum @default(unpaid)
+  currentReads             CurrentReads[]
+  author                   Users                  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  readingLists             ReadingList[]
+  story                    Story[]
+  lovedChapters            Love[]
+  following                Follow[]               @relation("FollowToProfilesFollowing")
+  followers                Follow[]               @relation("FollowToProfilesFollower")
+  rating                   Rating[]
+  comments                 Comment[]
+  unlockedChapters         Chapter[]              @relation("UnlockedChaptersToProfiles")
 
   @@index([username])
   @@index([name])
@@ -580,4 +584,18 @@ enum OneTimeTokenType {
 
   @@map("one_time_token_type")
   @@schema("auth")
+}
+
+enum stripeSubscriptionEnum {
+  incomplete
+  incomplete_expired
+  trialing
+  active
+  past_due
+  canceled
+  unpaid
+  paused
+
+  @@map("stripe_subscription_enum")
+  @@schema("public")
 }
