@@ -72,7 +72,7 @@ const UserProfile = async ({
   return (
     <>
       <div className="mx-auto min-h-96 w-full max-w-[1440px] px-4">
-        <div className="xs:py-4 border-b border-border py-2 sm:py-8">
+        <div className="border-b border-border py-2 xs:py-4 sm:py-8">
           <div className="mb-6 flex flex-col flex-wrap items-center gap-2 sm:flex-row sm:items-start">
             <Image
               alt={userDetails.name}
@@ -93,7 +93,7 @@ const UserProfile = async ({
                 </span>
               </div>
 
-              <div className="xxs:mt-0 mt-6 flex flex-wrap items-center gap-2 text-base font-semibold text-slate-700">
+              <div className="mt-6 flex flex-wrap items-center gap-2 text-base font-semibold text-slate-700 xxs:mt-0">
                 <div>
                   <span>{userDetails.story?.length} works</span>
                 </div>
@@ -180,7 +180,7 @@ const UserProfile = async ({
             </div>
             <main
               className={cn(
-                "xxxs:grid-cols-2 xs:grid-cols-3 relative grid w-full grid-cols-1 place-items-center gap-5 md:grid-cols-4 lg:grid-cols-5",
+                "relative grid w-full grid-cols-1 place-items-center gap-5 xxxs:grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
                 "xl:grid-cols-6",
               )}
             >
